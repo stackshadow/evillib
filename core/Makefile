@@ -27,7 +27,7 @@ CoreSource=evillib.$(Version).c
 
 CoreSources = $(shell ls core/*.c)
 CoreSources+= $(shell ls memory/*.c)
-#CoreSources+= $(shell ls string/*.c)
+CoreSources+= $(shell ls string/*.c)
 CoreSourcesFull=$(addprefix $(sourceCoreDir)/,$(CoreSources))
 
 CoreObjects=$(addprefix $(buildCoreDir)/,$(CoreSources))
@@ -55,7 +55,11 @@ help:
 	@echo -n "$(CComment)"
 	@echo "##################### Core library #####################"
 	@echo "$(MAKE) evillib-core: Build evillib-core library ( in $(buildCoreDir)/libevillib.so )"
+	@echo "$(MAKE) evillib-core-clean: Clean the build directory of core"
 	@echo "$(MAKE) evillib-core-dev: Build development files ( in $(buildCoreDir)/evillib.h )"
+	@echo "$(MAKE) evillib-app: create the evillib app"
+	@echo "$(MAKE) evillib-app-clean"
+
 	@echo "$(MAKE) install: Install development headers"
 	@echo -n "$(CNormal)"
 
@@ -72,15 +76,14 @@ install: core
 evillib-core-dev: $(outputDir)$(includeDir)/evillib.h
 evillib-core-dev-clean:
 	@$(RM) evillib_version.h
-	@$(RM) $(buildCoreDir)/$(CoreHeader).prep
-	@$(RM) $(buildCoreDir)/$(CoreHeader)
+	@$(RM) $(CoreHeader).prep
+	@$(RM) $(CoreHeader)
 	@$(RM) $(outputDir)$(includeDir)/evillib/$(CoreHeader)
 	@$(RM) $(outputDir)$(includeDir)/evillib.h
-	@$(RMDIR) -p $(outputDir)$(includeDir)
 
-$(outputDir)$(includeDir)/evillib/$(CoreHeader): $(buildCoreDir)/$(CoreHeader)
+$(outputDir)$(includeDir)/evillib/$(CoreHeader): $(CoreHeader)
 	@mkdir -p $(outputDir)$(includeDir)/evillib/
-	@$(CP) $(buildCoreDir)/$(CoreHeader) $@
+	@$(CP) $(CoreHeader) $@
 $(outputDir)$(includeDir)/evillib.h: $(outputDir)$(includeDir)/evillib/$(CoreHeader)
 	@$(LN) evillib/$(CoreHeader) $@
 
@@ -116,49 +119,48 @@ evillib_version.h:
 	@echo "" >> $@
 
 
-$(buildCoreDir)/$(CoreHeader).prep: $(buildCoreDir)
+$(CoreHeader).prep: $(buildCoreDir)
 	@echo "${CCommand}make $@ ${CNormal}"
 	$(CC) -Wall -fPIC -I. -E -P -C ./evillib_full.h -o $@
 
-$(buildCoreDir)/$(CoreHeader): $(buildCoreDir)/$(CoreHeader).prep evillib_version.h
+$(CoreHeader): $(CoreHeader).prep evillib_version.h
 	@echo "${CCommand}make $@ ${CNormal}"
 	cat evillib_start.h > $@
 	cat evillib_depends.h >> $@
 	cat evillib_version.h >> $@
 	cat evillib_defines.h >> $@
-	cat $(buildCoreDir)/$(CoreHeader).prep >> $@
+	cat $(CoreHeader).prep >> $@
 	cat evillib_end.h >> $@
 
 
 #################################### Library ####################################
 evillib-core: $(outputDir)$(libDir)/libevillib.so $(outputDir)$(libDir)/libevillib.$(VerMajor).$(VerMinor).so
 evillib-core-clean:
-	@$(RM) $(buildCoreDir)/$(CoreSource).prep
-	@$(RM) $(buildCoreDir)/$(CoreSource)
+	@$(RM) $(CoreSource).prep
+	@$(RM) $(CoreSource)
 	@$(RM) $(buildCoreDir)/libevillib.o
 	@$(RM) $(buildCoreDir)/$(CoreLibraryShared)
 	@$(RM) $(outputDir)$(libDir)/evillib/$(CoreLibraryShared)
 	@$(RM) $(outputDir)$(libDir)/libevillib.$(VerMajor).$(VerMinor).so
 	@$(RM) $(outputDir)$(libDir)/libevillib.so
-	@$(RMDIR) -p $(outputDir)$(libDir)
 
 
-$(buildCoreDir)/$(CoreSource).prep: evillib_version.h
+$(CoreSource).prep: evillib_version.h
 	@echo "${CCommand}make $@ ${CNormal}"
 	$(CC) -Wall -fPIC -I. -E -P -C ./evillib_full.c -o $@
 
-$(buildCoreDir)/$(CoreSource): $(buildCoreDir)/$(CoreSource).prep
+$(CoreSource): $(CoreSource).prep
 	@echo "${CCommand}make $@ ${CNormal}"
 	cat evillib_start.h > $@
 	cat evillib_depends.h >> $@
 	cat evillib_version.h >> $@
-	cat $(buildCoreDir)/$(CoreSource).prep >> $@
+	cat $(CoreSource).prep >> $@
 	cat evillib_end.h >> $@
 
-$(buildCoreDir)/libevillib.o: $(buildCoreDir)/$(CoreSource)
+$(buildCoreDir)/libevillib.o: $(buildCoreDir) $(CoreSource)
 	@echo "${CCommand}make $@ ${CNormal}"
 	$(CC) -fPIC -c -Wall \
-	$(CFLAGS) $(buildCoreDir)/$(CoreSource) -o $@
+	$(CFLAGS) $(CoreSource) -o $@
 
 $(buildCoreDir)/$(CoreLibraryShared): $(buildCoreDir)/libevillib.o
 	@echo "${CCommand}make $@ ${CNormal}"
@@ -182,7 +184,6 @@ $(outputDir)$(libDir)/libevillib.so: $(outputDir)$(libDir)/evillib/$(CoreLibrary
 
 
 #################################### docu target ####################################
-
 docu: $(buildCoreDir) $(buildCoreDir)/$(CoreSource).prep
 docu-clean:
 	@$(RM) $(buildCoreDir)/$(CoreSource).prep
@@ -194,21 +195,30 @@ $(buildCoreDir)/%.o: $(sourceCoreDir)/%.c
 
 #################################### APP ####################################
 evillib-app: $(outputDir)$(binDir)/evillib
-
-evillib-app-clean:
+evillib-app-clean: evillib-core-clean
 	@echo "${CCommand}make $@ ${CNormal}"
 	@find $(buildCoreDir) -name "*.o" -print -delete
 	@$(RM) $(outputDir)$(binDir)/evillib
 	@$(RM) $(buildDir)/evillib
-	@$(RMDIR) -p $(outputDir)$(binDir)
+evillib-app-debug: $(CoreObjectsFull) $(CoreAppObjectsFull)
+	@echo "${CCommand}make $@ ${CNormal}"
+	gcc $(CoreObjectsFull) $(CoreAppObjectsFull) \
+	-o $(buildDir)/evillib
+
+evillib-app-run: $(buildCoreDir)/$(CoreLibraryShared) $(buildDir)/evillib
+	LD_PRELOAD=$(buildCoreDir)/$(CoreLibraryShared) $(buildDir)/evillib --apicheck
+
 
 $(outputDir)$(binDir)/evillib: $(buildDir)/evillib
 	@$(MKDIR) $(outputDir)$(binDir)
 	@$(CP) $(buildDir)/evillib $@
 
-$(buildDir)/evillib: $(CoreObjectsFull) $(CoreAppObjectsFull)
+$(buildDir)/evillib: $(buildCoreDir)/$(CoreLibraryShared) $(CoreAppObjectsFull)
 	@echo "${CCommand}make $@ ${CNormal}"
-	gcc $(CoreObjectsFull) $(CoreAppObjectsFull) -o $(buildDir)/evillib
+	gcc $(CoreAppObjectsFull) \
+	-L$(buildCoreDir) -levillib.$(Version) \
+	-o $(buildDir)/evillib
+
 
 
 # this holds apicheckObjects

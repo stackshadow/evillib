@@ -60,6 +60,7 @@ Version=$(VerMajor).$(VerMinor)-$(VerPatch)
 	@echo ""
 	$(MAKE) --directory=$(sourceDir)/core $@
 	$(MAKE) --directory=$(sourceDir)/doc $@
+	@echo -n "$(CNormal)"
 
 .PHONY:
 

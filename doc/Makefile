@@ -20,6 +20,12 @@
 .DEFAULT:
 	@echo "$@: This target dont exist in docu Makefile"
 
+help:
+	@echo -n "$(CComment)"
+	@echo "##################### Documentation #####################"
+	@echo "$(MAKE) docu: create doxygen documentation to $(outputDir)$(docDir)"
+	@echo "$(MAKE) docu-clean: clean up $(outputDir)$(docDir)"
+
 all: docu
 
 docu:

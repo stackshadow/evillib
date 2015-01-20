@@ -1,5 +1,5 @@
 /* Apicheck Function for etMemoryBlock
-	Copyright (C) 2012-2014  by Martin Langlotz
+	Copyright (C) 2015 by Martin Langlotz alias stackshadow
 
 	This file is part of evillib.
 
@@ -67,6 +67,7 @@ etID_STATE			etMemoryBlockTest(){
 	snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds now the String: %s", etMemoryBlockActual, etMemoryData );
 	etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
 
+	etMemoryBlockActual = NULL;
 	etMemoryBlockFromData( etMemoryData, etMemoryBlockActual );
 
 // Is it free? ( should not )

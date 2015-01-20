@@ -1,5 +1,5 @@
 /* Apicheck Function for etMemory
-	Copyright (C) 2012-2014  by Martin Langlotz
+	Copyright (C) 2015 by Martin Langlotz alias stackshadow
 
 	This file is part of evillib.
 

@@ -320,7 +320,7 @@ etID_STATE				__etMemoryBlockDataGet( etMemoryBlock *etMemoryBlockActual, void *
 etID_STATE				__etMemoryBlockFromData( void *data, etMemoryBlock **p_etMemoryBlockActual ){
 // Check
 	etCheckNull( data );
-	etCheckNull( *p_etMemoryBlockActual );
+	etCheckNull( p_etMemoryBlockActual );
 
 // Go back
 	size_t sPointer = (size_t)data - sizeof(etMemoryBlock);

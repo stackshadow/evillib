@@ -48,6 +48,6 @@ double			etApicheckGetTime();
 
 etID_STATE			etMemoryTest();
 etID_STATE			etMemoryBlockTest();
-
+etID_STATE			etStringTest();
 
 #endif

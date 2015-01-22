@@ -78,6 +78,7 @@ int main( int argc, const char* argv[] ){
 
 						etMemoryBlockTest();
 						etMemoryTest();
+						etStringTest();
 
 						continue;
 					}

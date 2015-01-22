@@ -1,4 +1,4 @@
-/* Apicheck helper functions
+/* Apicheck Functions
 	Copyright (C) 2014 by Martin Langlotz
 
 	This file is part of evillib.

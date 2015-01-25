@@ -184,9 +184,9 @@ $(outputDir)$(libDir)/libevillib.so: $(outputDir)$(libDir)/evillib/$(CoreLibrary
 
 
 #################################### docu target ####################################
-docu: $(buildCoreDir) $(buildCoreDir)/$(CoreSource).prep
+docu: $(buildCoreDir) $(CoreSource).prep
 docu-clean:
-	@$(RM) $(buildCoreDir)/$(CoreSource).prep
+	@$(RM) $(CoreSource).prep
 
 #################################### Targets for development ####################################
 $(buildCoreDir)/%.o: $(sourceCoreDir)/%.c

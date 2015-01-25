@@ -29,7 +29,7 @@
 //	#include "string/etString_char.h"
 #endif
 
-/** @defgroup gr_etString String functions
+/** @defgroup grString String functions
 @~english
 @brief Core String functions
 
@@ -37,26 +37,28 @@ The core functions handle allocation, freeing, reallocation and basic informatio
 The etString uses the etMemory subsystem to allocate/free/copy/set memory \n
 */
 
-/** @ingroup gr_etString
+/** @ingroup grString
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 @~english
 
+@fn etID_STATE etStringAlloc( etStringActual )
 @brief Allocate a new etString object
 @see standardFunctions
 
-@param[out] p_etStringActual The pointer to an etString object pointer
+@param[out] etStringActual The pointer to an etString object pointer
 @return If the etString object was correctly allocated \n
 *- @ref etID_YES
-*- an @ref etID_STATE If something goes wrong
+*- @ref etID_STATE_PARAMETER_MISSUSE
 */
 etID_STATE				__etStringAlloc( etString **p_etStringActual ){
 	return __etStringAllocLen( p_etStringActual, 0 );
 }
 
-/** @ingroup gr_etString
+/** @ingroup grString
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 @~english
 
+@fn etStringAllocLen( etStringActual, NewLen )
 @brief Allocate a new etString with preallocated Memory
 
 If your string change very frequently, us this function to speed up your application.
@@ -65,7 +67,8 @@ If your string change very frequently, us this function to speed up your applica
 @param[in] NewLen The length of the new String
 @return If the etString object was correctly allocated with dedicated len\n
 *- @ref etID_YES
-*- an @ref etID_STATE If something goes wrong
+*- @ref etID_STATE_NOMEMORY
+*- @ref etID_STATE_PARAMETER_MISSUSE
 */
 etID_STATE				__etStringAllocLen( etString **p_etStringActual, int NewLen ){
 // Object okay ?
@@ -104,7 +107,7 @@ etID_STATE				__etStringAllocLen( etString **p_etStringActual, int NewLen ){
 	return etID_YES;
 }
 
-/** @ingroup gr_etString
+/** @ingroup grString
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 @~english
 
@@ -114,7 +117,7 @@ etID_STATE				__etStringAllocLen( etString **p_etStringActual, int NewLen ){
 @param[in,out] etStringActual The pointer to an etString object
 @return If the etString object was correctly init \n
 *- @ref etID_YES
-*- an @ref etID_STATE If something goes wrong
+*- @ref etID_STATE_PARAMETER_MISSUSE
 */
 etID_STATE				etStringInit( etString *etStringActual ){
 // Object okay ?
@@ -134,7 +137,7 @@ etID_STATE				etStringInit( etString *etStringActual ){
 	return etID_YES;
 }
 
-/** @ingroup gr_etString
+/** @ingroup grString
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 @~english
 
@@ -147,7 +150,7 @@ This is mainly to clear out an etString, if you have passwords or something else
 @param[in,out] etStringActual The pointer to an etString object
 @return If the etString object was correctly cleaned \n
 *- @ref etID_YES
-*- an @ref etID_STATE If something goes wrong
+*- @ref etID_STATE_PARAMETER_MISSUSE
 */
 etID_STATE				etStringClean( etString *etStringActual ){
 // Parameter check
@@ -170,17 +173,17 @@ etID_STATE				etStringClean( etString *etStringActual ){
 	return etID_YES;
 }
 
-/** @ingroup gr_etString
+/** @ingroup grString
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 @~english
 
 @brief Release the memory inside the etString
 
 This function release the memory of an etString but not the etString-Object itselfe
-@param etStringActual[in,out] The pointer to an etString object
+@param[in,out] etStringActual The pointer to an etString object
 @return If the etString object was correctly destroyed \n
 *- @ref etID_YES
-*- an @ref etID_STATE If something goes wrong
+*- @ref etID_STATE_PARAMETER_MISSUSE
 */
 etID_STATE				etStringDestroy( etString *etStringActual ){
 // Check object
@@ -207,20 +210,21 @@ etID_STATE				etStringDestroy( etString *etStringActual ){
 	return etID_YES;
 }
 
-/** @ingroup gr_etString
+/** @ingroup grString
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 @~english
 
+@fn etStringFree( etStringActual )
 @brief Free an etString
 @see standardFunctions
 
 Frees an etString which are before created with etString_create() or etString_create_len() \n
 Also the char-array itselfe will be freed !
 
-@param[out] p_etStringActual The pointer to an etString object pointer
+@param[out] etStringActual The pointer to an etString object pointer
 @return If the etString object was correctly freed \n
 *- @ref etID_YES
-*- an @ref etID_STATE If something goes wrong
+*- @ref etID_STATE_PARAMETER_MISSUSE
 */
 etID_STATE				__etStringFree( etString **p_etStringActual ){
 // Parameter check

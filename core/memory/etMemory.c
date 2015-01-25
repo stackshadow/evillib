@@ -154,7 +154,7 @@ void					etMemoryExit(){
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 @~english
 
-@fn etID_STATE etMemoryAlloc( void *data, size_t size ){
+@fn etID_STATE etMemoryAlloc( void *data, size_t size )
 @brief Allocate a new etMemoryBlock
 
 This allocate a new memory block. Only use this function if you really need to allocate a new Block \n
@@ -246,7 +246,7 @@ This function trigger also an free or an resorting of the memory for optimisatio
 *- or an @ref etID_STATE
 */
 void					__etMemoryRelease( etMemoryBlock **p_etMemoryBlockActual ){
-	etCheckNullVoid(*p_etMemoryBlockActual);
+	etCheckNullVoid(p_etMemoryBlockActual);
 
 	etMemoryBlockRelease( *p_etMemoryBlockActual );
 	*p_etMemoryBlockActual = NULL;
@@ -278,6 +278,7 @@ etID_STATE				__etMemorySet( etMemoryBlock **p_etMemoryBlockActual, void *dataSo
 // Vars
 	etMemoryBlock 	*etMemoryBlockActual = *p_etMemoryBlockActual;
 	void			*etMemoryBlockData = NULL;
+
 // Not enough size
 	if( etMemoryBlockHasSpace(etMemoryBlockActual,size) != etID_YES ){
 		

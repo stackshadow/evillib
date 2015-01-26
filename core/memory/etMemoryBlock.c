@@ -110,7 +110,9 @@ If ET_SECURE_MEMORY_OFF is not defined, the memory-block will be cleaned.
 */
 void					etMemoryBlockRelease( etMemoryBlock *etMemoryBlockActual ){
 // Check
-	etCheckNullVoid( etMemoryBlockActual );
+	if ( etMemoryBlockActual == NULL ){
+		return;
+	}
 
 
 // State okay ?
@@ -228,6 +230,10 @@ etID_STATE				etMemoryBlockIsFree( etMemoryBlock *etMemoryBlockActual ){
 *- @ref etID_NO - etMemoryBlock has not enough space
 */
 etID_STATE				etMemoryBlockHasSpace( etMemoryBlock *etMemoryBlockActual, size_t size ){
+// Check
+	if ( etMemoryBlockActual == NULL ){
+		return etID_NO;
+	}
 
 // Check if size is enough
 	if( size > etMemoryBlockActual->Size ){
@@ -270,6 +276,11 @@ etID_STATE				etMemoryBlockHasSpace( etMemoryBlock *etMemoryBlockActual, size_t 
 etID_STATE				__etMemoryBlockDataGetOffset( etMemoryBlock *etMemoryBlockActual, size_t offset, void **data ){
 // Check
 	etCheckNull( data );
+	
+	if( etMemoryBlockActual == NULL ){
+		*data = NULL;
+		return etID_STATE_NODATA;
+	}
 
 	if( offset >= etMemoryBlockActual->Size ){
 		*data = NULL;

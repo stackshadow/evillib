@@ -44,15 +44,26 @@ etID_STATE			etMemoryTest(){
 	etMemoryBlock		*etMemoryBlock30 = NULL;
 	etMemoryBlock		*etMemoryBlock40 = NULL;
 
+// Run all functions with NULL-Pointer
+	snprintf( etDebugTempMessage, etDebugTempMessageLen, "Error Checking Functions" );
+	etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
+	__etMemoryAlloc( NULL, 10 );
+	__etMemoryRequest( NULL, 10 );
+	__etMemoryRelease( NULL );
+	__etMemorySet( NULL, NULL, 10 );
+	__etMemorySetOffset( NULL, NULL, 10, 10 );
+	etMemoryOptFreeUnused();
+	etMemoryOptResort();
+	etMemoryDump( NULL, NULL );
+	
 
-
+// Prealloc Blocks
 	etMemoryAlloc( etMemoryBlock5, 5 );
 	etMemoryRequest( etMemoryBlock8, 8 );
 	etMemoryRequest( etMemoryBlock10, 10 );
 	etMemoryRequest( etMemoryBlock20, 20 );
 	etMemoryRequest( etMemoryBlock30, 30 );
 	etMemoryRequest( etMemoryBlock40, 40 );
-
 
 // Dump
 	etMemoryDump( NULL, NULL );
@@ -61,9 +72,7 @@ etID_STATE			etMemoryTest(){
 	etMemoryBlockActual = etMemoryBlock10;
 	etMemoryRelease( etMemoryBlock10 );
 	etMemoryRelease( etMemoryBlock20 );
-
 	etMemoryDump( NULL, NULL );
-	
 	etMemoryRequest( etMemoryBlock10, 9 );
 	if( etMemoryBlockActual != etMemoryBlock10 ){
 		snprintf( etDebugTempMessage, etDebugTempMessageLen, "We dont get the correct Block, etMemory dont work as expected !" );

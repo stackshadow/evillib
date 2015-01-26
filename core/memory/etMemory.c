@@ -31,7 +31,6 @@
 /** @cond DEV */
 /** @defgroup grMemoryCore etMemory - Core functions
 @ingroup grMemory
-@anchor etMemory
 @brief The memory subsystem of the evillib
 The etMemory system handle memory allocation, freeing and sorting of memory. \n
 Optimisation and reordering is also included, but not yet automatically.
@@ -49,7 +48,6 @@ Depending if @ref ET_SECURE_MEMORY_OFF is defined, the released Block get overwr
 
 # Example
 This is the normal use-case when you need Memory which is supervised by the evillib:
-@snippet etMemory.c etMemory request
 
 ## Description
 As you see in the example, we first request an new Memory-Block with etMemoryRequest() \n
@@ -272,7 +270,6 @@ You must specify the size which you would like to copy to the etMemoryBlock. \n
 etID_STATE				__etMemorySet( etMemoryBlock **p_etMemoryBlockActual, void *dataSource, size_t size ){
 //Checks
 	etCheckNull( p_etMemoryBlockActual );
-	etCheckNull( *p_etMemoryBlockActual );
 	if( size == 0 ) return etID_YES;
 
 // Vars
@@ -284,16 +281,17 @@ etID_STATE				__etMemorySet( etMemoryBlock **p_etMemoryBlockActual, void *dataSo
 		
 	// Release the old one
 		etMemoryBlockRelease( etMemoryBlockActual );
-		
-	// Debug
-		#ifndef ET_DEBUG_OFF
-			snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p has %li and can not hold %li. Request a new one", etMemoryBlockActual, etMemoryBlockActual->Size, size );
-			etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
-		#endif
-		
+
 	// Request new memory
-		etMemoryRequest( etMemoryBlockActual, size );
+		__etMemoryRequest( p_etMemoryBlockActual, size );
+		etMemoryBlockActual = *p_etMemoryBlockActual;
 	}
+
+// Debug
+	#ifndef ET_DEBUG_OFF
+		snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p set %li bytes from %p", etMemoryBlockActual, size, dataSource );
+		etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
+	#endif
 
 // Copy the rest
 	etMemoryBlockDataGet(etMemoryBlockActual,etMemoryBlockData);

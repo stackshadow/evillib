@@ -25,6 +25,7 @@
 
 
 // Main Parts
+	#include "core/etObject.c"
 	#include "core/etDebug.c"
 	#include "core/etInit.c"
 	#include "core/etVersion.c"

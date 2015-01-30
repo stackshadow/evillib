@@ -30,8 +30,8 @@
         <File Name="../../core/app/apicheck/etApicheck.h"/>
         <File Name="../../core/app/apicheck/etMemory.c"/>
         <File Name="../../core/app/apicheck/etMemoryBlock.c"/>
-        <File Name="../../core/app/apicheck/etStringChar.c"/>
         <File Name="../../core/app/apicheck/etString.c"/>
+        <File Name="../../core/app/apicheck/etStringChar.c"/>
       </VirtualDirectory>
     </VirtualDirectory>
     <VirtualDirectory Name="memory">
@@ -45,6 +45,9 @@
     <VirtualDirectory Name="string">
       <File Name="../../core/string/etString.c"/>
       <File Name="../../core/string/etString.h"/>
+      <File Name="../../core/string/etString.orig"/>
+      <File Name="../../core/string/etStringChar.c"/>
+      <File Name="../../core/string/etStringChar.h"/>
     </VirtualDirectory>
   </VirtualDirectory>
   <Reconciliation>
@@ -163,7 +166,7 @@ make evillib-app</BuildCommand>
         <SearchPaths/>
       </Completion>
     </Configuration>
-    <Configuration Name="app - debug" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+    <Configuration Name="app - debug" CompilerType="GCC ( 4.9 )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g -Wall" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
       </Compiler>

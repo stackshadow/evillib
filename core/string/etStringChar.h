@@ -1,5 +1,5 @@
-/* Apicheck helper functions
-	Copyright (C) 2014 by Martin Langlotz
+/* etString_char - char extension for etString
+	Copyright (C) 2015 by Martin Langlotz alias stackshadow
 
 	This file is part of evillib.
 
@@ -17,38 +17,35 @@
 	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-#ifndef _H_evillib_etApicheck
-#define _H_evillib_etApicheck
-
-
-typedef struct etApicheck_s {
-	etID_BOOL		timeRunning;
-	clock_t 		timerStart;
-	clock_t 		timerEnd;
-	clock_t			timeTaken;
-} etApicheck;
+#ifndef _H_etStringChar
+#define _H_etStringChar
 
 
 
 
 
 
-etID_TYPE		etApicheckTimerInit();
-
-
-etID_TYPE		etApicheckTimer();
-
-
-double			etApicheckGetTime();
 
 
 
 
 
-etID_STATE			etMemoryTest();
-etID_STATE			etMemoryBlockTest();
-etID_STATE			etStringTest();
-etID_STATE			etStringCharTest();
+
+
+
+
+#define				etStringCharGet( etStringActual, string ) __etStringCharGet( etStringActual, &string )
+etID_STATE			__etStringCharGet( etString *etStringActual, const char **p_char );
+
+
+etID_STATE			etStringCharSet( etString *etStringActual, const char *source, int maxLen );
+
+
+etID_STATE			etStringCharAdd( etString *etStringActual, const char *source );
+
+
+int					etStringCharFind( etString *etStringActual, const char *compareString, int offset );
+
+
 
 #endif

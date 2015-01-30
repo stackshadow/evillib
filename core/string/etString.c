@@ -26,10 +26,9 @@
 	#include "memory/etMemoryBlock.h"
 	#include "memory/etMemory.h"
 	#include "string/etString.h"
-//	#include "string/etString_char.h"
 #endif
 
-/** @defgroup grString String functions
+/** @defgroup grString etString - String functions
 @~english
 @brief Core String functions
 
@@ -114,7 +113,7 @@ etID_STATE				__etStringAllocLen( etString **p_etStringActual, int NewLen ){
 @brief Set an etString object to the initial state ( mainly for static objects ) \n
 @see standardFunctions
 
-@param[in,out] etStringActual The pointer to an etString object
+@param[in] etStringActual The pointer to an etString object
 @return If the etString object was correctly init \n
 *- @ref etID_YES
 *- @ref etID_STATE_PARAMETER_MISSUSE
@@ -147,7 +146,7 @@ etID_STATE				etStringInit( etString *etStringActual ){
 Overwrite the string data with zeros, but dont free the memory. \n
 This is mainly to clear out an etString, if you have passwords or something else important inside. \n
 
-@param[in,out] etStringActual The pointer to an etString object
+@param[in] etStringActual The pointer to an etString object
 @return If the etString object was correctly cleaned \n
 *- @ref etID_YES
 *- @ref etID_STATE_PARAMETER_MISSUSE
@@ -180,7 +179,7 @@ etID_STATE				etStringClean( etString *etStringActual ){
 @brief Release the memory inside the etString
 
 This function release the memory of an etString but not the etString-Object itselfe
-@param[in,out] etStringActual The pointer to an etString object
+@param[in] etStringActual The pointer to an etString object
 @return If the etString object was correctly destroyed \n
 *- @ref etID_YES
 *- @ref etID_STATE_PARAMETER_MISSUSE
@@ -221,7 +220,7 @@ etID_STATE				etStringDestroy( etString *etStringActual ){
 Frees an etString which are before created with etString_create() or etString_create_len() \n
 Also the char-array itselfe will be freed !
 
-@param[out] etStringActual The pointer to an etString object pointer
+@param[in,out] etStringActual The pointer to an etString object pointer. This will be set to NULL after the function is finished
 @return If the etString object was correctly freed \n
 *- @ref etID_YES
 *- @ref etID_STATE_PARAMETER_MISSUSE

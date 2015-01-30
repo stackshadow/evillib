@@ -34,7 +34,7 @@ EXTENSION_MAPPING 			= mk=C prep=C
 
 # Input
 INPUT 						= $(SOURCEDIR)/doc/ \
-							  $(SOURCEDIR)/core \
+							  $(SOURCEDIR)/core
 EXAMPLE_PATH 				= $(SOURCEDIR)
 EXCLUDE_PATTERNS			= */develop/* \
 							  */debian/*

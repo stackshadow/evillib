@@ -17,8 +17,8 @@
 	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H_evillib_etString
-#define _H_evillib_etString
+#ifndef _H_etString
+#define _H_etString
 
 
 

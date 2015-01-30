@@ -74,9 +74,6 @@ to see how you can change the default compile settings of the evillib, see @ref 
 @~english
 
 
-@defgroup grMemory Memory functions
-@brief Functions to handle Memory
-
 @defgroup grCore Core - Functions
 @brief Core Functions
 These are the core functions of the evillib

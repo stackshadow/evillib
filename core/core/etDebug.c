@@ -47,7 +47,7 @@ void 					(*etDebugPrintMessage)() = _etDebugPrintMessage;
 // For snprintf()
 
 
-struct mallinfo		etDebugPrintMallocInfo_( const char *Function, const char *OptionalText ){
+struct mallinfo		etDebugPrintMallocInfo_( const char *function, const char *optionalText ){
 #ifdef __unix__
 /*
   int arena;    non-mmapped space allocated from system
@@ -68,8 +68,8 @@ struct mallinfo		etDebugPrintMallocInfo_( const char *Function, const char *Opti
 
 	struct mallinfo ActualMallocInfo = mallinfo();
 
-	if( Function != NULL ) printf("%s ", Function);
-	if( OptionalText != NULL ) printf("%s ", OptionalText);
+	if( function != NULL ) printf("%s ", function);
+	if( optionalText != NULL ) printf("%s ", optionalText);
 
 
 	printf( "Arena: %i ", ActualMallocInfo.arena );
@@ -109,7 +109,7 @@ void				_etDebugPrintMessage(){
 	switch( etDebugEvillib->Level ){
 
 		case etID_LEVEL_DETAIL:
-			fprintf( OutputStream, "\e[0;36m[DEBUG] [TEST]" );
+			fprintf( OutputStream, "\e[0;36m[DEBUG] [DETAIL]" );
 			break;
 
 		case etID_LEVEL_DETAIL_MEM:
@@ -169,17 +169,17 @@ void				_etDebugPrintMessage(){
 
 
 
-etID_STATE			_etDebugStateExtern( etID_STATE State, const char *Function, int Line ){
+etID_STATE			_etDebugStateExtern( etID_STATE state, const char *function, int line ){
 
 // Set default level
 	etDebugEvillib->Level = etID_LEVEL_ERR;
 
 // Set info
-	etDebugEvillib->Function = Function;
-	etDebugEvillib->FunctionLine = Line;
+	etDebugEvillib->Function = function;
+	etDebugEvillib->FunctionLine = line;
 
 // Calculate Level
-	switch( State ){
+	switch( state ){
 
 	// Special things
 		case etID_STATE_PARAMETER_MISSUSE:
@@ -220,17 +220,17 @@ etID_STATE			_etDebugStateExtern( etID_STATE State, const char *Function, int Li
 		exit( EXIT_FAILURE );
 	}
 
-	return State;
+	return state;
 }
 
 
-etID_STATE			_etDebugStateIntern( etID_STATE State, const char *Function, int Line ){
+etID_STATE			_etDebugStateIntern( etID_STATE state, const char *function, int line ){
 
-	const char *ProgramName = etDebugEvillib->Program;
+	const char *programName = etDebugEvillib->Program;
 
 	etDebugEvillib->Program = "evillib";
-	int ReturnState = _etDebugStateExtern( State, Function, Line );
-	etDebugEvillib->Program = ProgramName;
+	int ReturnState = _etDebugStateExtern( state, function, line );
+	etDebugEvillib->Program = programName;
 
 	return ReturnState;
 }
@@ -239,14 +239,14 @@ etID_STATE			_etDebugStateIntern( etID_STATE State, const char *Function, int Li
 
 
 
-void				_etDebugMessageExtern( etID_LEVEL MessageLevel, const char *Function, int Line, const char *Message ){
+void				_etDebugMessageExtern( etID_LEVEL messageLevel, const char *function, int line, const char *message ){
 
 // Fill struct
-	etDebugEvillib->Level = MessageLevel;
+	etDebugEvillib->Level = messageLevel;
 
-	etDebugEvillib->Function = Function;
-	etDebugEvillib->FunctionLine = Line;
-	etDebugEvillib->Message = Message;
+	etDebugEvillib->Function = function;
+	etDebugEvillib->FunctionLine = line;
+	etDebugEvillib->Message = message;
 
 // Printout the error
 	etDebugPrintMessage();
@@ -258,12 +258,12 @@ void				_etDebugMessageExtern( etID_LEVEL MessageLevel, const char *Function, in
 }
 
 
-void				_etDebugMessageIntern( etID_LEVEL MessageLevel, const char *Function, int Line, const char *Message ){
+void				_etDebugMessageIntern( etID_LEVEL messageLevel, const char *function, int line, const char *message ){
 
 	const char *ProgramName = etDebugEvillib->Program;
 
 	etDebugEvillib->Program = "evillib";
-	_etDebugMessageExtern( MessageLevel, Function, Line, Message );
+	_etDebugMessageExtern( messageLevel, function, line, message );
 	etDebugEvillib->Program = ProgramName;
 
 }
@@ -274,14 +274,14 @@ etID_STATE			etDebugStateGetLast(){
 }
 
 
-etID_STATE			etDebug_ProgramName_set( const char *ProgramName ){
-	etDebugEvillib->Program = ProgramName;
+etID_STATE			etDebug_ProgramName_set( const char *programName ){
+	etDebugEvillib->Program = programName;
 	return etID_YES;
 }
 
 
-etID_STATE			etDebug_Level_set( etID_LEVEL DebugLevels ){
-	etDebugEvillib->LevelVisible = DebugLevels;
+etID_STATE			etDebug_Level_set( etID_LEVEL debugLevels ){
+	etDebugEvillib->LevelVisible = debugLevels;
 	return etID_YES;
 }
 

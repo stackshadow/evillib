@@ -81,22 +81,23 @@ Disable debugging \n
 This disable the debugging function during compile time, which results in a smaller library.
 */
 /** @ingroup etDebug
-@def etDebugState( MessageState )
+@def etDebugState( messageState )
 @brief Set an state for debugging
 The etID_STATE will be transform to an message/level. 
 If the etID_STATE is not mentioned from this function the level will be set to etID_LEVEL_ERR
+@param messageState The etID_STATE from which the Level and the Message is set
 */
 /** @ingroup etDebug
-@def etDebugMessage( MessageLevel, Message )
+@def etDebugMessage( messageLevel, Message )
 @brief Set a debug-message with an level
 */
 #ifndef ET_DEBUG_OFF
 	// debug stuff
-	#define etDebugState( MessageState ) (_etDebugState( MessageState, __ET_DEBUG_FUNCTION, __LINE__ ))
-	#define etDebugMessage( MessageLevel, Message ) (_etDebugMessage( MessageLevel, __ET_DEBUG_FUNCTION, __LINE__, Message ))
+	#define etDebugState( messageState ) (_etDebugState( messageState, __ET_DEBUG_FUNCTION, __LINE__ ))
+	#define etDebugMessage( messageLevel, Message ) (_etDebugMessage( messageLevel, __ET_DEBUG_FUNCTION, __LINE__, Message ))
 #else
-	#define etDebugState( MessageState ) MessageState
-	#define etDebugMessage( MessageLevel, Message ) 
+	#define etDebugState( messageState ) messageState
+	#define etDebugMessage( messageLevel, Message ) 
 #endif
 
 
@@ -105,26 +106,26 @@ void				_etDebugPrintMessage();
 
 
 
-etID_STATE			_etDebugStateExtern( etID_STATE State, const char *Function, int Line );
+etID_STATE			_etDebugStateExtern( etID_STATE state, const char *function, int line );
 
 
-etID_STATE			_etDebugStateIntern( etID_STATE State, const char *Function, int Line );
+etID_STATE			_etDebugStateIntern( etID_STATE state, const char *function, int line );
 
 
 
-void				_etDebugMessageExtern( etID_LEVEL MessageLevel, const char *Function, int Line, const char *Message );
+void				_etDebugMessageExtern( etID_LEVEL messageLevel, const char *function, int line, const char *message );
 
 
-void				_etDebugMessageIntern( etID_LEVEL MessageLevel, const char *Function, int Line, const char *Message );
+void				_etDebugMessageIntern( etID_LEVEL messageLevel, const char *function, int line, const char *message );
 
 
 etID_STATE			etDebugStateGetLast();
 
 
-etID_STATE			etDebug_ProgramName_set( const char *ProgramName );
+etID_STATE			etDebug_ProgramName_set( const char *programName );
 
 
-etID_STATE			etDebug_Level_set( etID_LEVEL DebugLevels );
+etID_STATE			etDebug_Level_set( etID_LEVEL debugLevels );
 
 
 

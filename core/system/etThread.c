@@ -283,7 +283,7 @@ etID_STATE				etThreadFinish( etThread *etThreadActual ){
 */
 void					etThreadWait( etThread *etThreadActual ){
 // Check
-	etCheckNull( etThreadActual );
+	etCheckNullVoid( etThreadActual );
 
 // Debug
 	#ifndef ET_DEBUG_OFF

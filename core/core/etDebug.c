@@ -124,6 +124,14 @@ void				_etDebugPrintMessage(){
 			fprintf( OutputStream, "\033[0;47m[DEBUG] [PROCESS]" );
 			break;
 
+		case etID_LEVEL_DETAIL_NET:
+			fprintf( OutputStream, "\033[0;48m[DEBUG] [NET]" );
+			break;
+			
+		case etID_LEVEL_DETAIL_THREAD:
+			fprintf( OutputStream, "\033[0;48m[DEBUG] [THREAD]" );
+			break;
+
 		case etID_LEVEL_INFO:
 			fprintf( OutputStream, "[INFO]" );
 			break;
@@ -274,13 +282,13 @@ etID_STATE			etDebugStateGetLast(){
 }
 
 
-etID_STATE			etDebug_ProgramName_set( const char *programName ){
+etID_STATE			etDebugProgramNameSet( const char *programName ){
 	etDebugEvillib->Program = programName;
 	return etID_YES;
 }
 
 
-etID_STATE			etDebug_Level_set( etID_LEVEL debugLevels ){
+etID_STATE			etDebugLevelSet( etID_LEVEL debugLevels ){
 	etDebugEvillib->LevelVisible = debugLevels;
 	return etID_YES;
 }

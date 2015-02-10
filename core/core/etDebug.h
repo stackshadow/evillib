@@ -122,10 +122,10 @@ void				_etDebugMessageIntern( etID_LEVEL messageLevel, const char *function, in
 etID_STATE			etDebugStateGetLast();
 
 
-etID_STATE			etDebug_ProgramName_set( const char *programName );
+etID_STATE			etDebugProgramNameSet( const char *programName );
 
 
-etID_STATE			etDebug_Level_set( etID_LEVEL debugLevels );
+etID_STATE			etDebugLevelSet( etID_LEVEL debugLevels );
 
 
 

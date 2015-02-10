@@ -72,8 +72,8 @@ int main( int argc, const char* argv[] ){
 
 
 					if( strncmp(Argument1, "--apicheck", 10) == 0 ){
-						etDebug_Level_set( etID_LEVEL_ALL );
-						etDebug_ProgramName_set( "apicheck" );
+						etDebugLevelSet( etID_LEVEL_ALL );
+						etDebugProgramNameSet( "apicheck" );
 						etApicheckTimerInit();
 
 						etMemoryBlockTest();

@@ -79,7 +79,7 @@ etID_STATE		etInit( int argc, const char* argv[] ){
 
 
 					if( strncmp( Argument1, "--debug", 7 ) == 0 ){
-						etDebug_Level_set( etID_LEVEL_ALL );
+						etDebugLevelSet( etID_LEVEL_ALL );
 						continue;
 					}
 
@@ -148,9 +148,9 @@ etID_STATE		etInit( int argc, const char* argv[] ){
 
 // From here - Userspace
 // Set program
-	etDebug_ProgramName_set( "program" );
+	etDebugProgramNameSet( "program" );
 // Dont show any Debugging as default
-	etDebug_Level_set( etID_LEVEL_CRITICAL );
+	etDebugLevelSet( etID_LEVEL_CRITICAL );
 
 
 	return etID_YES;

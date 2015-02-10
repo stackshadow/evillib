@@ -79,18 +79,18 @@ folders:
 install: core
 
 #################################### Development / Headers ####################################
-evillib-core-dev: $(outputDir)$(includeDir)/evillib.h
+evillib-core-dev: $(includeDir)/evillib.h
 evillib-core-dev-clean:
 	@$(RM) evillib_version.h
 	@$(RM) $(CoreHeader).prep
 	@$(RM) $(CoreHeader)
-	@$(RM) $(outputDir)$(includeDir)/evillib/$(CoreHeader)
-	@$(RM) $(outputDir)$(includeDir)/evillib.h
+	@$(RM) $(includeDir)/evillib/$(CoreHeader)
+	@$(RM) $(includeDir)/evillib.h
 
-$(outputDir)$(includeDir)/evillib/$(CoreHeader): $(CoreHeader)
-	@mkdir -p $(outputDir)$(includeDir)/evillib/
+$(includeDir)/evillib/$(CoreHeader): $(CoreHeader)
+	@mkdir -p $(includeDir)/evillib/
 	@$(CP) $(CoreHeader) $@
-$(outputDir)$(includeDir)/evillib.h: $(outputDir)$(includeDir)/evillib/$(CoreHeader)
+$(includeDir)/evillib.h: $(includeDir)/evillib/$(CoreHeader)
 	@$(LN) evillib/$(CoreHeader) $@
 
 $(buildCoreDir):
@@ -140,15 +140,15 @@ $(CoreHeader): $(CoreHeader).prep evillib_version.h
 
 
 #################################### Library ####################################
-evillib-core: $(outputDir)$(libDir)/libevillib.so $(outputDir)$(libDir)/libevillib.$(VerMajor).$(VerMinor).so
+evillib-core: $(libDir)/libevillib.so $(libDir)/libevillib.$(VerMajor).$(VerMinor).so
 evillib-core-clean:
 	@$(RM) $(CoreSource).prep
 	@$(RM) $(CoreSource)
 	@$(RM) $(buildCoreDir)/libevillib.o
 	@$(RM) $(buildCoreDir)/$(CoreLibraryShared)
-	@$(RM) $(outputDir)$(libDir)/evillib/$(CoreLibraryShared)
-	@$(RM) $(outputDir)$(libDir)/libevillib.$(VerMajor).$(VerMinor).so
-	@$(RM) $(outputDir)$(libDir)/libevillib.so
+	@$(RM) $(libDir)/evillib/$(CoreLibraryShared)
+	@$(RM) $(libDir)/libevillib.$(VerMajor).$(VerMinor).so
+	@$(RM) $(libDir)/libevillib.so
 
 
 $(CoreSource).prep: evillib_version.h
@@ -177,14 +177,14 @@ $(buildCoreDir)/$(CoreLibraryShared): $(buildCoreDir)/libevillib.o
 
 
 # Output directory
-$(outputDir)$(libDir)/evillib/$(CoreLibraryShared): $(buildCoreDir)/$(CoreLibraryShared)
-	@$(MKDIR) $(outputDir)$(libDir)/evillib
+$(libDir)/evillib/$(CoreLibraryShared): $(buildCoreDir)/$(CoreLibraryShared)
+	@$(MKDIR) $(libDir)/evillib
 	@$(CP) $(buildCoreDir)/$(CoreLibraryShared) $@
 
-$(outputDir)$(libDir)/libevillib.$(VerMajor).$(VerMinor).so: $(outputDir)$(libDir)/evillib/$(CoreLibraryShared)
+$(libDir)/libevillib.$(VerMajor).$(VerMinor).so: $(libDir)/evillib/$(CoreLibraryShared)
 	@$(LN) evillib/$(CoreLibraryShared) $@
 
-$(outputDir)$(libDir)/libevillib.so: $(outputDir)$(libDir)/evillib/$(CoreLibraryShared)
+$(libDir)/libevillib.so: $(libDir)/evillib/$(CoreLibraryShared)
 	@$(LN) evillib/$(CoreLibraryShared) $@
 
 
@@ -199,11 +199,11 @@ $(buildCoreDir)/%.o: $(sourceCoreDir)/%.c
 	$(CC) -fPIC -I. -Wall -DET_SINGLEMODULE -c $(CFLAGS) $< -o $@
 
 #################################### APP ####################################
-evillib-app: $(outputDir)$(binDir)/evillib
+evillib-app: $(binDir)/evillib
 evillib-app-clean: evillib-core-clean
 	@echo "${CCommand}make $@ ${CNormal}"
 	@find $(buildCoreDir) -name "*.o" -print -delete
-	@$(RM) $(outputDir)$(binDir)/evillib
+	@$(RM) $(binDir)/evillib
 	@$(RM) $(buildDir)/evillib
 evillib-app-debug: $(CoreObjectsFull) $(CoreAppObjectsFull)
 	@echo "${CCommand}make $@ ${CNormal}"
@@ -214,8 +214,8 @@ evillib-app-run: $(buildCoreDir)/$(CoreLibraryShared) $(buildDir)/evillib
 	LD_PRELOAD=$(buildCoreDir)/$(CoreLibraryShared) $(buildDir)/evillib --apicheck
 
 
-$(outputDir)$(binDir)/evillib: $(buildDir)/evillib
-	@$(MKDIR) $(outputDir)$(binDir)
+$(binDir)/evillib: $(buildDir)/evillib
+	@$(MKDIR) $(binDir)
 	@$(CP) $(buildDir)/evillib $@
 
 $(buildDir)/evillib: $(buildCoreDir)/$(CoreLibraryShared) $(CoreAppObjectsFull)

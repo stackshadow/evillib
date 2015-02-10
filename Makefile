@@ -35,16 +35,16 @@ MKDIR = mkdir -p -v
 RMDIR = rmdir -v
 
 # Directorys
-prefix=/usr
-export sourceDir=$(PWD)
-export buildDir=$(PWD)/.build
+prefix=/tmp/.output/usr
+
+sourceDir=$(PWD)
 buildDir=/tmp/.build
-targetDir=$(prefix)
-includeDir=$(targetDir)/include
-binDir=$(targetDir)/bin
-libDir=$(targetDir)/lib
-docDir=$(targetDir)/share/doc/evillib/${Version}
-outputDir=$(buildDir)/deploy
+
+includeDir=$(prefix)/include
+binDir=$(prefix)/bin
+libDir=$(prefix)/lib
+docDir=$(prefix)/share/doc/evillib/${Version}
+
 
 # Version of evillib
 VerMajor=00

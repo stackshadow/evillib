@@ -24,10 +24,16 @@ buildCoreDir=$(buildDir)/core
 CoreHeader=evillib.$(Version).h
 CoreSource=evillib.$(Version).c
 
+# librarys
+CLIBS =-lpthread
+CLIBS+=-lc
+CLIBS+=-lblkid
 
 CoreSources = $(shell ls core/*.c)
 CoreSources+= $(shell ls memory/*.c)
 CoreSources+= $(shell ls string/*.c)
+CoreSources+= $(shell ls system/*.c)
+CoreSources+= $(shell ls net/*.c)
 CoreSourcesFull=$(addprefix $(sourceCoreDir)/,$(CoreSources))
 
 CoreObjects=$(addprefix $(buildCoreDir)/,$(CoreSources))
@@ -166,8 +172,7 @@ $(buildCoreDir)/$(CoreLibraryShared): $(buildCoreDir)/libevillib.o
 	@echo "${CCommand}make $@ ${CNormal}"
 	$(CC) -shared -Wl,-soname,libevillib.so \
 	$(buildCoreDir)/libevillib.o \
-	-lc \
-	-lblkid \
+	$(CLIBS) \
 	-o $@
 
 
@@ -202,7 +207,7 @@ evillib-app-clean: evillib-core-clean
 	@$(RM) $(buildDir)/evillib
 evillib-app-debug: $(CoreObjectsFull) $(CoreAppObjectsFull)
 	@echo "${CCommand}make $@ ${CNormal}"
-	gcc $(CoreObjectsFull) $(CoreAppObjectsFull) \
+	$(CC) $(CoreObjectsFull) $(CoreAppObjectsFull) $(CLIBS) \
 	-o $(buildDir)/evillib
 
 evillib-app-run: $(buildCoreDir)/$(CoreLibraryShared) $(buildDir)/evillib

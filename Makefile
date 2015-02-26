@@ -17,41 +17,6 @@
 #	You should have received a copy of the GNU Lesser General Public License
 #	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 
-# Colours
-CNormal=\033[00m
-CCommand=\033[1;35m
-CComment=\033[36m
-COK=\033[32m
-
-# Compiler
-CC = ${CROSSCOMPILE}gcc
-CXX = ${CROSSCOMPILE}g++
-AR = ${CROSSCOMPILE}ar
-RANLIB = ${CROSSCOMPILE}ranlib
-RM = rm -v -f
-CP = cp -v -f
-LN = ln -v -f -s
-MKDIR = mkdir -p -v
-RMDIR = rmdir -v
-
-# Directorys
-prefix=/tmp/.output/usr
-
-sourceDir=$(PWD)
-buildDir=/tmp/.build
-
-includeDir=$(prefix)/include
-binDir=$(prefix)/bin
-libDir=$(prefix)/lib
-docDir=$(prefix)/share/doc/evillib/${Version}
-
-
-# Version of evillib
-VerMajor=00
-VerMinor=14
-VerPatch=04
-Version=$(VerMajor).$(VerMinor)-$(VerPatch)
-
 .EXPORT_ALL_VARIABLES:
 
 

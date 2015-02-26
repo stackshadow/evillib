@@ -61,28 +61,59 @@ int main( int argc, const char* argv[] ){
 	return 0;
 */
 
+	const char *Argument1 = NULL;
+	const char *Argument2 = NULL;
+				
 	if( argc > 0 ){
 
 		int index = 1;
 		for ( index = 1; index <= argc; index ++ ){
 
-				const char *Argument1 = argv[index];
+				Argument1 = argv[index];
+				
+				if( index+1 <= argc ){
+					Argument2 = argv[index+1];
+				} else {
+					Argument2 = NULL;
+				}
 
 				if( Argument1 != NULL ){
-
 
 					if( strncmp(Argument1, "--apicheck", 10) == 0 ){
 						etDebugLevelSet( etID_LEVEL_ALL );
 						etDebugProgramNameSet( "apicheck" );
-						etApicheckTimerInit();
+						
+						int checkAll = 0;
+						
+						if( Argument2 != NULL ){
+							
+							if( strncmp(Argument2, "all", 8) == 0 ){
+								checkAll = 1;
+							}
 
-						etMemoryBlockTest();
-						etMemoryTest();
-						etStringTest();
-						etStringCharTest();
+							if( strncmp(Argument2, "etMemory", 8) == 0 || checkAll == 1 ){
+								etMemoryBlockTest();
+								etMemoryTest();
+							}
+							if( strncmp(Argument2, "etString", 8) == 0 || checkAll == 1 ){
+								etStringTest();
+								etStringCharTest();
+							}
+							if( strncmp(Argument2, "etThread", 8) == 0 || checkAll == 1 ){
+								etThreadTest();
+							}
+							if( strncmp(Argument2, "etComm", 8) == 0 || checkAll == 1 ){
+								etCommTest();
+							}
+							
+							
+						}
 
+
+						
 						continue;
 					}
+					
 
 					if( strncmp( Argument1, "-h", 2 ) == 0 || strncmp( Argument1, "--help", 6 ) == 0 ){
 						fprintf( stdout, "APP:\n" );

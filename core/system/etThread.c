@@ -34,6 +34,13 @@
 /** @defgroup grThread etThread - Threading functions
 @brief Threading functions in evillib
 
+Threads are background task. Background tasks are used to run some functions in the background of the main Thread.
+The threading functions in evillib use pthread (so we need an c-library)
+@todo Add Timeout and "Ping" Functions. "Ping"-Function should "ping" the thread, the background thread should respond in an specific amount of time
+
+@dotfile system/etThreadUsage.dot "Typical usage graph" width=10cm
+
+
 Here is an example for an etThread use:
 
 @snippet app/apicheck/etThread.c etThread function
@@ -122,9 +129,9 @@ etID_STATE				__etThreadFree( etThread **p_etThreadActual ){
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
 @~english
-@brief Set the threaded function
+@brief Set the function which should be run in background
 
-Set the Function the etThread-Object will run with etThreadRun
+The function is just set and will not run until you call etThreadRun().
 @param[in] etThreadActual The etThread object
 @param[in] ThreadFunction The function which get called inside the thread
 */
@@ -178,14 +185,14 @@ void					__etThreadGetUserdata( etThread *etThreadActual, void **p_userData ){
 @~english
 @brief Start the function in background which was set before with etThreadSetFunction()
 
-This function start an background thread and runs the function wich was set with etThreadSetFunction() \n
-The thread is only started if etThread is in etID_STATE_READY state, then the state is set to etID_STATE_RUN \n
+This function start an background thread of the function wich was set with etThreadSetFunction() \n
+The thread only starts if etThread is in etID_STATE_READY state \n
 @param[in] etThreadActual The etThread object
 @return If the thread was correctly started \n
 *- @ref etID_STATE_PARAMETER_MISSUSE
 *- @ref etID_YES
-*- @ref etID_NO
-*- @ref etID_STATE_RUN - Thread busy
+*- @ref etID_STATE_USED - Function already run in an thread
+*- @ref etID_STATE_NODATA - No Function was set with etThreadSetFunction()
 */
 etID_STATE				etThreadRun( etThread *etThreadActual ){
 // Check
@@ -194,7 +201,7 @@ etID_STATE				etThreadRun( etThread *etThreadActual ){
 // Check state
 	if( etThreadActual->state != etID_STATE_READY ){
 		etDebugMessage( etID_LEVEL_ERR, "Thread already running !" );
-		return etID_NO;
+		return etID_STATE_USED;
 	}
 
 // Run Thread if function exist
@@ -211,7 +218,7 @@ etID_STATE				etThreadRun( etThread *etThreadActual ){
 
 	} else {
 		etDebugMessage( etID_LEVEL_ERR, "Can not run the function.. no function is present to run" );
-		return etID_STATE_RUN;
+		return etID_STATE_NODATA;
 	}
 
 
@@ -249,6 +256,8 @@ etID_STATE				etThreadKill( etThread *etThreadActual ){
 			snprintf( etDebugTempMessage, etDebugTempMessageLen, "[KILLED] %li", etThreadActual->thread );
 			etDebugMessage( etID_LEVEL_DETAIL_THREAD, etDebugTempMessage );
 			#endif
+			
+			etThreadActual->state = etID_STATE_BREAK;
 
 			return etID_YES;
 		} else {
@@ -288,7 +297,7 @@ etID_STATE				etThreadFinish( etThread *etThreadActual ){
 		
 	// Debug
 		#ifndef ET_DEBUG_OFF
-		snprintf( etDebugTempMessage, etDebugTempMessageLen, "[FINISHED] %li", etThreadActual->thread );
+		snprintf( etDebugTempMessage, etDebugTempMessageLen, "[SET FINISHED] %li", etThreadActual->thread );
 		etDebugMessage( etID_LEVEL_DETAIL_THREAD, etDebugTempMessage );
 		#endif
 
@@ -317,7 +326,7 @@ void					etThreadWait( etThread *etThreadActual ){
 
 // Debug
 	#ifndef ET_DEBUG_OFF
-	snprintf( etDebugTempMessage, etDebugTempMessageLen, "[FINISHED] %li", etThreadActual->thread );
+	snprintf( etDebugTempMessage, etDebugTempMessageLen, "[WAIT FOR FINISH] %li", etThreadActual->thread );
 	etDebugMessage( etID_LEVEL_DETAIL_THREAD, etDebugTempMessage );
 	#endif
 

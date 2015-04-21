@@ -29,9 +29,9 @@ help:
 all: docu
 
 docu:
-	$(MKDIR) $(outputDir)$(docDir)
-	SOURCEDIR=$(sourceDir) \
-	OUTPUTDIR=$(outputDir)$(docDir) \
+	mkdir -p ./output
+	SOURCEDIR=../ \
+	OUTPUTDIR=./output \
 	SECTION="DEV" \
 	doxygen 
 

@@ -38,7 +38,6 @@ typedef struct etString {
 
 
 
-
 #define					etStringAlloc( etStringActual ) __etStringAlloc( &etStringActual )
 etID_STATE				__etStringAlloc( etString **p_etStringActual );
 

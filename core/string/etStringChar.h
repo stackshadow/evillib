@@ -34,7 +34,7 @@
 
 
 
-#define				etStringCharGet( etStringActual, string ) __etStringCharGet( etStringActual, &string )
+#define				etStringCharGet( etStringActual, char ) __etStringCharGet( etStringActual, &char )
 etID_STATE			__etStringCharGet( etString *etStringActual, const char **p_char );
 
 

@@ -1,0 +1,130 @@
+
+/** @ingroup gr_etString_char
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+
+@~english
+
+@brief Get the length of an etString ( means "letters" )
+
+@param etStringActual The pointer to an etString object
+@return The length ( count of "letters" ) of the etString \n
+*- The length ( count of "letters" ) of the etString
+*- -1 if an error occure
+*/
+int					etString_char_len( etString *etStringActual ){
+// Parameter check
+	if( etStringActual == NULL ){
+		etDebugState(etID_STATE_PARAMETER_MISSUSE);
+		return -1;
+	}
+
+// Debug
+#ifndef ET_DEBUG_OFF
+	snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p]", etStringActual );
+	etDebugMessage( etID_LEVEL_DEBUG, etDebugTempMessage );
+#endif
+
+// Renew information
+	char* ActualString = (char*)etMemoryBlock_data_get( etStringActual->data );
+	if( ActualString == NULL ) return -1;
+
+	etStringActual->length = strlen(ActualString);
+	return etStringActual->length;
+}
+
+
+/** @ingroup gr_etString_char
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+
+@~english
+@brief replace a part of the etString with an provided char-array
+
+The resulting String is created accroding to: \n
+*- From the actual String from 0 to "Start" Position \n
+*- Append the Source to the end of "Start"-Position \n
+*- After Start+Len the string continouse \n
+\n
+If the resulting string is bigger than the old one, a new one will be created. Thats why the etString-Pointer is an pointer to a pointer.
+
+@param p_etStringActual The pointer to an etString object pointer
+@param Start The start-position where to replace
+@param Len The len from the start. \n
+The len define the len which will cut out
+@param Source The Char to insert at parameter Start
+@return If the etString object was correctly inserted \n
+*- @ref etID_STATE_PARAMETER_MISSUSE
+*- @ref etID_YES
+*/
+etID_STATE			etString_char_replace( etString **p_etStringActual, size_t Start, size_t Len, const char *Source ){
+// Parameter check
+	if( p_etStringActual == NULL ){
+		return etDebugState(etID_STATE_PARAMETER_MISSUSE);
+	}
+	if( Source == NULL ){
+		return etDebugState(etID_STATE_PARAMETER_MISSUSE);
+	}
+
+// Vars
+	char*			etStringActualChar = (char*)etString_char_get( *p_etStringActual );
+	int				etStringActualSize = etString_char_len( *p_etStringActual ) * sizeof(char);
+	size_t			SourceSize = strlen(Source) * sizeof(char);
+
+// We need a new string
+	etString *etStringNew = NULL;
+	etString_alloc_len( &etStringNew, etStringActualSize + SourceSize - Len*sizeof(char) + sizeof(char) );
+
+// Remember the char we would like to set to 0
+	etStringActualChar[Start] = '\0';
+
+	etString_char_set( etStringNew, etStringActualChar );
+
+// Add the source
+	etString_char_add( etStringNew, Source );
+
+// The rest
+	const char *Rest = (const char*)&(etStringActualChar[Start+Len]);
+	etString_char_add( etStringNew, Rest );
+
+// return
+	etString_free( p_etStringActual );
+	*p_etStringActual = etStringNew;
+
+	return etID_YES;
+}
+
+
+
+
+
+
+
+
+
+
+
+etID_STATE			etString_char_is_utf8( const char *Source ){
+// Parameter check
+	if( Source == NULL ){
+		return etDebugState(etID_STATE_PARAMETER_MISSUSE);
+	}
+
+	int SourceLen = strlen(Source);
+	wchar_t MBString[SourceLen]; memset( MBString, 0, SourceLen*sizeof(wchar_t) );
+
+	// Convert to a multibyte string
+	mbstowcs( MBString, Source, SourceLen*sizeof(wchar_t) );
+
+	int MBStringLen = wcslen( MBString );
+
+	// Compare the size
+	// If size is equal, this is a plain char, if not multibyte
+	if( MBStringLen == SourceLen ) return etID_NO;
+
+	return etID_YES;
+}
+
+
+
+
+
+

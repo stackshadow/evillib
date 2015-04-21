@@ -44,13 +44,13 @@
 
 @~english
 
-@fn etStringCharGet( etStringActual, string )
+@fn etStringCharGet( etStringActual, char )
 @brief Get the Char-Array from the etString
 
 This will return the internal char. You dont need to free this char.
 
 @param[in] etStringActual The pointer to an etString object
-@param[out] string The pointer to the resulting char \n
+@param[out] char The pointer to the resulting char \n
 Dont free this char, it will be managed internaly by the etMemory-System \n
 *- NULL if no string is aviable or etStringActual is NULL
 @warning Don't free the resulting char, your application will crash !

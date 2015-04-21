@@ -27,6 +27,7 @@ OUTPUT_LANGUAGE				= "English"
 HIDE_UNDOC_MEMBERS			= YES
 SORT_MEMBER_DOCS			= NO
 SOURCE_BROWSER 				= NO
+HAVE_DOT					= YES
 
 # File handling
 FILE_PATTERNS 				= *.c *.h *.mk *.prep
@@ -38,6 +39,8 @@ INPUT 						= $(SOURCEDIR)/doc/ \
 EXAMPLE_PATH 				= $(SOURCEDIR)
 EXCLUDE_PATTERNS			= */develop/* \
 							  */debian/*
+DOTFILE_DIRS				= $(SOURCEDIR) \ 
+							  $(SOURCEDIR)/core
 RECURSIVE					= YES
 ENABLE_PREPROCESSING		= YES
 SEARCH_INCLUDES				= YES

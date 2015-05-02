@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Workspace Name="evillib" Database="">
+  <Project Name="evillib" Path="evillib.project" Active="Yes"/>
+  <Environment>
+    <![CDATA[]]>
+  </Environment>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="app" Selected="yes">
+      <Project Name="evillib" ConfigName="app"/>
+      <Project Name="raspdispd" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Documentation" Selected="no">
+      <Project Name="evillib" ConfigName="docu"/>
+      <Project Name="raspdispd" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Development Header" Selected="no">
+      <Project Name="evillib" ConfigName="develop"/>
+      <Project Name="raspdispd" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="app - debug" Selected="no">
+      <Project Name="evillib" ConfigName="app - debug"/>
+      <Project Name="raspdispd" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>

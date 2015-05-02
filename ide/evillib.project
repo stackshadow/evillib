@@ -1,55 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Project Name="evillib" InternalType="">
-  <VirtualDirectory Name="core">
-    <VirtualDirectory Name="core">
-      <File Name="../../core/core/etDebug.c"/>
-      <File Name="../../core/core/etDebug.h"/>
-      <File Name="../../core/core/etInit.c"/>
-      <File Name="../../core/core/etInit.h"/>
-      <File Name="../../core/core/etVersion.c"/>
-      <File Name="../../core/core/etVersion.h"/>
-      <File Name="../../core/core/etObject.c"/>
-      <File Name="../../core/core/etObject.h"/>
-    </VirtualDirectory>
-    <File Name="../../core/evillib_config.h"/>
-    <File Name="../../core/evillib_defines.h"/>
-    <File Name="../../core/evillib_depends.h"/>
-    <File Name="../../core/evillib_end.c"/>
-    <File Name="../../core/evillib_end.h"/>
-    <File Name="../../core/evillib_full.c"/>
-    <File Name="../../core/evillib_full.h"/>
-    <File Name="../../core/evillib_start.c"/>
-    <File Name="../../core/evillib_start.h"/>
-    <File Name="../../core/evillib_version.h"/>
-    <File Name="../../core/Makefile"/>
-    <VirtualDirectory Name="app">
-      <File Name="../../core/app/evillib.c"/>
-      <File Name="../../core/app/evillib.h"/>
-      <VirtualDirectory Name="apicheck">
-        <File Name="../../core/app/apicheck/etApicheck.c"/>
-        <File Name="../../core/app/apicheck/etApicheck.h"/>
-        <File Name="../../core/app/apicheck/etMemory.c"/>
-        <File Name="../../core/app/apicheck/etMemoryBlock.c"/>
-        <File Name="../../core/app/apicheck/etString.c"/>
-        <File Name="../../core/app/apicheck/etStringChar.c"/>
-      </VirtualDirectory>
-    </VirtualDirectory>
-    <VirtualDirectory Name="memory">
-      <File Name="../../core/memory/etMemoryBlock.c"/>
-      <File Name="../../core/memory/etMemoryBlock.h"/>
-      <File Name="../../core/memory/etMemory.c"/>
-      <File Name="../../core/memory/etMemory.h"/>
-      <File Name="../../core/memory/etMemoryList.h"/>
-      <File Name="../../core/memory/etMemoryList.c"/>
-    </VirtualDirectory>
-    <VirtualDirectory Name="string">
-      <File Name="../../core/string/etString.c"/>
-      <File Name="../../core/string/etString.h"/>
-      <File Name="../../core/string/etString.orig"/>
-      <File Name="../../core/string/etStringChar.c"/>
-      <File Name="../../core/string/etStringChar.h"/>
-    </VirtualDirectory>
-  </VirtualDirectory>
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0011app - debug000000000000]]>
+    </Plugin>
+    <Plugin Name="CMakePlugin">
+      <![CDATA[[{
+  "name": "app",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "app - debug",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }]]]>
+    </Plugin>
+  </Plugins>
   <Reconciliation>
     <Regexes/>
     <Excludepaths/>
@@ -61,16 +37,102 @@
   </Reconciliation>
   <Description/>
   <Dependencies/>
+  <Dependencies Name="app"/>
+  <Dependencies Name="app - all disabled"/>
+  <Dependencies Name="app - debug"/>
+  <Dependencies Name="develop"/>
+  <Dependencies Name="docu"/>
+  <VirtualDirectory Name="core">
+    <File Name="../core/Makefile"/>
+    <File Name="../core/configure"/>
+    <File Name="../core/evillib.cmake.pc"/>
+    <File Name="../core/evillib_defines.h"/>
+    <File Name="../core/evillib_depends.h"/>
+    <File Name="../core/evillib_end.c"/>
+    <File Name="../core/evillib_end.h"/>
+    <File Name="../core/evillib_full.c"/>
+    <File Name="../core/evillib_full.h"/>
+    <File Name="../core/evillib_start.c"/>
+    <File Name="../core/evillib_start.h"/>
+    <File Name="../core/evillib_version.h"/>
+    <VirtualDirectory Name="app">
+      <File Name="../core/app/evillib.c"/>
+      <File Name="../core/app/evillib.h"/>
+      <VirtualDirectory Name="apicheck">
+        <File Name="../core/app/apicheck/etApicheck.c"/>
+        <File Name="../core/app/apicheck/etApicheck.h"/>
+        <File Name="../core/app/apicheck/etComm.c"/>
+        <File Name="../core/app/apicheck/etMemory.c"/>
+        <File Name="../core/app/apicheck/etMemoryBlock.c"/>
+        <File Name="../core/app/apicheck/etString.c"/>
+        <File Name="../core/app/apicheck/etStringChar.c"/>
+        <File Name="../core/app/apicheck/etThread.c"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
+    <VirtualDirectory Name="core">
+      <File Name="../core/core/etDebug.c"/>
+      <File Name="../core/core/etDebug.h"/>
+      <File Name="../core/core/etInit.c"/>
+      <File Name="../core/core/etInit.h"/>
+      <File Name="../core/core/etObject.c"/>
+      <File Name="../core/core/etObject.h"/>
+      <File Name="../core/core/etVersion.c"/>
+      <File Name="../core/core/etVersion.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="memory">
+      <File Name="../core/memory/etMemory.c"/>
+      <File Name="../core/memory/etMemory.h"/>
+      <File Name="../core/memory/etMemoryBlock.c"/>
+      <File Name="../core/memory/etMemoryBlock.h"/>
+      <File Name="../core/memory/etMemoryList.c"/>
+      <File Name="../core/memory/etMemoryList.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="net">
+      <File Name="../core/net/etComm.c"/>
+      <File Name="../core/net/etComm.h"/>
+      <File Name="../core/net/etCommTCP.c"/>
+      <File Name="../core/net/etCommTCP.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="string">
+      <File Name="../core/string/etString.c"/>
+      <File Name="../core/string/etString.h"/>
+      <File Name="../core/string/etString.orig"/>
+      <File Name="../core/string/etStringChar.c"/>
+      <File Name="../core/string/etStringChar.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="system">
+      <File Name="../core/system/etThread.h"/>
+      <File Name="../core/system/etThread.c"/>
+      <File Name="../core/system/etThreadUsage.dot"/>
+    </VirtualDirectory>
+    <File Name="../core/MakefileBase.make"/>
+  </VirtualDirectory>
   <VirtualDirectory Name="doc">
-    <File Name="../../doc/LibraryStandard.c"/>
-    <File Name="../../doc/MainPage.c"/>
-    <File Name="../../doc/Versioning.c"/>
-    <File Name="../../doc/doxyfile"/>
-    <File Name="../../doc/MakefileDescription.c"/>
-    <File Name="../../doc/Makefile"/>
+    <File Name="../documentation/LibraryStandard.c"/>
+    <File Name="../documentation/MainPage.c"/>
+    <File Name="../documentation/Makefile"/>
+    <File Name="../documentation/Versioning.c"/>
+    <File Name="../documentation/doxyfile"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="extra">
+    <File Name="../extra/Makefile"/>
+    <File Name="../extra/etjsonDB"/>
+    <File Name="../extra/etjDB.c"/>
+    <File Name="../extra/etjDB.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name=".">
-    <File Name="../../Makefile"/>
+    <File Name="../Makefile"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="debian">
+    <File Name="../debian/changelog"/>
+    <File Name="../debian/compat"/>
+    <File Name="../debian/conffile"/>
+    <File Name="../debian/conffiles"/>
+    <File Name="../debian/control"/>
+    <File Name="../debian/copyright"/>
+    <File Name="../debian/libevillib-core.changelog"/>
+    <File Name="../debian/libevillib-core.copyright"/>
+    <File Name="../debian/rules"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -111,7 +173,7 @@ make evillib-app</BuildCommand>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
         <ThirdPartyToolName/>
-        <WorkingDirectory>/usr/src/projekte/evillib</WorkingDirectory>
+        <WorkingDirectory>../core/</WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
         <CustomPostBuild/>
@@ -153,7 +215,7 @@ make evillib-app</BuildCommand>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
         <ThirdPartyToolName/>
-        <WorkingDirectory>/usr/src/projekte/evillib</WorkingDirectory>
+        <WorkingDirectory>../core/</WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
         <CustomPostBuild/>
@@ -166,7 +228,7 @@ make evillib-app</BuildCommand>
         <SearchPaths/>
       </Completion>
     </Configuration>
-    <Configuration Name="app - debug" CompilerType="GCC ( 4.9 )" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+    <Configuration Name="app - debug" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g -Wall" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
       </Compiler>
@@ -175,7 +237,7 @@ make evillib-app</BuildCommand>
         <LibraryPath Value="Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/.build/evillib" CommandArguments="--apicheck --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/build/evillib/evillib" CommandArguments="--apicheck all --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -195,7 +257,7 @@ make evillib-app-debug</BuildCommand>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
         <ThirdPartyToolName/>
-        <WorkingDirectory>/usr/src/projekte/evillib</WorkingDirectory>
+        <WorkingDirectory>../core/</WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
         <CustomPostBuild/>
@@ -237,7 +299,7 @@ make evillib-core-dev</BuildCommand>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
         <ThirdPartyToolName/>
-        <WorkingDirectory>/usr/src/projekte/evillib</WorkingDirectory>
+        <WorkingDirectory>../core/</WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
         <CustomPostBuild/>
@@ -272,13 +334,13 @@ make evillib-core-dev</BuildCommand>
       <PostBuild/>
       <CustomBuild Enabled="yes">
         <RebuildCommand/>
-        <CleanCommand>make docu-clean</CleanCommand>
-        <BuildCommand>make docu</BuildCommand>
+        <CleanCommand>make doc-clean</CleanCommand>
+        <BuildCommand>make doc</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
         <ThirdPartyToolName/>
-        <WorkingDirectory>/usr/src/projekte/evillib</WorkingDirectory>
+        <WorkingDirectory>/usr/src/evillib</WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
         <CustomPostBuild/>

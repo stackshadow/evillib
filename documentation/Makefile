@@ -18,14 +18,35 @@
 #	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 
 
+include ../core/MakefileBase.make
+
 .DEFAULT:
-	@echo "$(COK)Welcome to the evillib-build-system $(CNormal)"
-	@echo ""
-	@cd core && $(MAKE) $@
-	@$(MAKE) --directory=./documentation $@
+	@echo "$@: This target dont exist in docu Makefile"
+
+.PHONY: doc
+
+
+help:
+	@echo -n "$(CComment)"
+	@echo "##################### Documentation #####################"
+	@echo "$(MAKE) doc: create doxygen documentation to $(outputDir)$(docDir)"
+	@echo "$(MAKE) doc-clean: clean up $(outputDir)$(docDir)"
 	@echo -n "$(CNormal)"
 
+all: doc
 
+$(docDir):
+	@$(MKDIR) $(docDir)
 
+doc: $(docDir)
+	mkdir -p ./output
+	SOURCEDIR=../ \
+	SECTION="DEV" \
+	OUTPUTDIR=$(docDir) \
+	doxygen 
 
+doc-clean:
+	@$(RM) -fR $(outputDir)$(docDir)/*
+	@$(RMDIR) -p $(outputDir)$(docDir)
 
+evillib-doc: doc

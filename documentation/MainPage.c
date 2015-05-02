@@ -54,7 +54,6 @@ You can clone or download the evillib from github
 #### Compile
 - to compile the library cd to source
 - use \code{.cpp} make help \endcode to get the targets
-- use \code{.cpp} make evillib \endcode to build the evillib and \code{.cpp}make install \endcode to install
 to see how you can change the default compile settings of the evillib, see @ref compileOptions
 */
 /** @defgroup compileOptions Compile options
@@ -63,8 +62,6 @@ to see how you can change the default compile settings of the evillib, see @ref 
 ##### ET_DEBUG_OFF
 @copydoc ET_DEBUG_OFF
 
-##### ET_SECURE_MEMORY_OFF
-@copydoc ET_SECURE_MEMORY_OFF
 
 */
 

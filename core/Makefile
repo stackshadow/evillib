@@ -17,49 +17,18 @@
 #	You should have received a copy of the GNU Lesser General Public License
 #	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 
-
-# Colours
-CNormal=\033[00m
-CCommand=\033[1;35m
-CComment=\033[36m
-COK=\033[32m
-
-# Compiler
-CC = ${CROSSCOMPILE}gcc
-CXX = ${CROSSCOMPILE}g++
-AR = ${CROSSCOMPILE}ar
-RANLIB = ${CROSSCOMPILE}ranlib
-RM = rm -v -f
-CP = cp -v -f
-LN = ln -v -f -s
-MKDIR = mkdir -p -v
-RMDIR = rmdir -v
-
-# Directorys
-sourcePath=$(PWD)
-buildPath=/tmp/.build
-prefix=$(buildPath)/target
-
-includeDir=$(prefix)/include
-binDir=$(prefix)/bin
-libDir=$(prefix)/lib
-docDir=$(prefix)/share/doc/evillib/${Version}
+include MakefileBase.make
 
 
-# Version of evillib
-VerMajor=00
-VerMinor=14
-VerPatch=04
-Version=$(VerMajor).$(VerMinor)-$(VerPatch)
 
-CoreHeader=evillib.$(Version).h
-CoreSource=evillib.$(Version).c
 
 # librarys
 CLIBS =-lpthread
 CLIBS+=-lc
 CLIBS+=-lblkid
+CLIBS+=-ldl
 
+CFLAGS+=-rdynamic
 
 # Main Parts
 sources += core/etObject.c
@@ -80,14 +49,19 @@ sources += string/etStringChar.c
 sources += system/etThread.c
 
 # Network functions
+sources += net/etComm.c
 sources += net/etCommTCP.c
+
+# Extra struff ( will be moved ! )
+#sources += ../extra/etjDB.c
+#CLIBS+=-ljansson
 
 sourcesFull=$(addprefix $(sourcePath)/,$(sources))
 
 headers=$(sources:.c=.h)
 
 objects=$(sources:.c=.o)
-objectsFull=$(addprefix $(buildPath)/,$(objects))
+objectsFull=$(addprefix $(buildPath)/core/,$(objects))
 
 
 
@@ -98,7 +72,7 @@ CoreAppSources+=$(shell ls app/*.c)
 CoreAppSources+=$(shell ls app/apicheck/*.c)
 CoreAppSourcesFull=$(addprefix $(sourcePath)/,$(CoreAppSources))
 
-CoreAppObjects=$(addprefix $(buildPath)/,$(CoreAppSources))
+CoreAppObjects=$(addprefix $(buildPath)/core/,$(CoreAppSources))
 CoreAppObjectsFull=$(CoreAppObjects:.c=.o)
 
 
@@ -109,6 +83,8 @@ CoreLibraryStatic=libevillib.$(Version).a
 
 .EXPORT_ALL_VARIABLES:
 
+.DEFAULT:
+	@echo "$@: This target dont exist in Makefile"
 
 #################################### Standard ####################################
 all: evillib-core-dev evillib-core
@@ -116,13 +92,13 @@ all: evillib-core-dev evillib-core
 help:
 	@echo -n "$(CComment)"
 	@echo "##################### Core library #####################"
-	@echo "$(MAKE) evillib-core: Build evillib-core library ( in $(buildPath)/libevillib.so )"
+	@echo "$(MAKE) evillib-core: Build evillib-core library ( in $(libDir)/libevillib.so )"
+	@echo "$(buildPath)/evillib.$(Version).c: Create the single-source-file"
 	@echo "$(MAKE) evillib-core-clean: Clean the build directory of core"
-	@echo "$(MAKE) evillib-core-dev: Build development files ( in $(buildPath)/evillib.h )"
+	@echo "$(MAKE) evillib-core-dev: Build development files ( in $(includeDir)/evillib.h )"
 	@echo "$(MAKE) evillib-app: create the evillib app"
 	@echo "$(MAKE) evillib-app-clean"
-
-	@echo "$(MAKE) install: Install development headers"
+	@echo "$(MAKE) install: install everything"
 	@echo -n "$(CNormal)"
 
 clean: evillib-core-dev-clean evillib-core-clean evillib-app-clean
@@ -138,8 +114,8 @@ install: core
 evillib-core-dev: $(includeDir)/evillib.h
 evillib-core-dev-clean:
 	@$(RM) evillib_version.h
-	@$(RM) $(buildPath)/$(CoreHeader)
-	@$(RM) $(includeDir)/evillib/$(CoreHeader)
+	@$(RM) $(buildPath)/evillib.$(Version).h
+	@$(RM) $(includeDir)/evillib/evillib.$(Version).h
 	@$(RM) $(includeDir)/evillib.h
 
 
@@ -174,7 +150,7 @@ evillib_version.h:
 	
 	@echo "" >> $@
 
-$(buildPath)/$(CoreHeader): evillib_version.h $(buildPath)
+$(buildPath)/evillib.$(Version).h: evillib_version.h $(buildPath)
 	@echo "${CCommand}make $@ ${CNormal}"
 	cat evillib_start.h > $@
 	cat evillib_depends.h >> $@
@@ -185,18 +161,17 @@ $(buildPath)/$(CoreHeader): evillib_version.h $(buildPath)
 
 
 # Output directory
-$(includeDir)/evillib/$(CoreHeader): $(buildPath)/$(CoreHeader)
+$(includeDir)/evillib.h: $(buildPath)/evillib.$(Version).h
 	@mkdir -p $(includeDir)/evillib/
-	@$(CP) $< $@
-$(includeDir)/evillib.h: $(includeDir)/evillib/$(CoreHeader)
-	@$(LN) evillib/$(CoreHeader) $@
+	@$(CP) $(buildPath)/evillib.$(Version).h $(includeDir)/evillib/	
+	@$(LN) evillib/evillib.$(Version).h $@
 
 
 #################################### Library ####################################
-evillib-core: $(libDir)/libevillib.so
+evillib-core: $(libDir)/libevillib.so $(shareDir)/pkgconfig/evillib.pc
 evillib-core-static: $(libDir)/libevillib.a
 evillib-core-clean:
-	@$(RM) $(buildPath)/$(CoreSource)
+	@$(RM) $(buildPath)/evillib.$(Version).c
 	@$(RM) $(buildPath)/libevillib.o
 	@$(RM) $(buildPath)/$(CoreLibraryShared)
 	@$(RM) $(libDir)/evillib/$(CoreLibraryShared)
@@ -204,14 +179,15 @@ evillib-core-clean:
 	@$(RM) $(libDir)/libevillib.so
 
 
-$(buildPath)/$(CoreSource): evillib_version.h $(buildPath)/$(CoreHeader)
+$(buildPath)/evillib.$(Version).c: evillib_version.h $(buildPath)/evillib.$(Version).h
 	@echo "${CCommand}make $@ ${CNormal}"
-	cat $(buildPath)/$(CoreHeader) > $@
+	@echo "$(PWD)"
+	cat $(buildPath)/evillib.$(Version).h > $@
 	cat evillib_start.c >> $@
 	cat $(sourcesFull) >> $@
 	cat evillib_end.c >> $@
 
-$(buildPath)/libevillib.o: $(buildPath)/$(CoreSource)
+$(buildPath)/libevillib.o: $(buildPath)/evillib.$(Version).c
 	@echo "${CCommand}make $@ ${CNormal}"
 	$(CC) -fPIC -c -Wall \
 	$(CFLAGS) $< -o $@
@@ -234,13 +210,24 @@ $(libDir)/libevillib.$(VerMajor).$(VerMinor).so: $(libDir)/evillib/$(CoreLibrary
 $(libDir)/libevillib.so: $(libDir)/libevillib.$(VerMajor).$(VerMinor).so
 	@$(LN) evillib/$(CoreLibraryShared) $@
 
+# pkgconf
+$(shareDir)/pkgconfig/evillib.pc:
+	@$(MKDIR) $(shareDir)/pkgconfig
+	@echo "Name: evillib" > $@
+	@echo "Version: $(Version)" >> $@
+	@echo "Description: evillib" >> $@
+	@echo "Requires:" >> $@
+	@echo "Libs: -L/usr/lib/evillib -levillib" >> $@
+	@echo "Cflags: -I/usr/include/evillib/" >> $@
+
+
 
 #################################### docu target ####################################
 docu: $(buildPath)/$(CoreHeader)
 
 
 #################################### Targets for development ####################################
-$(buildPath)/%.o: $(sourcePath)/%.c
+$(buildPath)/core/%.o: $(sourcePath)/%.c
 	@mkdir -v -p $$(dirname $@)
 	$(CC) -fPIC -I. -Wall -DET_SINGLEMODULE -c $(CFLAGS) $< -o $@
 
@@ -253,7 +240,9 @@ evillib-app-clean: evillib-core-clean
 	@$(RM) $(buildPath)/evillib
 evillib-app-debug: $(objectsFull) $(CoreAppObjectsFull)
 	@echo "${CCommand}make $@ ${CNormal}"
-	$(CC) $(objectsFull) $(CoreAppObjectsFull) $(CLIBS) \
+	$(CC) $(objectsFull) $(CoreAppObjectsFull) \
+	$(CFLAGS) \
+	$(CLIBS) \
 	-o $(buildPath)/evillib
 
 evillib-app-run: $(buildPath)/$(CoreLibraryShared) $(buildPath)/evillib
@@ -264,6 +253,7 @@ $(buildPath)/evillib: $(CoreAppObjectsFull) evillib_version.h $(libDir)/libevill
 	@echo "${CCommand}make $@ ${CNormal}"
 	gcc $(CoreAppObjectsFull) \
 	-L$(buildPath) -levillib \
+	$(CFLAGS) \
 	-o $(buildPath)/evillib
 
 
@@ -288,3 +278,6 @@ $(binDir)/evillib: $(buildPath)/evillib
 output:
 	@echo $(objects)
 	@echo $(CoreAppObjectsFull)
+
+
+

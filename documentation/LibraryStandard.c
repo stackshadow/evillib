@@ -28,16 +28,6 @@
 @section standard_description Descriptions
 
 
-Some words about some texts which are used in this documentation: \n
-*- "The pointer to an etLink object pointer" \n
-Means a pointer to a pointer ;) So if you have for example an etLink and yould like to alloc it, do it like that: \n
-@code
-	etLink *etLinkNew = NULL;
-	etLink_alloc( &etLinkNew ); // Here is the pointer to the pointer
-@endcode
-
-
-
 
 @subsection standardFunctions Standard Functions
 
@@ -68,7 +58,7 @@ Every function return a @ref etID_STATE
 
 @defgroup gr_internal_function Internal Functions
 @{
-@subsection internal_function Internal Functions
+@anchor internal_function Internal Functions
 @warning Internal functions should not used in your program
 This functions are called inside the evillib
 

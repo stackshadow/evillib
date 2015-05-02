@@ -17,24 +17,40 @@
 #	You should have received a copy of the GNU Lesser General Public License
 #	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 
-.DEFAULT:
-	@echo "$@: This target dont exist in docu Makefile"
+# Export all variables
+export
 
-help:
-	@echo -n "$(CComment)"
-	@echo "##################### Documentation #####################"
-	@echo "$(MAKE) docu: create doxygen documentation to $(outputDir)$(docDir)"
-	@echo "$(MAKE) docu-clean: clean up $(outputDir)$(docDir)"
+# Colours
+CNormal=\033[00m
+CCommand=\033[1;35m
+CComment=\033[36m
+COK=\033[32m
 
-all: docu
+# Compiler
+CC = ${CROSSCOMPILE}gcc
+CXX = ${CROSSCOMPILE}g++
+AR = ${CROSSCOMPILE}ar
+RANLIB = ${CROSSCOMPILE}ranlib
+RM = rm -v -f
+CP = cp -v -f
+LN = ln -v -f -s
+MKDIR = mkdir -p -v
+RMDIR = rmdir -v
 
-docu:
-	mkdir -p ./output
-	SOURCEDIR=../ \
-	OUTPUTDIR=./output \
-	SECTION="DEV" \
-	doxygen 
+# Directorys
+sourcePath=$(PWD)
+buildPath=/tmp/build/evillib
+prefix=$(buildPath)/target
 
-docu-clean:
-	@$(RM) -fR $(outputDir)$(docDir)/*
-	@$(RMDIR) -p $(outputDir)$(docDir)
+includeDir=$(prefix)/include
+binDir=$(prefix)/bin
+libDir=$(prefix)/lib
+shareDir=$(prefix)/share
+docDir=$(prefix)/share/doc/evillib/${Version}
+
+
+# Version of evillib
+VerMajor=00
+VerMinor=14
+VerPatch=04
+Version=$(VerMajor).$(VerMinor)-$(VerPatch)

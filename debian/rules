@@ -1,0 +1,83 @@
+#!/usr/bin/make -f
+
+#DH_VERBOSE = 1
+
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/default.mk
+
+# PROGS
+CP=/bin/cp -v
+RSYNC=/usr/bin/rsync
+RSYNCOPTS=--recursive --links --verbose --update --progress --exclude Makefile --exclude copyright --exclude README
+
+# VARS
+VERSION=0.1
+TARGETDIR=/srv/plugapp
+parts=core extra
+
+
+.EXPORT_ALL_VARIABLES:
+.PHONY: $(parts)
+
+default: $(parts)
+
+clean:
+	dh_prep
+	dh_testdir
+	dh_auto_clean
+	dh_clean
+
+build:
+
+build-arch:
+
+build-indep:
+
+
+$(parts):
+
+# generate conffile
+	if [ -f debian/libevillib-${@}.conffiles ]; then \
+		cp debian/libevillib-${@}.conffiles debian/conffiles;\
+	else \
+		echo "" > debian/conffiles;\
+	fi
+
+	dh_prep
+	dh_installdirs -plibevillib-$@
+	dh_installdirs -plibevillib-$@-dev
+	
+	dh_install -plibevillib-$@
+	dh_install -plibevillib-$@-dev
+	
+	dh_installdocs -plibevillib-$@
+	dh_installdocs -plibevillib-$@-dev
+	dh_installchangelogs -plibevillib-$@
+	dh_installchangelogs -plibevillib-$@-dev
+
+
+# run install or copy
+	if [ -f $@/Makefile ]; then \
+		cd $(PWD)/$@ && make prefix=$(PWD)/debian/libevillib-$@/usr evillib-$@;\
+		cd $(PWD)/$@ && make prefix=$(PWD)/debian/libevillib-$@-dev/usr evillib-$@-dev;\
+	fi
+
+# builddeb
+	dh_installdeb
+	dh_gencontrol -plibevillib-$@
+	dh_gencontrol -plibevillib-$@-dev
+	dh_md5sums -plibevillib-$@
+	dh_md5sums -plibevillib-$@-dev
+	dh_builddeb -plibevillib-$@
+	dh_builddeb -plibevillib-$@-dev
+	
+
+binary: $(parts)
+
+
+binary-arch:
+
+binary-indep:
+
+.PHONY:
+	@echo "Test $(PLUGS)"

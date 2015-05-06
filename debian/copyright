@@ -1,0 +1,8 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: libevillib
+Source: https://github.com/stackshadow/netplug.git
+
+Files: *
+Copyright: 2015 Martin Langlotz stackshadow@evilbrain.de
+           <years> <likewise for another author>
+License: LGPL

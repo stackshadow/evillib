@@ -23,7 +23,7 @@
 
 
 #include "core/etDebug.h"
-#include "app/apicheck/etApicheck.h"
+#include "etApicheck.h"
 #include "memory/etMemoryBlock.h"
 #include "memory/etMemoryList.h"
 #include "memory/etMemory.h"

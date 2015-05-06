@@ -23,11 +23,14 @@
 
 
 #include "core/etDebug.h"
-#include "app/apicheck/etApicheck.h"
+#include "etApicheck.h"
 #include "memory/etMemoryBlock.h"
 #include "memory/etMemory.h"
 #include "string/etString.h"
 
+#ifdef ET_SINGLEMODULE
+	#include "string/etString.c"
+#endif
 
 etID_STATE			etStringTest(){
 	etDebugMessage( etID_LEVEL_DETAIL, "Start test.." );
@@ -51,6 +54,9 @@ etID_STATE			etStringTest(){
 	etStringFree( etStringActual );
 
 
+// End Timer
+	etApicheckTimer( __ET_DEBUG_FUNCTION, __LINE__ );
+	etDebugMessage( etID_LEVEL_DETAIL, "Test finished" );
 	return etID_YES;
 }
 

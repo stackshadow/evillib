@@ -68,14 +68,6 @@ objectsFull=$(addprefix $(buildPath)/core/,$(objects))
 
 
 
-CoreAppSources+=$(shell ls app/*.c)
-CoreAppSources+=$(shell ls app/apicheck/*.c)
-CoreAppSourcesFull=$(addprefix $(sourcePath)/,$(CoreAppSources))
-
-CoreAppObjects=$(addprefix $(buildPath)/core/,$(CoreAppSources))
-CoreAppObjectsFull=$(CoreAppObjects:.c=.o)
-
-
 
 #CoreSourceFiles+=
 CoreLibraryShared=libevillib.$(Version).so
@@ -230,37 +222,6 @@ docu: $(buildPath)/$(CoreHeader)
 $(buildPath)/core/%.o: $(sourcePath)/%.c
 	@mkdir -v -p $$(dirname $@)
 	$(CC) -fPIC -I. -Wall -DET_SINGLEMODULE -c $(CFLAGS) $< -o $@
-
-#################################### APP ####################################
-evillib-app: $(binDir)/evillib
-evillib-app-clean: evillib-core-clean
-	@echo "${CCommand}make $@ ${CNormal}"
-	@find $(buildPath) -name "*.o" -print -delete
-	@$(RM) $(binDir)/evillib
-	@$(RM) $(buildPath)/evillib
-evillib-app-debug: $(objectsFull) $(CoreAppObjectsFull)
-	@echo "${CCommand}make $@ ${CNormal}"
-	$(CC) $(objectsFull) $(CoreAppObjectsFull) \
-	$(CFLAGS) \
-	$(CLIBS) \
-	-o $(buildPath)/evillib
-
-evillib-app-run: $(buildPath)/$(CoreLibraryShared) $(buildPath)/evillib
-	LD_PRELOAD=$(buildPath)/$(CoreLibraryShared) $(buildPath)/evillib --apicheck all
-
-
-$(buildPath)/evillib: $(CoreAppObjectsFull) evillib_version.h $(libDir)/libevillib.so 
-	@echo "${CCommand}make $@ ${CNormal}"
-	gcc $(CoreAppObjectsFull) \
-	-L$(buildPath) -levillib \
-	$(CFLAGS) \
-	-o $(buildPath)/evillib
-
-
-$(binDir)/evillib: $(buildPath)/evillib
-	@$(MKDIR) $(binDir)
-	@$(CP) $(buildPath)/evillib $@
-
 
 # this holds apicheckObjects
 #include $(sourceCoreDir)/app/apichecks/Makefile

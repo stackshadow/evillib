@@ -22,7 +22,7 @@
 #include "evillib_version.h"
 
 #include "core/etDebug.h"
-#include "app/apicheck/etApicheck.h"
+#include "etApicheck.h"
 
 
 etApicheck etApicheckActualStatic;

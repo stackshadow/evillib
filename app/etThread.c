@@ -23,10 +23,14 @@
 
 
 #include "core/etDebug.h"
-#include "app/apicheck/etApicheck.h"
+#include "etApicheck.h"
 #include "memory/etMemoryBlock.h"
 #include "memory/etMemory.h"
 #include "system/etThread.h"
+
+#ifdef ET_SINGLEMODULE
+	#include "system/etThread.c"
+#endif
 
 //! [etThread function]
 void	ThreadFunction( void *etThreadVoid ){

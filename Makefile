@@ -22,6 +22,7 @@
 	@echo "$(COK)Welcome to the evillib-build-system $(CNormal)"
 	@echo ""
 	@cd core && $(MAKE) $@
+	@$(MAKE) --directory=./extra $@
 	@$(MAKE) --directory=./documentation $@
 	@echo -n "$(CNormal)"
 

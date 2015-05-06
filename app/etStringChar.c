@@ -23,12 +23,15 @@
 
 
 #include "core/etDebug.h"
-#include "app/apicheck/etApicheck.h"
+#include "etApicheck.h"
 #include "memory/etMemoryBlock.h"
 #include "memory/etMemory.h"
 #include "string/etString.h"
 #include "string/etStringChar.h"
 
+#ifdef ET_SINGLEMODULE
+	#include "string/etStringChar.c"
+#endif
 
 etID_STATE			etStringCharTest(){
 	etDebugMessage( etID_LEVEL_DETAIL, "Start test.." );
@@ -79,7 +82,9 @@ etID_STATE			etStringCharTest(){
 
 // Find something inside the string
 	int foundPosition = etStringCharFind( etStringActual, "longer", 0 );
-
+	if( foundPosition != 15 ){
+		etDebugMessage( etID_LEVEL_CRITICAL, "Found the search string 'longer' not instide the string" );
+	}
 
 // End Timer
 	etApicheckTimer( __ET_DEBUG_FUNCTION, __LINE__ );

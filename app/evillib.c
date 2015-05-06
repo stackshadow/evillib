@@ -20,11 +20,15 @@
 #include "evillib_defines.h"
 #include "evillib_depends.h"
 #include "evillib_version.h"
-#include "evillib_full.h"
 
-#include "app/apicheck/etApicheck.h"
+#include "etApicheck.h"
 #include "core/etInit.h"
 
+#ifdef ET_SINGLEMODULE
+	#include "core/etDebug.c"
+	#include "core/etInit.c"
+	#include "core/etVersion.c"
+#endif
 
 /** @defgroup grApp The evillib-app
 @brief The evillib App can be used to check, if the installed library works correctly
@@ -92,20 +96,23 @@ int main( int argc, const char* argv[] ){
 							}
 
 							if( strncmp(Argument2, "etMemory", 8) == 0 || checkAll == 1 ){
-								etMemoryBlockTest();
-								etMemoryTest();
+								//etMemoryBlockTest();
+								//etMemoryTest();
 							}
 							if( strncmp(Argument2, "etString", 8) == 0 || checkAll == 1 ){
-								etStringTest();
-								etStringCharTest();
+								//etStringTest();
+								//etStringCharTest();
 							}
 							if( strncmp(Argument2, "etThread", 8) == 0 || checkAll == 1 ){
-								etThreadTest();
+								//etThreadTest();
 							}
 							if( strncmp(Argument2, "etComm", 8) == 0 || checkAll == 1 ){
-								etCommTest();
+								//etCommTest();
 							}
-							
+							if( strncmp(Argument2, "etjDB", 8) == 0 || checkAll == 1 ){
+								//etjDBTest();
+								etjDBSQLiteTest();
+							}							
 							
 						}
 

@@ -38,7 +38,7 @@ struct etDebug 			etDebugEvillib[1] = {
 	{
 		.Sync = PTHREAD_MUTEX_INITIALIZER,
 	// Standart visible levels
-		.LevelVisible = etID_LEVEL_CRITICAL
+		.LevelVisible = etID_LEVEL_ERR
 	}
 };
 int						etDebugTempMessageLen = 256;
@@ -131,6 +131,10 @@ void				_etDebugPrintMessage(){
 		case etID_LEVEL_DETAIL_THREAD:
 			fprintf( OutputStream, "\033[0;48m[DEBUG] [THREAD]" );
 			break;
+			
+		case etID_LEVEL_DETAIL_DB:
+			fprintf( OutputStream, "\033[0;48m[DEBUG] [DB]" );
+			break;
 
 		case etID_LEVEL_INFO:
 			fprintf( OutputStream, "[INFO]" );
@@ -209,10 +213,20 @@ etID_STATE			_etDebugStateExtern( etID_STATE state, const char *function, int li
 			etDebugEvillib->Level = etID_LEVEL_ERR;
 			etDebugEvillib->Message = "Already in use";
 			break;
+	
+		case etID_STATE_ERROR_INTERNAL:
+			etDebugEvillib->Level = etID_LEVEL_WARNING;
+			etDebugEvillib->Message = "Internal Error";
+			break;
 
 		case etID_STATE_NOTINLIB:
 			etDebugEvillib->Level = etID_LEVEL_WARNING;
 			etDebugEvillib->Message = "Function not aviable in the library";
+			break;
+			
+		case etID_STATE_SEQERR:
+			etDebugEvillib->Level = etID_LEVEL_ERR;
+			etDebugEvillib->Message = "Sequencial Error, you need to run another function before this function. Read the documentation about this function.";
 			break;
 
 		default:

@@ -90,6 +90,10 @@ typedef enum etID_STATE {
 // Configuration of the core library
 	etID_STATE_NOTINLIB = -100,					/*!< Not compiled into this library; Function do nothing */
 	etID_STATE_INTERR,							/*!< Internal error */
+	
+	/** Sequencial error
+	that means, that you need to run another function BEFORE use if this function */
+	etID_STATE_SEQERR,
 
 // Times
 	etID_STATE_TIMEOUT = -70,					/*!< An timeout occures ( etDebug WARNING ) */
@@ -167,6 +171,9 @@ typedef enum etID_LEVEL {
 	etID_LEVEL_DETAIL_MEM,				/*!< Memory Debug message */
 	etID_LEVEL_DETAIL_EVENT,			/*!< Event debug messages */
 	etID_LEVEL_DETAIL_PROCESS,			/*!< Process debug messages */
+	etID_LEVEL_DETAIL_NET,				/*!< Network debug process */
+	etID_LEVEL_DETAIL_THREAD,			/*!< Threading debug process */
+	etID_LEVEL_DETAIL_DB,				/*!< Database debug messages */
 	etID_LEVEL_INFO,					/*!< Info message */
 	etID_LEVEL_WARNING,					/*!< Warning message */
 	etID_LEVEL_ERR,						/*!< Error message */
@@ -226,10 +233,11 @@ typedef enum {
 
 	// Connection Types
 	etID_TYPE_SOCKET = 90, /*!< Socket-Connection */
-	etID_TYPE_SMB, /*!< SMB-Connection */
+	etID_TYPE_UDP, /*!< UDP-Connection */
 	etID_TYPE_TCP, /*!< TCP-Connection */
-	etID_TYPE_HTTP, /*!< HTTP-Connection */
-	etID_TYPE_FTP, /*!< FTP-Connection */
+	etID_TYPE_IP4,
+	etID_TYPE_IP6,
+
 
 	// Checksums
 	etID_TYPE_MD5 = 110, /*!< MD5-Checksum */
@@ -240,12 +248,6 @@ typedef enum {
 	etID_TYPE_AND, /*!< AND */
 	etID_TYPE_OR, /*!< OR */
 	etID_TYPE_NOT, /*!< NOT */
-
-	// evillib types
-	etID_TYPE_etArray = 150,
-	etID_TYPE_etContainer,
-	etID_TYPE_etList,
-	etID_TYPE_etLink
 }
 etID_TYPE;
 

@@ -27,6 +27,7 @@
 	#include "core/etDebug.h"
 	#include "core/etInit.h"
 
+	#include "core/etVersion.h"
 	#include "memory/etMemoryBlock.h"
 	#include "memory/etMemory.h"
 #endif
@@ -66,6 +67,27 @@ Call this function before you do something with the evillib.
 */
 etID_STATE		etInit( int argc, const char* argv[] ){
 
+
+// Set debug-program-name
+
+// A global Mutex
+	pthread_mutex_unlock( &etDebugEvillib->Sync );
+
+// Init Memory system
+	if( etMemoryInit() != etID_YES ) return etID_NO;
+
+// Alloc for version string
+	etMemoryBlock *etMemoryBlockActual = NULL;
+	etMemoryAlloc( etMemoryBlockActual, strlen(ET_VERSIONSTRING) + 1 );
+	etMemoryBlockDataGet( etMemoryBlockActual, versionString );
+	memcpy( versionString, ET_VERSIONSTRING, strlen(ET_VERSIONSTRING) );
+
+
+// From here - Userspace
+// Set program
+	etDebugProgramNameSet( "program" );
+// Dont show any Debugging as default
+	etDebugLevelSet( etID_LEVEL_ERR );
 
 
 // Command line parameters
@@ -136,21 +158,8 @@ etID_STATE		etInit( int argc, const char* argv[] ){
 
 
 
-// Set debug-program-name
-
-// A global Mutex
-	pthread_mutex_unlock( &etDebugEvillib->Sync );
-
-// Init Memory system
-	if( etMemoryInit() != etID_YES ) return etID_NO;
 
 
-
-// From here - Userspace
-// Set program
-	etDebugProgramNameSet( "program" );
-// Dont show any Debugging as default
-	etDebugLevelSet( etID_LEVEL_CRITICAL );
 
 
 	return etID_YES;

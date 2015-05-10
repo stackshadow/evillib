@@ -31,13 +31,14 @@
 /** @cond DEV */
 
 
+
 /** @ingroup grCore
 @~english
 
 @brief Return the versionstring of the evillib
 */
 const char*		etLibVersion(){
-	return ET_VERSIONSTRING;
+	return &versionString[0];
 }
 
 /** @ingroup grCore

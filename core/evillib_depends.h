@@ -44,10 +44,10 @@
 	#include <wchar.h>
 	#include <pthread.h>
 
-	//Shared memory
+//Shared memory
 	#include <sys/shm.h>
 
-	// Dynamic open
+// Dynamic open
 	#include <dlfcn.h>
 
 #ifndef ET_BLOCKDEVICE_OFF
@@ -57,5 +57,13 @@
 	#define blkid_dev_iterate int
 	#define blkid_dev int
 #endif
+
+// etComm
+	#include <netdb.h>
+	#include <netinet/in.h>
+	#include <arpa/inet.h>
+
+// Threading
+	#include <pthread.h>
 
 #endif

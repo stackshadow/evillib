@@ -30,7 +30,7 @@
 
 /** @cond DEV */
 
-
+char *versionString;
 
 /** @ingroup grCore
 @~english

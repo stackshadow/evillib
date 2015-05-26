@@ -22,7 +22,7 @@
 #define _H_evillib_etVersion
 
 
-char *versionString;
+extern char *versionString;
 
 
 

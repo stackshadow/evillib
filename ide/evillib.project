@@ -37,11 +37,6 @@
   </Reconciliation>
   <Description/>
   <Dependencies/>
-  <Dependencies Name="app"/>
-  <Dependencies Name="app - all disabled"/>
-  <Dependencies Name="app - debug"/>
-  <Dependencies Name="develop"/>
-  <Dependencies Name="docu"/>
   <VirtualDirectory Name="core">
     <File Name="../core/Makefile"/>
     <File Name="../core/configure"/>
@@ -55,20 +50,6 @@
     <File Name="../core/evillib_start.c"/>
     <File Name="../core/evillib_start.h"/>
     <File Name="../core/evillib_version.h"/>
-    <VirtualDirectory Name="app">
-      <File Name="../core/app/evillib.c"/>
-      <File Name="../core/app/evillib.h"/>
-      <VirtualDirectory Name="apicheck">
-        <File Name="../core/app/apicheck/etApicheck.c"/>
-        <File Name="../core/app/apicheck/etApicheck.h"/>
-        <File Name="../core/app/apicheck/etComm.c"/>
-        <File Name="../core/app/apicheck/etMemory.c"/>
-        <File Name="../core/app/apicheck/etMemoryBlock.c"/>
-        <File Name="../core/app/apicheck/etString.c"/>
-        <File Name="../core/app/apicheck/etStringChar.c"/>
-        <File Name="../core/app/apicheck/etThread.c"/>
-      </VirtualDirectory>
-    </VirtualDirectory>
     <VirtualDirectory Name="core">
       <File Name="../core/core/etDebug.c"/>
       <File Name="../core/core/etDebug.h"/>
@@ -116,9 +97,28 @@
   </VirtualDirectory>
   <VirtualDirectory Name="extra">
     <File Name="../extra/Makefile"/>
+    <VirtualDirectory Name="db">
+      <File Name="../extra/db/etjDB.c"/>
+      <File Name="../extra/db/etjDB.h"/>
+      <File Name="../extra/db/etjDBColumn.c"/>
+      <File Name="../extra/db/etjDBColumn.h"/>
+      <File Name="../extra/db/etjDBTable.c"/>
+      <File Name="../extra/db/etjDBTable.h"/>
+      <File Name="../extra/db/etjDBQuery.c"/>
+      <File Name="../extra/db/etjDBQuery.h"/>
+      <File Name="../extra/db/etjDBValue.c"/>
+      <File Name="../extra/db/etjDBValue.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="dbdriver">
+      <File Name="../extra/dbdriver/etjDBSQLite.c"/>
+      <File Name="../extra/dbdriver/etjDBSQLite.h"/>
+      <File Name="../extra/dbdriver/etjDBDriver.c"/>
+      <File Name="../extra/dbdriver/etjDBDriver.h"/>
+    </VirtualDirectory>
     <File Name="../extra/etjsonDB"/>
-    <File Name="../extra/etjDB.c"/>
-    <File Name="../extra/etjDB.h"/>
+    <File Name="../extra/evillib-extra_depends.h"/>
+    <File Name="../extra/evillib-extra_end.h"/>
+    <File Name="../extra/evillib-extra_start.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name=".">
     <File Name="../Makefile"/>
@@ -133,6 +133,21 @@
     <File Name="../debian/libevillib-core.changelog"/>
     <File Name="../debian/libevillib-core.copyright"/>
     <File Name="../debian/rules"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="app">
+    <File Name="../app/etApicheck.c"/>
+    <File Name="../app/etApicheck.h"/>
+    <File Name="../app/etComm.c"/>
+    <File Name="../app/etMemory.c"/>
+    <File Name="../app/etMemoryBlock.c"/>
+    <File Name="../app/etString.c"/>
+    <File Name="../app/etStringChar.c"/>
+    <File Name="../app/etThread.c"/>
+    <File Name="../app/evillib.c"/>
+    <File Name="../app/evillib.h"/>
+    <File Name="../app/Makefile"/>
+    <File Name="../app/etJsonDB.c"/>
+    <File Name="../app/etjsonDBSQLite.c"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -250,14 +265,14 @@ make evillib-app</BuildCommand>
       <PostBuild/>
       <CustomBuild Enabled="yes">
         <RebuildCommand/>
-        <CleanCommand>make evillib-app-clean</CleanCommand>
+        <CleanCommand>make evillib-app-debug-clean</CleanCommand>
         <BuildCommand>export CFLAGS="-g" &amp;&amp;
 make evillib-app-debug</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
         <ThirdPartyToolName/>
-        <WorkingDirectory>../core/</WorkingDirectory>
+        <WorkingDirectory>../app/</WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
         <CustomPostBuild/>
@@ -354,4 +369,9 @@ make evillib-core-dev</BuildCommand>
       </Completion>
     </Configuration>
   </Settings>
+  <Dependencies Name="app"/>
+  <Dependencies Name="app - all disabled"/>
+  <Dependencies Name="app - debug"/>
+  <Dependencies Name="develop"/>
+  <Dependencies Name="docu"/>
 </CodeLite_Project>

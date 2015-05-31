@@ -5,7 +5,7 @@
     <![CDATA[]]>
   </Environment>
   <BuildMatrix>
-    <WorkspaceConfiguration Name="app" Selected="yes">
+    <WorkspaceConfiguration Name="app" Selected="no">
       <Project Name="evillib" ConfigName="app"/>
       <Project Name="raspdispd" ConfigName="Debug"/>
     </WorkspaceConfiguration>
@@ -17,7 +17,7 @@
       <Project Name="evillib" ConfigName="develop"/>
       <Project Name="raspdispd" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="app - debug" Selected="no">
+    <WorkspaceConfiguration Name="app - debug" Selected="yes">
       <Project Name="evillib" ConfigName="app - debug"/>
       <Project Name="raspdispd" ConfigName="Debug"/>
     </WorkspaceConfiguration>

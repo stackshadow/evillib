@@ -24,7 +24,8 @@ CLIBS=
 
 CFLAGS+=-DET_SINGLEMODULE
 CFLAGS+=-I ../core
-CFLAGS+=-I ../extra
+CFLAGS+=-I ../extra/db
+CFLAGS+=-I ../extra/dbdriver
 CFLAGS+=-g
 
 CLIBS+=-lpthread
@@ -48,7 +49,7 @@ evillib-app-clean: evillib-core-clean
 	@$(RM) $(buildPath)/evillib
 
 
-evillib-app-debug: $(objectsFull)
+evillib-app-debug: evillib-app-debug-clean $(objectsFull)
 	@echo "${CCommand}make $@ ${CNormal}"
 	$(CC) $(objectsFull) \
 	$(CFLAGS) \

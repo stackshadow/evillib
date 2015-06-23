@@ -1,4 +1,4 @@
-/* etjDBTable - evillib json Table functions
+/* etDBTable - evillib json Table functions
 	Copyright (C) 2015 by Martin Langlotz alias stackshadow
 
 	This file is part of evillib.
@@ -18,15 +18,53 @@
 */
 
 
-#ifdef ET_SINGLEMODULE
-	#include "evillib_defines.h"
-	#include "evillib_depends.h"
 
-	#include "core/etDebug.h"
-	#include "core/etObject.h"
-	#include "memory/etMemoryBlock.h"
-	#include "memory/etMemory.h"
-	
-	#include "etjDB.h"
+#ifndef _H_etjDBQuery
+#define _H_etjDBQuery
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #endif
-

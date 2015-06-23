@@ -28,12 +28,14 @@ CLIBS+=-lsqlite3
 
 sourcePath=$(PWD)
 
-sources+= db/etjDB.c
-sources+= dbdriver/etjDBDriver.c
-sources+= db/etjDBTable.c
-sources+= db/etjDBColumn.c
-sources+= db/etjDBValue.c
-sources+= dbdriver/etjDBSQLite.c
+sources+= db/etDB.c
+sources+= dbdriver/etDBDriver.c
+sources+= db/etDBTable.c
+sources+= db/etDBColumn.c
+sources+= db/etDBValue.c
+sources+= db/etDBFilter.c
+sources+= db/etDBRelations.c
+sources+= dbdriver/etDBSQLite.c
 sourcesFull=$(addprefix $(sourcePath)/,$(sources))
 
 headers+=$(sources:.c=.h)

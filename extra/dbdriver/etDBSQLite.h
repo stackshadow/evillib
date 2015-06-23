@@ -1,4 +1,4 @@
-/* etjDB - evillib json DB representation
+/* etDB - evillib json DB representation
 	Copyright (C) 2015 by Martin Langlotz alias stackshadow
 
 	This file is part of evillib.
@@ -19,26 +19,27 @@
 
 
 
-#ifndef _H_etjDBSQLite
-#define _H_etjDBSQLite
+#ifndef _H_etDBSQLite
+#define _H_etDBSQLite
 
 #include "jansson.h"
 #include "sqlite3.h"
 
-typedef struct etjDBSQLite {
-// The driver struct ( as static var to allocate the needed memory for etjDBDriver )
-	etjDBDriver		driverClass;
+typedef struct etDBSQLite {
+// The driver struct ( as static var to allocate the needed memory for etDBDriver )
+	etDBDriver		driverClass;
 
 // Our data
 	etString 			*query;
 
 	sqlite3 			*dbSqlite;
 	sqlite3_stmt		*dbSqliteResult;
+	int					sqliteResultIndex;
 	int					dbSQLiteState;
 
-} etjDBSQLite;
+} etDBSQLite;
 
-#define etjDB_TYPE_SQLITE_MAX 2
+#define etjDB_TYPE_SQLITE_MAX 3
 extern const char *etjDB_TYPE_SQLITE[etjDB_TYPE_SQLITE_MAX];
 
 #define etjDB_COMP_SQLITE_MAX 2
@@ -52,11 +53,11 @@ extern const char *etjDB_COMP_SQLITE[etjDB_COMP_SQLITE_MAX];
 
 
 
-#define				etjDBSQLiteInit( etjDBDriverActual ) __etjDBSQLiteInit( &etjDBDriverActual )
-etID_STATE			__etjDBSQLiteInit( etjDBDriver **p_etjDBDriverActual );
+#define				etDBSQLiteAlloc( etjDBDriverActual ) __etDBSQLiteAlloc( &etjDBDriverActual )
+etID_STATE			__etDBSQLiteAlloc( etDBDriver **p_etjDBDriverActual );
 
 
-etID_STATE			etjDBSQLiteConnect( etjDBDriver *etjDBDriverActual, const char *path );
+etID_STATE			etDBSQLiteConnect( etDBDriver *etjDBDriverActual, const char *path );
 
 
 #endif

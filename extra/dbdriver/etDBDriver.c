@@ -1,4 +1,5 @@
-/* etjDBTable - evillib json Table functions
+
+/* etDB - evillib json DB representation
 	Copyright (C) 2015 by Martin Langlotz alias stackshadow
 
 	This file is part of evillib.
@@ -18,53 +19,27 @@
 */
 
 
+#ifdef ET_SINGLEMODULE
+	#include "evillib_defines.h"
+	#include "evillib_depends.h"
 
-#ifndef _H_etjDBQuery
-#define _H_etjDBQuery
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	#include "core/etDebug.h"
+	#include "core/etObject.h"
+	#include "memory/etMemoryBlock.h"
+	#include "memory/etMemory.h"
+	#include "string/etString.h"
+	
+	#include "db/etDB.h"
+	#include "etDBDriver.h"
 #endif
+
+
+
+etID_STATE etDBRun( etDBDriver *etjDBDriverActual, etDB *etDBActual ){
+	return etjDBDriverActual->queryRun( etjDBDriverActual, etDBActual );
+}
+
+etID_STATE etDBNextResult( etDBDriver *etjDBDriverActual, etDB *etDBActual ){
+	return etjDBDriverActual->nextResult( etjDBDriverActual, etDBActual );
+}
+

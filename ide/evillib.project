@@ -98,22 +98,26 @@
   <VirtualDirectory Name="extra">
     <File Name="../extra/Makefile"/>
     <VirtualDirectory Name="db">
-      <File Name="../extra/db/etjDB.c"/>
-      <File Name="../extra/db/etjDB.h"/>
-      <File Name="../extra/db/etjDBColumn.c"/>
-      <File Name="../extra/db/etjDBColumn.h"/>
-      <File Name="../extra/db/etjDBTable.c"/>
-      <File Name="../extra/db/etjDBTable.h"/>
-      <File Name="../extra/db/etjDBQuery.c"/>
-      <File Name="../extra/db/etjDBQuery.h"/>
-      <File Name="../extra/db/etjDBValue.c"/>
-      <File Name="../extra/db/etjDBValue.h"/>
+      <File Name="../extra/db/etDB.c"/>
+      <File Name="../extra/db/etDB.h"/>
+      <File Name="../extra/db/etDBColumn.c"/>
+      <File Name="../extra/db/etDBColumn.h"/>
+      <File Name="../extra/db/etDBTable.c"/>
+      <File Name="../extra/db/etDBFilter.c"/>
+      <File Name="../extra/db/etDBFilter.h"/>
+      <File Name="../extra/db/etDBQuery.c"/>
+      <File Name="../extra/db/etDBQuery.h"/>
+      <File Name="../extra/db/etDBRelations.c"/>
+      <File Name="../extra/db/etDBRelations.h"/>
+      <File Name="../extra/db/etDBTable.h"/>
+      <File Name="../extra/db/etDBValue.c"/>
+      <File Name="../extra/db/etDBValue.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="dbdriver">
-      <File Name="../extra/dbdriver/etjDBSQLite.c"/>
-      <File Name="../extra/dbdriver/etjDBSQLite.h"/>
-      <File Name="../extra/dbdriver/etjDBDriver.c"/>
-      <File Name="../extra/dbdriver/etjDBDriver.h"/>
+      <File Name="../extra/dbdriver/etDBDriver.c"/>
+      <File Name="../extra/dbdriver/etDBDriver.h"/>
+      <File Name="../extra/dbdriver/etDBSQLite.c"/>
+      <File Name="../extra/dbdriver/etDBSQLite.h"/>
     </VirtualDirectory>
     <File Name="../extra/etjsonDB"/>
     <File Name="../extra/evillib-extra_depends.h"/>
@@ -149,6 +153,11 @@
     <File Name="../app/etJsonDB.c"/>
     <File Name="../app/etjsonDBSQLite.c"/>
   </VirtualDirectory>
+  <Dependencies Name="app"/>
+  <Dependencies Name="app - all disabled"/>
+  <Dependencies Name="app - debug"/>
+  <Dependencies Name="develop"/>
+  <Dependencies Name="docu"/>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -194,7 +203,7 @@ make evillib-app</BuildCommand>
         <CustomPostBuild/>
         <CustomPreBuild/>
       </AdditionalRules>
-      <Completion EnableCpp11="no">
+      <Completion EnableCpp11="no" EnableCpp14="no">
         <ClangCmpFlagsC/>
         <ClangCmpFlags/>
         <ClangPP/>
@@ -236,7 +245,7 @@ make evillib-app</BuildCommand>
         <CustomPostBuild/>
         <CustomPreBuild/>
       </AdditionalRules>
-      <Completion EnableCpp11="no">
+      <Completion EnableCpp11="no" EnableCpp14="no">
         <ClangCmpFlagsC/>
         <ClangCmpFlags/>
         <ClangPP/>
@@ -252,7 +261,7 @@ make evillib-app</BuildCommand>
         <LibraryPath Value="Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/build/evillib/evillib" CommandArguments="--apicheck all --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/build/evillib/evillib" CommandArguments="--apicheck all --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/usr/src/evillib/extra" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -278,11 +287,15 @@ make evillib-app-debug</BuildCommand>
         <CustomPostBuild/>
         <CustomPreBuild/>
       </AdditionalRules>
-      <Completion EnableCpp11="no">
+      <Completion EnableCpp11="no" EnableCpp14="no">
         <ClangCmpFlagsC/>
         <ClangCmpFlags/>
         <ClangPP/>
-        <SearchPaths/>
+        <SearchPaths>../extra/
+../extra/db
+../extra/dbdriver
+
+</SearchPaths>
       </Completion>
     </Configuration>
     <Configuration Name="develop" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
@@ -320,7 +333,7 @@ make evillib-core-dev</BuildCommand>
         <CustomPostBuild/>
         <CustomPreBuild/>
       </AdditionalRules>
-      <Completion EnableCpp11="no">
+      <Completion EnableCpp11="no" EnableCpp14="no">
         <ClangCmpFlagsC/>
         <ClangCmpFlags/>
         <ClangPP/>
@@ -361,7 +374,7 @@ make evillib-core-dev</BuildCommand>
         <CustomPostBuild/>
         <CustomPreBuild/>
       </AdditionalRules>
-      <Completion EnableCpp11="no">
+      <Completion EnableCpp11="no" EnableCpp14="no">
         <ClangCmpFlagsC/>
         <ClangCmpFlags/>
         <ClangPP/>
@@ -369,9 +382,4 @@ make evillib-core-dev</BuildCommand>
       </Completion>
     </Configuration>
   </Settings>
-  <Dependencies Name="app"/>
-  <Dependencies Name="app - all disabled"/>
-  <Dependencies Name="app - debug"/>
-  <Dependencies Name="develop"/>
-  <Dependencies Name="docu"/>
 </CodeLite_Project>

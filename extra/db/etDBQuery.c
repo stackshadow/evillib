@@ -1,4 +1,4 @@
-/* etjDBTable - evillib json Table functions
+/* etDBTable - evillib json Table functions
 	Copyright (C) 2015 by Martin Langlotz alias stackshadow
 
 	This file is part of evillib.
@@ -18,31 +18,15 @@
 */
 
 
+#ifdef ET_SINGLEMODULE
+	#include "evillib_defines.h"
+	#include "evillib_depends.h"
 
-#ifndef _H_etjDBValue
-#define _H_etjDBValue
-
-
-
-
-
-
-
-
-
-
-
-
-
-etID_STATE				etjDBValueInit( etjDB *etjDBActual );
-
-
-etID_STATE				etjDBValueSet( etjDB *etjDBActual, const char *columnName, const char *value );
-
-#define 				etjDBValueGet( etjDBActual, columnName, value ) __etjDBValueGet( etjDBActual, columnName, &value );
-etID_STATE				__etjDBValueGet( etjDB *etjDBActual, const char *columnName, const char **p_value );
-
-
-
-
+	#include "core/etDebug.h"
+	#include "core/etObject.h"
+	#include "memory/etMemoryBlock.h"
+	#include "memory/etMemory.h"
+	
+	#include "etDB.h"
 #endif
+

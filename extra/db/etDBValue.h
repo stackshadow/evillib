@@ -1,4 +1,4 @@
-/* etjDB - evillib json DB representation
+/* etDBTable - evillib json Table functions
 	Copyright (C) 2015 by Martin Langlotz alias stackshadow
 
 	This file is part of evillib.
@@ -17,23 +17,39 @@
 	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H_etjDBDriver
-#define _H_etjDBDriver
 
-typedef struct		etjDBDriver etjDBDriver;
-typedef struct		etjDBDriver {
 
-	etID_STATE		(*queryRun)( etjDBDriver *etjDBDriverActual, etjDB *etjDBActual );
-	etID_STATE		(*nextResult)( etjDBDriver *etjDBDriverActual, etjDB *etjDBActual );
-	etID_STATE		(*dump)( etjDBDriver *etjDBDriverActual, etjDB *etjDBActual );
+#ifndef _H_etDBValue
+#define _H_etDBValue
 
-// callback functions ( can be set from the userspace )
-	etID_STATE		(*queryPreRun)( etjDBDriver *etjDBDriverActual, etString *query );
-	
-} etjDBDriver;
+
+
+
+
+
+
+
+
+
+
+
+
+etID_STATE				etDBValueInit( etDB *etDBActual );
+
+
+etID_STATE				etDBValuesNewClean( etDB *etDBActual );
+
+
+etID_STATE				etDBValueSet( etDB *etDBActual, const char *columnName, const char *value );
+
+#define 				etDBValueGet( etDBActual, columnName, value, valueNew ) __etDBValueGet( etDBActual, columnName, &value, &valueNew );
+etID_STATE				__etDBValueGet( etDB *etDBActual, 
+							const char *columnName, 
+							const char **p_value, 
+							const char **p_valueNew
+						);
 
 
 
 
 #endif
-

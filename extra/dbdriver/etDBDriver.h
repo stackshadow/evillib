@@ -1,5 +1,4 @@
-
-/* etjDB - evillib json DB representation
+/* etDB - evillib json DB representation
 	Copyright (C) 2015 by Martin Langlotz alias stackshadow
 
 	This file is part of evillib.
@@ -18,28 +17,33 @@
 	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef _H_etjDBDriver
+#define _H_etjDBDriver
 
 #ifdef ET_SINGLEMODULE
 	#include "evillib_defines.h"
 	#include "evillib_depends.h"
-
-	#include "core/etDebug.h"
-	#include "core/etObject.h"
-	#include "memory/etMemoryBlock.h"
-	#include "memory/etMemory.h"
-	#include "string/etString.h"
 	
-	#include "etjDB.h"
-	#include "etjDBDriver.h"
+	#include "etDB.h"
 #endif
 
+typedef struct		etDBDriver etDBDriver;
+typedef struct		etDBDriver {
+
+	etID_STATE		(*queryRun)( etDBDriver *etjDBDriverActual, etDB *etDBActual );
+	etID_STATE		(*nextResult)( etDBDriver *etjDBDriverActual, etDB *etDBActual );
+	etID_STATE		(*dump)( etDBDriver *etjDBDriverActual, etDB *etDBActual );
+
+// callback functions ( can be set from the userspace )
+	etID_STATE		(*queryPreRun)( etDB *etDBActual, etString *query );
+	
+} etDBDriver;
 
 
-etID_STATE etjDBRun( etjDBDriver *etjDBDriverActual, etjDB *etjDBActual ){
-	return etjDBDriverActual->queryRun( etjDBDriverActual, etjDBActual );
-}
 
-etID_STATE etjDBNextResult( etjDBDriver *etjDBDriverActual, etjDB *etjDBActual ){
-	return etjDBDriverActual->nextResult( etjDBDriverActual, etjDBActual );
-}
+etID_STATE etDBRun( etDBDriver *etjDBDriverActual, etDB *etDBActual );
+etID_STATE etDBNextResult( etDBDriver *etjDBDriverActual, etDB *etDBActual );
+
+
+#endif
 

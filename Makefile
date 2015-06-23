@@ -22,11 +22,17 @@
 	@echo "$(COK)Welcome to the evillib-build-system $(CNormal)"
 	@echo ""
 	@cd core && $(MAKE) $@
-	@$(MAKE) --directory=./extra $@
+	@cd extra && $(MAKE) $@
 	@$(MAKE) --directory=./documentation $@
 	@echo -n "$(CNormal)"
 
 
+debian/libevillib-core/DEBIAN/control:
+	parts="core" dpkg-buildpackage -us -uc -b
+evillib-core-debian: debian/libevillib-core/DEBIAN/control
 
-
+debian/libevillib-extra/DEBIAN/control:
+	parts="extra" dpkg-buildpackage -us -uc -b
+evillib-extra-debian: debian/libevillib-extra/DEBIAN/control
+	@echo "done"
 

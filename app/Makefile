@@ -24,6 +24,7 @@ CLIBS=
 
 CFLAGS+=-DET_SINGLEMODULE
 CFLAGS+=-I ../core
+CFLAGS+=-I ../extra
 CFLAGS+=-I ../extra/db
 CFLAGS+=-I ../extra/dbdriver
 CFLAGS+=-g

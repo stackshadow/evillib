@@ -16,6 +16,7 @@ TARGETDIR=/srv/plugapp
 parts=core extra
 
 
+
 .EXPORT_ALL_VARIABLES:
 .PHONY: $(parts)
 
@@ -57,10 +58,11 @@ $(parts):
 
 
 # run install or copy
-	if [ -f $@/Makefile ]; then \
-		cd $(PWD)/$@ && make prefix=$(PWD)/debian/libevillib-$@/usr evillib-$@;\
-		cd $(PWD)/$@ && make prefix=$(PWD)/debian/libevillib-$@-dev/usr evillib-$@-dev;\
-	fi
+	cd make ;\
+	make prefix=$(PWD)/debian/libevillib-$@/usr evillib-$@;\
+	make prefix=$(PWD)/debian/libevillib-$@-dev/usr evillib-$@-dev;\
+	
+
 
 # builddeb
 	dh_installdeb

@@ -17,40 +17,26 @@
 #	You should have received a copy of the GNU Lesser General Public License
 #	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 
-# Export all variables
-export
+ifneq ($(VARS),1)
+	include vars.make
+endif
 
-# Colours
-CNormal=\033[00m
-CCommand=\033[1;35m
-CComment=\033[36m
-COK=\033[32m
-
-# Compiler
-CC = ${CROSSCOMPILE}gcc
-CXX = ${CROSSCOMPILE}g++
-AR = ${CROSSCOMPILE}ar
-RANLIB = ${CROSSCOMPILE}ranlib
-RM = rm -v -f
-CP = cp -v -f
-LN = ln -v -f -s
-MKDIR = mkdir -p -v
-RMDIR = rmdir -v
-
-# Directorys
-sourcePath=$(PWD)
-buildPath=/tmp/build/evillib
-prefix=$(buildPath)/target
-
-includeDir=$(prefix)/include
-binDir=$(prefix)/bin
-libDir=$(prefix)/lib
-shareDir=$(prefix)/share
-docDir=$(prefix)/share/doc/evillib/${Version}
+.DEFAULT:
+	@echo "$(COK)Welcome to the evillib-build-system $(CNormal)"
+	@echo ""
+	@$(MAKE) -f evillib-core-dev.make $@
+	@$(MAKE) -f evillib-core.make $@
+	@$(MAKE) -f evillib-extra-dev.make $@
+	@$(MAKE) -f evillib-extra.make $@
+	@echo -n "$(CNormal)"
 
 
-# Version of evillib
-VerMajor=00
-VerMinor=14
-VerPatch=04
-Version=$(VerMajor).$(VerMinor)-$(VerPatch)
+debian/libevillib-core/DEBIAN/control:
+	parts="core" dpkg-buildpackage -us -uc -b
+evillib-core-debian: debian/libevillib-core/DEBIAN/control
+
+debian/libevillib-extra/DEBIAN/control:
+	parts="extra" dpkg-buildpackage -us -uc -b
+evillib-extra-debian: debian/libevillib-extra/DEBIAN/control
+	@echo "done"
+

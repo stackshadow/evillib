@@ -17,8 +17,9 @@
 #	You should have received a copy of the GNU Lesser General Public License
 #	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 
+include evillib-version.make
+include evillib-extra-sources.make
 
-include ../core/MakefileBase.make
 
 CFLAGS+=-g
 
@@ -26,26 +27,16 @@ CLIBS+=-ldl
 CLIBS+=-ljansson
 CLIBS+=-lsqlite3
 
-sourcePath=$(PWD)
-
-sources+= db/etDB.c
-sources+= dbdriver/etDBDriver.c
-sources+= db/etDBTable.c
-sources+= db/etDBColumn.c
-sources+= db/etDBValue.c
-sources+= db/etDBFilter.c
-sources+= db/etDBRelations.c
-sources+= dbdriver/etDBSQLite.c
-sourcesFull=$(addprefix $(sourcePath)/,$(sources))
-
-headers+=$(sources:.c=.h)
 
 objects+=$(sources:.c=.o)
 objectsFull+=$(addprefix $(buildPath)/,$(objects))
 
 
+ExtraLibraryShared=libevillib-extra.$(Version).so
+ExtraLibraryStatic=libevillib-extra.$(Version).a
+
 .DEFAULT:
-	@echo "$@: This target dont exist in docu Makefile"
+	@sleep 0
 
 help:
 	@echo -n "$(CComment)"
@@ -53,26 +44,8 @@ help:
 	@echo "$(MAKE) evillib-extra: Build evillib-extra library ( in $(buildPath)/libevillib-extra.so )"
 	@echo -n "$(CNormal)"
 
-
-
-#################################### Development / Headers ####################################
-evillib-extra-dev: $(includeDir) $(includeDir)/evillib-extra.h
-
-$(buildPath)/libevillib-extra.$(Version).h:
-	@echo "${CCommand}make $@ ${CNormal}"
-	cat evillib-extra_start.h > $@
-	cat evillib-extra_depends.h >> $@
-	cat $(headers) >> $@
-	cat evillib-extra_end.h >> $@
-
-# Output directory
-$(includeDir)/evillib-extra.h: $(buildPath)/libevillib-extra.$(Version).h
-	@mkdir -p $(includeDir)/evillib/
-	@$(CP) $< $(includeDir)/evillib/libevillib-extra.$(Version).h
-	@$(LN) evillib/libevillib-extra.$(Version).h $@
-
-
-
+clean:
+	@$(RM) $(buildPath)/libevillib-extra.$(Version).so
 
 #################################### Library ####################################
 evillib-extra: $(libDir) $(libDir)/libevillib-extra.so
@@ -82,12 +55,11 @@ $(buildPath)/libevillib-extra.$(Version).c: $(buildPath)
 	@echo "${CCommand}make $@ ${CNormal}"
 	#cat $(buildPath)/$(CoreHeader) > $@
 	#cat evillib_start.c >> $@
-	cat evillib-extra_depends.h > $@
-	cat $(headers) >> $@
+	cat $(buildPath)/libevillib-extra.$(Version).h > $@
 	cat $(sourcesFull) >> $@
-	#cat evillib_end.c >> $@
+	#cat $(sourcePath)/evillib_end.c >> $@
 
-$(buildPath)/libevillib-extra.$(Version).so: $(buildPath)/libevillib-extra.$(Version).c
+$(buildPath)/$(ExtraLibraryShared): $(buildPath)/libevillib-extra.$(Version).c
 	$(CC) -fPIC -c -Wall \
 	$(CFLAGS) \
 	$(CLIBS) \

@@ -109,11 +109,11 @@ int main( int argc, const char* argv[] ){
 							if( strncmp(Argument2, "etComm", 8) == 0 || checkAll == 1 ){
 								//etCommTest();
 							}
-							if( strncmp(Argument2, "etjDB", 8) == 0 || checkAll == 1 ){
-								//etjDBTest();
-								etjDBSQLiteTest();
-							}							
-							
+							if( strncmp(Argument2, "etDB", 8) == 0 || checkAll == 1 ){
+								etjDBTest();
+								//etDBSQLiteTest();
+							}					
+
 						}
 
 

@@ -23,6 +23,10 @@
 #define _H_etDBValue
 
 
+typedef struct etDBValue {
+    json_t*     values;
+    void*       iterator;    
+} etDBValue;
 
 
 
@@ -32,24 +36,23 @@
 
 
 
+#define             etDBValueAlloc( etDBValues ) __etDBValueAlloc( &etDBValues )
+etID_STATE          __etDBValueAlloc( etDBValue **p_etDBValues );
 
 
-etID_STATE				etDBValueInit( etDB *etDBActual );
+etID_STATE          etDBValuesClean( etDBValue *etDBValues );
 
 
-etID_STATE				etDBValuesNewClean( etDB *etDBActual );
+etID_STATE          etDBValueSet( etDBValue *etDBValues, const char *columnName, const char *value );
 
+#define             etDBValueGet( etDBValues, columnName, value ) __etDBValueGet( etDBValues, columnName, &value )
+etID_STATE          __etDBValueGet( etDBValue *etDBValues, const char *columnName, const char **p_value );
 
-etID_STATE				etDBValueSet( etDB *etDBActual, const char *columnName, const char *value );
+#define             etDBValueGetNext( etDBValues, columnName, value ) __etDBValueGetNext( etDBValues, &columnName, &value )
+etID_STATE          __etDBValueGetNext( etDBValue *etDBValues, const char **p_columnName, const char **p_value );
 
-#define 				etDBValueGet( etDBActual, columnName, value, valueNew ) __etDBValueGet( etDBActual, columnName, &value, &valueNew );
-etID_STATE				__etDBValueGet( etDB *etDBActual, 
-							const char *columnName, 
-							const char **p_value, 
-							const char **p_valueNew
-						);
-
-
+#define             etDBValueFree( etDBValues ) __etDBValueFree( &etDBValues )
+etID_STATE          __etDBValueFree( etDBValue **p_etDBValues );
 
 
 #endif

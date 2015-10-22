@@ -22,41 +22,53 @@
 #ifndef _H_etDBTable
 #define _H_etDBTable
 
-etID_STATE				etDBTableStructInit( etDB *etDBActual );
+
+typedef struct etDBTable { 
+    json_t*     jsonTables;     // this is an json_array inside jsonTable
+    json_t*     jsonTable;
 
 
-etID_STATE				etDBTableAppend( etDB *etDBActual, const char *tableName );
+    json_t*     jsonColumns;
+    json_t*     jsonColumn;
+    void*       jsonColumnIterator;
+} etDBTable;
 
 
-etID_STATE				etDBTableSeek( etDB *etDBActual, const char *tableName );
+#define                 etDBTableAlloc( etDBTable, etDebugActual ) __etDBTableAlloc( &etDBTable, etDebugActual )
+etID_STATE              __etDBTableAlloc( etDBTable **p_etDBTable, etDebug* etDebugActual );
+
+#define                 etDBTableFree( etDBTable, etDebugActual ) __etDBTableFree( &etDBTable, etDebugActual )
+etID_STATE              __etDBTableFree( etDBTable **p_etDBTable, etDebug* etDebugActual );
+
+#define                 etDBTableDumps( etDBTable, jsonChar, etDebugActual ) __etDBTableDumps( etDBTable, &jsonChar, etDebugActual )
+etID_STATE              __etDBTableDumps( etDBTable* dbTable, const char** p_jsonChar, etDebug* etDebugActual );
 
 
-etID_STATE				etDBTableGetFirst( etDB *etDBActual );
+etID_STATE              etDBTableAppend( etDBTable *dbTable, const char *tableName, etDebug* etDebugActual );
 
 
-etID_STATE				etDBTableGetNext( etDB *etDBActual );
+etID_STATE              etDBTableSeek( etDBTable *dbTable, const char *tableName, etDebug* etDebugActual );
 
 
+etID_STATE              etDBTableDumpf( etDBTable *dbTable, etDebug* etDebugActual );
 
 
-etID_STATE				etDBTableNameOriginalSet( etDB *etDBActual, const char *tableName );
-
-#define				etDBTableNameGet( etDBActual, tableName, tableNameNew ) __etDBTableNameGet( etDBActual, &tableName, &tableNameNew )
-etID_STATE				__etDBTableNameGet( etDB *etDBActual, const char **p_tableName, const char **p_tableNameNew );
-
-
-etID_STATE				etDBTableVisibleNameSet( etDB *etDBActual, const char *visibleName );
-
-#define				etDBTableVisibleNameGet( etDBActual, visibleName ) __etDBTableVisibleNameGet( etDBActual, &visibleName )
-etID_STATE				__etDBTableVisibleNameGet( etDB *etDBActual, const char **p_visibleName );
+#define                 etDBTableNameSet( etDBTable, tableName, etDebugActual ) etDBTableNameSetFull( etDBTable, NULL, tableName, etDebugActual )
+#define                 etDBTableNameOriginalSet( etDBTable, tableName, etDebugActual ) etDBTableNameSetFull( etDBTable, tableName, NULL, etDebugActual )
+etID_STATE              etDBTableNameSetFull( etDBTable *etDBTableActual, const char *tableName, const char *tableNameNew, etDebug* etDebugActual );
 
 
+#define                 etDBTableNameGet( etDBTable, tableName, etDebugActual ) __etDBTableNameGetFull( etDBTable, &tableName, &tableName, etDebugActual )
+#define                 etDBTableNameOriginalGet( etDBTable, tableName, etDebugActual ) __etDBTableNameGetFull( etDBTable, &tableName, NULL, etDebugActual )
+#define                 etDBTableNameGetFull( etDBTable, tableName, tableNameNew, etDebugActual ) __etDBTableNameGetFull( etDBTable, &tableName, &tableNameNew, etDebugActual )
+etID_STATE              __etDBTableNameGetFull( etDBTable *etDBTableActual, const char **p_tableName, const char **p_tableNameNew, etDebug* etDebugActual );
 
 
-etID_STATE				etDBTableActionSet( etDB *etDBActual, etjDBAction etjDBActionNew );
+etID_STATE              etDBTableVisibleNameSet( etDBTable *etDBTableActual, const char *visibleName, etDebug* etDebugActual );
 
+#define                 etDBTableVisibleNameGet( etDBActual, visibleName, etDebugActual ) __etDBTableVisibleNameGet( etDBActual, &visibleName, etDebugActual )
+etID_STATE              __etDBTableVisibleNameGet( etDBTable *etDBTableActual, const char **p_visibleName, etDebug* etDebugActual );
 
-etjDBAction			etDBTableActionGet( etDB *etDBActual );
 
 
 

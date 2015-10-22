@@ -16,13 +16,17 @@ help:
 	@echo "$(MAKE) evillib-extra-dev: Build development files ( in $(includeDir)/evillib-extra.h )"
 	@echo -n "$(CNormal)"
 
-#################################### Development / Headers ####################################
-evillib-extra: $(buildPath)/libevillib-extra.$(Version).h
-evillib-extra-dev: $(includeDir) $(includeDir)/evillib-extra.h
-evillib-extra-clean:
+clean:
 	@$(RM) $(buildPath)/libevillib-extra.$(Version).h
 	@$(RM) $(includeDir)/evillib/libevillib-extra.$(Version).h
 	@$(RM) $(includeDir)/evillib-extra.h
+
+install: evillib-extra-install
+
+#################################### Development / Headers ####################################
+evillib-extra: evillib-extra-dev
+evillib-extra-dev: $(includeDir) $(buildPath)/libevillib-extra.$(Version).h
+evillib-extra-dev-install: $(includeDir)/evillib-extra.h
 
 $(buildPath)/libevillib-extra.$(Version).h: 
 	@echo "${CCommand}make $@ ${CNormal}"

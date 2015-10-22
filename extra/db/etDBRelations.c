@@ -1,4 +1,4 @@
-/* etDBTable - evillib json Table functions
+/* etDBRelation - an representation on an connection between two tables
 	Copyright (C) 2015 by Martin Langlotz alias stackshadow
 
 	This file is part of evillib.
@@ -22,219 +22,606 @@
 #ifdef ET_SINGLEMODULE
 	#include "evillib_defines.h"
 	#include "evillib_depends.h"
-
+	#include "evillib-extra_depends.h"
+    
 	#include "core/etDebug.h"
 	#include "core/etObject.h"
 	#include "memory/etMemoryBlock.h"
 	#include "memory/etMemory.h"
 	#include "string/etString.h"
-	
-	#include "etDB.h"
-	#include "etDBTable.h"
+
 	#include "etDBRelations.h"
 #endif
 
+/**
+@ingroup etDB
+@defgroup etDBRelation etDBRelation - an representation on an connection between two tables
 
+The etDBRelations -object can hold multiple relation descriptions. \\
+An relation description describe the connection between two different columns of two different tables.
+*/
 
-json_t*				etDBRelationExtract( etDB *etDBActual ){
-// Check
-	if( etDBActual == NULL ){
-		snprintf( etDebugTempMessage, etDebugTempMessageLen, "etDBActual is null" );
-		etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-		return NULL;
-	}
-	if( etDBActual->nodeRoot == NULL ){
-		snprintf( etDebugTempMessage, etDebugTempMessageLen, "etDBActual is null" );
-		etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-		return NULL;
-	}
+/** @ingroup etDBRelation
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@def etDBRelationAlloc( etDBRelations* dbRelations )
+@~english
+@brief Allocate an new etDBRelations-object
+@param[out] dbRelations - An pointer to an etDBRelations-object
+@return 
+*- @ref etID_YES
+*- @ref etID_STATE_PARAMETER_MISSUSE
+*/
+etID_STATE          __etDBRelationAlloc( etDBRelations** p_dbRelations, etDebug* etDebugActual ){
+// check
+    etDebugReturnOnError( etDebugActual );
+    etDebugCheckNull( etDebugActual, p_dbRelations );
 
+// vars
+    etMemoryBlock*      etMemoryBlockActual = NULL;
+    etDBRelations*      dbRelation;
+    
+// Allocate
+    etMemoryRequest( etMemoryBlockActual, sizeof(etDBRelations) );
+    etMemoryBlockDataGet( etMemoryBlockActual, dbRelation );
 
-// Vars
-	//int 				jsonReturnCode = 0;
-	json_t				*jsonRelations;
-
-
-	jsonRelations = json_object_get( etDBActual->nodeRoot, "relations" );
-	if( jsonRelations != NULL ){
-		json_object_del( etDBActual->nodeRoot, "relations" );
-		return jsonRelations;
-	}
-
-
-	return NULL;
-}
-
-
-etID_STATE				etDBRelationInject( etDB *etDBActual, json_t *relation ){
-// Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeRoot );
-
-	json_object_set( etDBActual->nodeRoot, "relations", relation );
-	
-	return etID_YES;
-}
-
-
-etID_STATE				etDBRelationAppend( 
-							etDB *etDBActual, 
-							const char *tableA, const char *columnA,
-							const char *tableB, const char *columnB
-						){
-
-
-// Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeRoot );
-
-// Vars
-	//int 				jsonReturnCode = 0;
-	json_t				*jsonRelations;
-	json_t				*jsonRelation;
-
-// try to get the relation-array
-	jsonRelations = json_object_get( etDBActual->nodeRoot, "relations" );
-	if( jsonRelations == NULL ){
-		jsonRelations = json_array();
-		json_object_set_new( etDBActual->nodeRoot, "relations", jsonRelations );
-	}
-
-	jsonRelation = json_object();
-	json_object_set_new( jsonRelation, "tableA", json_string(tableA) );
-	json_object_set_new( jsonRelation, "columnA", json_string(columnA) );
-	json_object_set_new( jsonRelation, "tableB", json_string(tableB) );
-	json_object_set_new( jsonRelation, "columnB", json_string(columnB) );
-
-	json_array_append_new( jsonRelations, jsonRelation );
-	
-
-#ifndef ET_DEBUG_OFF
-	const char *tableName;
-	etDBTableNameGet( etDBActual, tableName, tableName );
-	snprintf( etDebugTempMessage, etDebugTempMessageLen, "Append relation to table %s", tableName );
-	etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
-#endif
+// Setup fields
+    dbRelation->jsonArrayRelations = json_array();
+    dbRelation->foreward = 1;
+    dbRelation->index = 0;
 
 // return
+    *p_dbRelations = dbRelation;
+    return etID_YES;
+}
+
+/** @ingroup etDBRelation
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@~english
+@brief Clean up ( remove all relations inside the etDBRelations-object
+@param dbRelations - An pointer to an etDBRelations-object
+@return 
+*- @ref etID_YES
+*- @ref etID_STATE_PARAMETER_MISSUSE
+ */
+etID_STATE          etDBRelationClean( etDBRelations* dbRelations, etDebug* etDebugActual ){
+// Check
+	etCheckNull( dbRelations );
+
+// Clean the "new"-values
+    json_array_clear( dbRelations->jsonArrayRelations );
+    dbRelations->foreward = 1;
+    dbRelations->index = -1;
+
 	return etID_YES;
 }
 
-
-int						etDBRelationCount( etDB *etDBActual ){
+/** @ingroup etDBRelation
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@def etDBRelationFree( etDBRelations* dbRelations )
+@~english
+@brief Free the etDBRelations-object and sets the pointer to NULL
+@param[out] dbRelations - An pointer to an etDBRelations-object
+@return 
+*- @ref etID_YES
+*- @ref etID_STATE_PARAMETER_MISSUSE
+*/
+etID_STATE          __etDBRelationFree( etDBRelations** p_dbRelations, etDebug* etDebugActual ){
 // Check
-	if( etDBActual == NULL){
-		etDebugState( etID_STATE_PARAMETER_MISSUSE );
-		return -1;
-	}
-	if( etDBActual->nodeRoot == NULL){
-		etDebugState( etID_STATE_PARAMETER_MISSUSE );
-		return -1;
-	}
+	etCheckNull( p_dbRelations );
+
+    etDBRelations*      dbRelations = *p_dbRelations;
+// Clean the "new"-values
+	json_decref( dbRelations->jsonArrayRelations );
+
+    *p_dbRelations = NULL;
+	return etID_YES;
+}
+
+/** @ingroup etDBRelation
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@def etDBRelationDumps( etDBRelations* dbRelations, const char* jsonChar )
+@~english
+@brief Dump the etDBRelations-object
+
+This function dumps the etDBRelations-objext as char, which represent an json-array
+@param dbRelations - An pointer to an etDBRelations-object
+@param[out] jsonChar - Change the pointer to an new allocated const char* which holds the json-array as string. You need to free this const char* in your application !
+@return 
+*- @ref etID_YES
+*- @ref etID_STATE_PARAMETER_MISSUSE
+*/
+etID_STATE          __etDBRelationDumps( etDBRelations* dbRelations, const char** p_jsonChar, etDebug* etDebugActual ){
+// Check
+	etCheckNull( dbRelations );
+	etCheckNull( p_jsonChar );
+
+    *p_jsonChar = json_dumps( dbRelations->jsonArrayRelations, JSON_INDENT(4) | JSON_PRESERVE_ORDER );
+	return etID_YES;
+}
+
+/** @ingroup etDBRelation
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@~english
+@brief Inject an json-object into the etDBRelations-object
+
+This function append an json-OBJECT ( not the full-array which you retrieve with etDBRelationDumps() ! ) 
+to the etDBRelations-object
+@param dbRelations - An pointer to an etDBRelations-object
+@param jsonChar - The string which represents an json-object
+@return 
+*- @ref etID_YES
+*- @ref etID_STATE_PARAMETER_MISSUSE
+*- @ref etID_STATE_INTERR
+ */
+etID_STATE          etDBRelationInject( etDBRelations* dbRelations, const char *jsonChar, etDebug* etDebugActual ){
+// Check
+	etCheckNull( dbRelations );
+	etCheckNull( jsonChar );
+
+// vars
+    json_t*     jsonRelations = dbRelations->jsonArrayRelations;
 
 // Vars
 	//int 				jsonReturnCode = 0;
-	json_t				*jsonRelations;
+	json_error_t        jsonError;
+	json_t*             jsonRelation;
+	int                 arrayLen;
 
-// try to get the relation-array
-	jsonRelations = json_object_get( etDBActual->nodeRoot, "relations" );
-	if( jsonRelations == NULL ){
-		return -1;
-	}	
+    jsonRelation = json_loads( jsonChar, JSON_INDENT(4) | JSON_PRESERVE_ORDER, &jsonError );
+    arrayLen = json_array_append_new( jsonRelations, jsonRelation );
+    if( arrayLen > 0 ) return etID_STATE_INTERR;
 	
-	return json_array_size(jsonRelations);
+	return etID_YES;
 }
 
+/** @ingroup etDBRelation
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@~english
+@brief Append an relation
+This function appends an relation between two columns in two tables to the internal array\\
+No checking is performed in this function, you can write everything as column-name or table name
+@param dbRelations - An pointer to an etDBRelations-object
+@param tableA - The origin table name
+@param columnA - The column of the origin table name, which has an connection to the column of the partner-column-name
+@param tableB - The partner table
+@param columnB - The column of the partner table, which is connected to the column of the origin-column-name
+@return 
+*- @ref etID_YES
+*- @ref etID_STATE_PARAMETER_MISSUSE
+ */
+etID_STATE          etDBRelationAppend( etDBRelations* dbRelations, 
+                        const char *tableA, const char *columnA,
+                        const char *tableB, const char *columnB, 
+                        etDebug* etDebugActual ){
 
-etID_STATE				etDBRelationFind( 
-							etDB *etDBActual, int index,
-							const char *table, const char *column,
-							const char **p_tableB, const char **p_columnB
-						){
 
-// Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeRoot );
+    // Check
+    etCheckNull( dbRelations );
 
 // Vars
-	//int 				jsonReturnCode = 0;
-	json_t				*jsonRelations;
-	json_t				*jsonRelation;
-	json_t				*jsonString;
-	const char			*jsonChar;
-	int					jsonRelationsIndex;
-	int					jsonRelationsCount;
-	
-// try to get the relation-array
-	jsonRelations = json_object_get( etDBActual->nodeRoot, "relations" );
-	if( jsonRelations == NULL ){
-		return etID_STATE_NODATA;
-	}
+    int             jsonReturnCode = 0;
+    json_t*         jsonRelation;
+    json_t*         jsonRelations = dbRelations->jsonArrayRelations;
 
-// Go to every element
-	jsonRelationsCount = json_array_size(jsonRelations);
-	for( jsonRelationsIndex = 0; jsonRelationsIndex < jsonRelationsCount; jsonRelationsIndex++ ){
+    jsonRelation = json_object();
+    jsonReturnCode |= json_object_set_new( jsonRelation, "ver", json_integer(1) );
+    jsonReturnCode |= json_object_set_new( jsonRelation, "tableA", json_string(tableA) );
+    jsonReturnCode |= json_object_set_new( jsonRelation, "columnA", json_string(columnA) );
+    jsonReturnCode |= json_object_set_new( jsonRelation, "tableB", json_string(tableB) );
+    jsonReturnCode |= json_object_set_new( jsonRelation, "columnB", json_string(columnB) );
 
-		jsonRelation = json_array_get( jsonRelations, jsonRelationsIndex );
-		if( jsonRelation == NULL ) return etID_STATE_NODATA;
-		
-	// Table a ?
-		jsonString = json_object_get( jsonRelation, "tableA" );
-		jsonChar = json_string_value( jsonString );
-		if( strncmp( jsonChar, table, strlen(table) ) == 0 ){
-			
-		// column a ?
-			jsonString = json_object_get( jsonRelation, "columnA" );
-			jsonChar = json_string_value( jsonString );
-			if( strncmp( jsonChar, column, strlen(column) ) == 0 ){
-
-			// return b
-				jsonString = json_object_get( jsonRelation, "tableB" );
-				if( jsonString != NULL ) *p_tableB = json_string_value( jsonString );
-				else *p_tableB = NULL;
-				
-				jsonString = json_object_get( jsonRelation, "columnB" );
-				if( jsonString != NULL ) *p_columnB = json_string_value( jsonString );
-				else *p_tableB = NULL;
-
-				return etID_YES;	
-				
-			}
-		}
-		
-	// Table b ?
-		jsonString = json_object_get( jsonRelation, "tableB" );
-		jsonChar = json_string_value( jsonString );
-		if( strncmp( jsonChar, table, strlen(table) ) == 0 ){
-		
-		// column b ?
-			jsonString = json_object_get( jsonRelation, "columnB" );
-			jsonChar = json_string_value( jsonString );
-			if( strncmp( jsonChar, column, strlen(column) ) == 0 ){
-				
-				
-			// return a
-				jsonString = json_object_get( jsonRelation, "tableA" );
-				if( jsonString != NULL ) *p_tableB = json_string_value( jsonString );
-				else *p_tableB = NULL;
-				
-				jsonString = json_object_get( jsonRelation, "columnA" );
-				if( jsonString != NULL ) *p_columnB = json_string_value( jsonString );
-				else *p_tableB = NULL;
-				
-				return etID_YES;
-				
-			}
-			
-
-		}
-		
-
-	}
+    json_array_append_new( jsonRelations, jsonRelation );
 
 
-	return etID_NO;
+    // return
+    return etID_YES;
 }
+
+/** @ingroup etDBRelation
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@~english
+@brief Get the amount of relations stored inside the etDBRelations-object with etDBRelationAppend()
+@param dbRelations - An pointer to an etDBRelations-object
+@return 
+*- @ref etID_YES
+*- @ref etID_STATE_PARAMETER_MISSUSE
+*/
+int                 etDBRelationCount( etDBRelations* dbRelations, etDebug* etDebugActual ){
+// Check
+    if( dbRelations == NULL){
+        etDebugState( etID_STATE_PARAMETER_MISSUSE );
+        return -1;
+    }
+
+
+// Vars
+    json_t*         jsonRelations = dbRelations->jsonArrayRelations;
+
+    return json_array_size(jsonRelations);
+}
+
+/** @ingroup etDBRelation
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@~english
+@brief Reset the internal counter
+
+Normaly with functions like etDBRelationFindNext() or etDBRelationFindNext2() you search relativ until etID_NO is returned.
+But if you would like to search from the beginning again, cou can call etDBRelationsIndexReset()
+@param dbRelations - An pointer to an etDBRelations-object
+@return 
+*- @ref etID_YES
+*- @ref etID_STATE_PARAMETER_MISSUSE
+**/
+etID_STATE          etDBRelationsIndexReset( etDBRelations* dbRelations, etDebug* etDebugActual ){
+// Check
+	etCheckNull( dbRelations );
+
+// vars
+    dbRelations->foreward = 1;
+    dbRelations->index = 0;
+
+    return etID_YES;
+}
+
+/** @ingroup etDBRelation
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+
+@def etDBRelationFindNext( etDBRelations* dbRelations, const char *tableSearch, 
+                        const char *tableColumn, const char *relatedTable, const char *relatedColumn )
+
+@~english
+@brief Find the next relation of an table
+
+@param dbRelations - An pointer to an etDBRelations-object
+@param tableSearch - The table name, we try to find inside the dbRelations
+@param[out] tableColumn - Returns the name of the origin column of the tableSearch, DON'T FREE THIS POINTER
+@param[out] relatedTable - Returns the name of the related table, DON'T FREE THIS POINTER
+@param[out] relatedColumn - Returns the name of the related column, DON'T FREE THIS POINTER
+@return 
+*- @ref etID_YES
+*- @ref etID_STATE_PARAMETER_MISSUSE
+*- @ref etID_STATE_ERROR_INTERNAL
+*/
+etID_STATE          __etDBRelationFindNext( etDBRelations* dbRelations, const char *tableSearch, 
+                        const char **p_tableColumn, const char **p_relatedTable, const char **p_relatedColumn, 
+                        etDebug* etDebugActual ){
+
+// Check
+    etCheckNull( dbRelations );
+    etCheckNull( dbRelations->jsonArrayRelations );
+    etCheckNull( tableSearch );
+    etCheckNull( p_tableColumn );
+    etCheckNull( p_relatedTable );
+    etCheckNull( p_relatedColumn );
+
+// Vars
+    json_t*                         jsonTemp = NULL;
+    json_t*                         jsonRelations = dbRelations->jsonArrayRelations;
+    json_t*                         jsonRelation = NULL;
+    int                             relationCount = json_array_size( jsonRelations );
+    const char*                     tempTable = NULL;
+
+// clear out values
+    *p_tableColumn = NULL;
+    *p_relatedTable = NULL;
+    *p_relatedColumn = NULL;
+
+
+
+    for( ; dbRelations->index < relationCount; dbRelations->index++ ){
+
+    // get the single relation
+        if( (jsonRelation = json_array_get( jsonRelations, dbRelations->index )) == NULL ){ 
+            return etDebugState( etID_STATE_ERROR_INTERNAL );
+        }
+
+
+        if( (jsonTemp = json_object_get( jsonRelation, "tableA" )) == NULL ){ 
+            return etDebugState( etID_STATE_ERROR_INTERNAL );
+        }
+        tempTable = json_string_value(jsonTemp);
+        if( strncmp(tempTable,tableSearch,strlen(tableSearch)) == 0 ){
+
+        // origin column
+            if( (jsonTemp = json_object_get( jsonRelation, "columnA" )) == NULL ){ 
+                return etDebugState( etID_STATE_ERROR_INTERNAL );
+            }
+            *p_tableColumn = json_string_value(jsonTemp);
+
+        // partner table
+            if( (jsonTemp = json_object_get( jsonRelation, "tableB" )) == NULL ){ 
+                return etDebugState( etID_STATE_ERROR_INTERNAL );
+            }
+            *p_relatedTable = json_string_value(jsonTemp);
+
+        // partner column
+            if( (jsonTemp = json_object_get( jsonRelation, "columnB" )) == NULL ){ 
+                return etDebugState( etID_STATE_ERROR_INTERNAL );
+            }
+            *p_relatedColumn = json_string_value(jsonTemp);
+
+            dbRelations->index++;
+            return etID_YES;
+        }
+
+
+        if( (jsonTemp = json_object_get( jsonRelation, "tableB" )) == NULL ){ 
+            return etDebugState( etID_STATE_ERROR_INTERNAL );
+        }
+        tempTable = json_string_value(jsonTemp);        
+        if( strncmp(tempTable,tableSearch,strlen(tableSearch)) == 0 ){
+
+        // origin column
+            if( (jsonTemp = json_object_get( jsonRelation, "columnB" )) == NULL ){ 
+                return etDebugState( etID_STATE_ERROR_INTERNAL );
+            }
+            *p_tableColumn = json_string_value(jsonTemp);
+
+        // partner table
+            if( (jsonTemp = json_object_get( jsonRelation, "tableA" )) == NULL ){ 
+                return etDebugState( etID_STATE_ERROR_INTERNAL );
+            }
+            *p_relatedTable = json_string_value(jsonTemp);
+
+        // partner column
+            if( (jsonTemp = json_object_get( jsonRelation, "columnA" )) == NULL ){ 
+                return etDebugState( etID_STATE_ERROR_INTERNAL );
+            }
+            *p_relatedColumn = json_string_value(jsonTemp);            
+
+            dbRelations->index++;
+            return etID_YES;
+        }
+    }
+
+
+    return etID_NO;
+}
+
+/** @ingroup etDBRelation
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+
+@def etDBRelationFindNextColumn( etDBRelations* dbRelations, const char *tableSearch, 
+                        const char *columnSearch, const char *relatedTable, const char *relatedColumn )
+
+@~english
+@brief Find the next relation of an table with column
+
+@param dbRelations - An pointer to an etDBRelations-object
+@param tableSearch - The table name, we try to find inside the dbRelations
+@param columnSearch - The name of the origin column of the tableSearch, we try to find inside the dbRelations
+@param[out] relatedTable - Returns the name of the related table, DON'T FREE THIS POINTER
+@param[out] relatedColumn - Returns the name of the related column, DON'T FREE THIS POINTER
+@return 
+*- @ref etID_YES
+*- @ref etID_STATE_PARAMETER_MISSUSE
+*- @ref etID_STATE_ERROR_INTERNAL
+*/
+etID_STATE          __etDBRelationFindNextColumn( etDBRelations* dbRelations, const char *tableSearch, const char *columnSearch,
+                        const char **p_relatedTable, const char **p_relatedColumn, 
+                        etDebug* etDebugActual ){
+
+// Check
+    etCheckNull( dbRelations );
+    etCheckNull( dbRelations->jsonArrayRelations );
+    etCheckNull( tableSearch );
+    etCheckNull( columnSearch );
+    etCheckNull( p_relatedTable );
+    etCheckNull( p_relatedColumn );
+
+// Vars
+    json_t*                         jsonTemp = NULL;
+    json_t*                         jsonRelations = dbRelations->jsonArrayRelations;
+    json_t*                         jsonRelation = NULL;
+    int                             relationCount = json_array_size( jsonRelations );
+    const char*                     tempTable = NULL;
+
+// clear out values
+    *p_relatedTable = NULL;
+    *p_relatedColumn = NULL;
+
+
+
+    for( ; dbRelations->index < relationCount; dbRelations->index++ ){
+
+    // get the single relation
+        if( (jsonRelation = json_array_get( jsonRelations, dbRelations->index )) == NULL ){ 
+            return etDebugState( etID_STATE_ERROR_INTERNAL );
+        }
+
+
+        if( (jsonTemp = json_object_get( jsonRelation, "tableA" )) == NULL ){ 
+            return etDebugState( etID_STATE_ERROR_INTERNAL );
+        }
+        tempTable = json_string_value(jsonTemp);
+        if( strncmp(tempTable,tableSearch,strlen(tableSearch)) == 0 ){
+
+        // origin column
+            if( (jsonTemp = json_object_get( jsonRelation, "columnA" )) == NULL ){ 
+                return etDebugState( etID_STATE_ERROR_INTERNAL );
+            }
+            tempTable = json_string_value(jsonTemp);
+            if( strncmp(tempTable,columnSearch,strlen(columnSearch)) == 0 ){
+
+            // partner table
+                if( (jsonTemp = json_object_get( jsonRelation, "tableB" )) == NULL ){ 
+                    return etDebugState( etID_STATE_ERROR_INTERNAL );
+                }
+                *p_relatedTable = json_string_value(jsonTemp);
+
+            // partner column
+                if( (jsonTemp = json_object_get( jsonRelation, "columnB" )) == NULL ){ 
+                    return etDebugState( etID_STATE_ERROR_INTERNAL );
+                }
+                *p_relatedColumn = json_string_value(jsonTemp);
+
+            }
+
+            dbRelations->index++;
+            return etID_YES;
+        }
+
+
+        if( (jsonTemp = json_object_get( jsonRelation, "tableB" )) == NULL ){ 
+            return etDebugState( etID_STATE_ERROR_INTERNAL );
+        }
+        tempTable = json_string_value(jsonTemp);        
+        if( strncmp(tempTable,tableSearch,strlen(tableSearch)) == 0 ){
+
+        // origin column
+            if( (jsonTemp = json_object_get( jsonRelation, "columnB" )) == NULL ){ 
+                return etDebugState( etID_STATE_ERROR_INTERNAL );
+            }
+            tempTable = json_string_value(jsonTemp);
+            if( strncmp(tempTable,columnSearch,strlen(columnSearch)) == 0 ){
+
+            // partner table
+                if( (jsonTemp = json_object_get( jsonRelation, "tableA" )) == NULL ){ 
+                    return etDebugState( etID_STATE_ERROR_INTERNAL );
+                }
+                *p_relatedTable = json_string_value(jsonTemp);
+
+            // partner column
+                if( (jsonTemp = json_object_get( jsonRelation, "columnA" )) == NULL ){ 
+                    return etDebugState( etID_STATE_ERROR_INTERNAL );
+                }
+                *p_relatedColumn = json_string_value(jsonTemp);
+                
+            }
+
+            dbRelations->index++;
+            return etID_YES;
+        }
+    }
+
+
+    return etID_NO;
+}
+
+/** @ingroup etDBRelation
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+
+@def etDBRelationFindNextTable( etDBRelations* dbRelations, const char *tableSearch, 
+                        const char *columnSearch, const char *relatedTable, const char *relatedColumn )
+
+@~english
+@brief Find the next relation of an table with column
+
+@param dbRelations - An pointer to an etDBRelations-object
+@param tableSearch - The table name, we try to find inside the dbRelations
+@param columnSearch - The name of the origin column of the tableSearch, we try to find inside the dbRelations
+@param[out] relatedTable - Returns the name of the related table, DON'T FREE THIS POINTER
+@param[out] relatedColumn - Returns the name of the related column, DON'T FREE THIS POINTER
+@return 
+*- @ref etID_YES
+*- @ref etID_STATE_PARAMETER_MISSUSE
+*- @ref etID_STATE_ERROR_INTERNAL
+*/
+etID_STATE          __etDBRelationFindNextTable( etDBRelations* dbRelations, const char *tableSearch, const char *relatedTableSearch,
+                        const char **p_tableColumn,  const char **p_relatedColumn, 
+                        etDebug* etDebugActual ){
+
+// Check
+    etCheckNull( dbRelations );
+    etCheckNull( dbRelations->jsonArrayRelations );
+    etCheckNull( tableSearch );
+    etCheckNull( relatedTableSearch );
+    etCheckNull( p_tableColumn );
+    etCheckNull( p_relatedColumn );
+
+// Vars
+    json_t*                         jsonTemp = NULL;
+    json_t*                         jsonRelations = dbRelations->jsonArrayRelations;
+    json_t*                         jsonRelation = NULL;
+    int                             relationCount = json_array_size( jsonRelations );
+    const char*                     tempTable = NULL;
+
+// clear out values
+    *p_tableColumn = NULL;
+    *p_relatedColumn = NULL;
+
+
+
+    for( ; dbRelations->index < relationCount; dbRelations->index++ ){
+
+    // get the single relation
+        if( (jsonRelation = json_array_get( jsonRelations, dbRelations->index )) == NULL ){ 
+            return etDebugState( etID_STATE_ERROR_INTERNAL );
+        }
+
+
+    // compare origin table
+        if( (jsonTemp = json_object_get( jsonRelation, "tableA" )) == NULL ){ 
+            return etDebugState( etID_STATE_ERROR_INTERNAL );
+        }
+        tempTable = json_string_value(jsonTemp);
+        if( strncmp(tempTable,tableSearch,strlen(tableSearch)) == 0 ){
+
+        // compare partner table
+            if( (jsonTemp = json_object_get( jsonRelation, "tableB" )) == NULL ){ 
+                return etDebugState( etID_STATE_ERROR_INTERNAL );
+            }
+            tempTable = json_string_value(jsonTemp);
+            if( strncmp(tempTable,relatedTableSearch,strlen(relatedTableSearch)) == 0 ){
+
+            // return origin column
+                if( (jsonTemp = json_object_get( jsonRelation, "columnA" )) == NULL ){ 
+                    return etDebugState( etID_STATE_ERROR_INTERNAL );
+                }
+                *p_tableColumn = json_string_value(jsonTemp);
+
+            // return partner column
+                if( (jsonTemp = json_object_get( jsonRelation, "columnB" )) == NULL ){ 
+                    return etDebugState( etID_STATE_ERROR_INTERNAL );
+                }
+                *p_relatedColumn = json_string_value(jsonTemp);
+
+                dbRelations->index++;
+                return etID_YES;
+            }
+        }
+
+
+
+    // compare partner table
+        if( (jsonTemp = json_object_get( jsonRelation, "tableB" )) == NULL ){ 
+            return etDebugState( etID_STATE_ERROR_INTERNAL );
+        }
+        tempTable = json_string_value(jsonTemp);
+        if( strncmp(tempTable,tableSearch,strlen(tableSearch)) == 0 ){
+
+        // compare origin table
+            if( (jsonTemp = json_object_get( jsonRelation, "tableA" )) == NULL ){ 
+                return etDebugState( etID_STATE_ERROR_INTERNAL );
+            }
+            tempTable = json_string_value(jsonTemp);
+            if( strncmp(tempTable,relatedTableSearch,strlen(relatedTableSearch)) == 0 ){
+
+            // return origin column
+                if( (jsonTemp = json_object_get( jsonRelation, "columnB" )) == NULL ){ 
+                    return etDebugState( etID_STATE_ERROR_INTERNAL );
+                }
+                *p_tableColumn = json_string_value(jsonTemp);
+
+            // return partner column
+                if( (jsonTemp = json_object_get( jsonRelation, "columnA" )) == NULL ){ 
+                    return etDebugState( etID_STATE_ERROR_INTERNAL );
+                }
+                *p_relatedColumn = json_string_value(jsonTemp);
+
+                dbRelations->index++;
+                return etID_YES;
+            }
+
+        }
+    }
+
+
+    return etID_NO;
+}
+
+
+
 
 
 

@@ -22,6 +22,7 @@
 #ifdef ET_SINGLEMODULE
 	#include "evillib_defines.h"
 	#include "evillib_depends.h"
+	#include "evillib-extra_depends.h"
 
 	#include "core/etDebug.h"
 	#include "core/etObject.h"
@@ -29,254 +30,300 @@
 	#include "memory/etMemory.h"
 	#include "string/etString.h"
 	
-	#include "etDB.h"
+
 	#include "etDBTable.h"
 	#include "etDBColumn.h"
 #endif
 
 
 
-// Column set
-etID_STATE				etDBColumnInit( etDB *etDBActual ){
-// Get columns from json-object
-	if( etDBActual->nodeColumns == NULL ){
-		etDBActual->nodeColumns = json_object_get( etDBActual->nodeTable, "columns" );
-	}
-	return etID_YES;
+etID_STATE              etDBColumnAppend( etDBTable *dbTable, const char *columnName, etDebug* etDebugActual ){
+    return etDBColumnNameSetFull( dbTable, NULL, columnName, etDebugActual );
 }
 
 
-etID_STATE				etDBColumnAppend( etDB *etDBActual, const char *columnName ){
+etID_STATE              etDBColumnSeek( etDBTable *dbTable, const char *columnName, etDebug* etDebugActual ){
 // Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeTable );
+    etDebugReturnOnError( etDebugActual );
+    etDebugCheckNull( etDebugActual, dbTable );
+    etDebugCheckMember( etDebugActual, dbTable->jsonColumns );
+    etDebugCheckNull( etDebugActual, columnName );
 
-// Try to load columns from json
-	if( etDBColumnInit( etDBActual ) != etID_YES ) return etID_STATE_ERROR_INTERNAL;
-
-// If no columns exist
-	if( etDBActual->nodeColumns == NULL ){
-		etDBActual->nodeColumns = json_object();
-		etDBActual->nodeColumn = NULL;
-		etDBActual->nodeColumnsIterator = NULL;
-		json_object_set_new( etDBActual->nodeTable, "columns", etDBActual->nodeColumns );
-	}
 
 // Vars
-	int 				jsonReturnCode = 0;
+    json_t*         jsonTableColumns = dbTable->jsonColumns;
+    json_t*         jsonTableColumn = NULL;
 
-
-// Create Column
-	etDBActual->nodeColumn = json_object();
-	jsonReturnCode |= json_object_set_new( etDBActual->nodeColumn, "nameNew", json_string(columnName) );
-
-// Add column to columns
-	jsonReturnCode |= json_object_set_new( etDBActual->nodeColumns, columnName, etDBActual->nodeColumn );
-	
-// Check return code
-	if( jsonReturnCode != 0 ){
-		etDebugMessage( etID_LEVEL_ERR, "jansson error" );
-		return etID_STATE_ERROR_INTERNAL;
-	}
-
-#ifndef ET_DEBUG_OFF
-	const char *tableName;
-	etDBTableNameGet( etDBActual, tableName, tableName );
-	snprintf( etDebugTempMessage, etDebugTempMessageLen, "Append column '%s' to table '%s'", columnName, tableName );
-	etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
-#endif
-
-// return
-	return etID_YES;
-}
-
-
-etID_STATE				etDBColumnSeek( etDB *etDBActual, const char *columnName ){
-// Check
-	etCheckNull( etDBActual );
-	etCheckNull( columnName );
-
-// Check if column-struct is init
-	if( etDBColumnInit( etDBActual ) != etID_YES ) return etID_STATE_ERROR_INTERNAL;
-
-// vars
-	json_t			*jsonColumn;
 
 // try to find the column
-	jsonColumn = json_object_get( etDBActual->nodeColumns, columnName );
+	jsonTableColumn = json_object_get( jsonTableColumns, columnName );
 
 // We found it
-	if( jsonColumn != NULL ){
+	if( jsonTableColumn != NULL ){
 		#ifndef ET_DEBUG_OFF
 			snprintf( etDebugTempMessage, etDebugTempMessageLen, "Column Found %s", columnName );
-			etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+			etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_DETAIL_DB, etDebugTempMessage );
 		#endif
 		
 	// return
-		etDBActual->nodeColumn = jsonColumn;
+		dbTable->jsonColumn = jsonTableColumn;
 		return etID_YES;
 	}
 
 // Didnt found the column
 	snprintf( etDebugTempMessage, etDebugTempMessageLen, "Column not Found %s", columnName );
-	etDebugMessage( etID_LEVEL_WARNING, etDebugTempMessage );
+	etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_DETAIL_DB, etDebugTempMessage );
 
 	return etID_STATE_NODATA;
 }
 
 
-etID_STATE				etDBColumnGetFirst( etDB *etDBActual ){
+etID_STATE              etDBColumnIndexReset( etDBTable *dbTable, etDebug* etDebugActual ){
 // Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeColumns );
-
-
-// Set the iterator to the first column
-	etDBActual->nodeColumnsIterator = json_object_iter( etDBActual->nodeColumns );
-	if( etDBActual->nodeColumnsIterator == NULL ) return etID_STATE_NODATA;
-	
-	etDBActual->nodeColumn = json_object_iter_value( etDBActual->nodeColumnsIterator );
-
-// return
-	return etID_YES;
-}
-
-
-etID_STATE				etDBColumnGetNext( etDB *etDBActual ){
-// Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeColumns );
-
-
-// Set the iterator to the first column
-	etDBActual->nodeColumnsIterator = json_object_iter_next( etDBActual->nodeColumns, etDBActual->nodeColumnsIterator );
-	if( etDBActual->nodeColumnsIterator == NULL ) return etID_STATE_NODATA;
-	
-	etDBActual->nodeColumn = json_object_iter_value( etDBActual->nodeColumnsIterator );
-
-// return
-	return etID_YES;
-}
-
-
-
-
-etID_STATE				etDBColumnNameOriginalSet( etDB *etDBActual, const char *columnName ){
-// Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeColumn );
+    etDebugReturnOnError( etDebugActual );
+	etDebugCheckNull( etDebugActual, dbTable );
+    etDebugCheckMember( etDebugActual, dbTable->jsonColumns );
 
 // Vars
-	int 				jsonReturnCode = 0;
+    json_t*         jsonTableColumns = dbTable->jsonColumns;
 
-// table-name
-	jsonReturnCode |= json_object_set_new( etDBActual->nodeColumn, "name", json_string(columnName) );
 
+// Set the iterator to the first column
+    dbTable->jsonColumn = NULL;
+	dbTable->jsonColumnIterator = json_object_iter( jsonTableColumns );
+	if( dbTable->jsonColumnIterator == NULL ) return etID_STATE_NODATA;
+
+// return
+	return etID_YES;
+}
+
+
+etID_STATE              __etDBColumnGetNextFull( etDBTable *dbTable, const char **p_columnName, const char **p_columnNameNew, etDebug* etDebugActual ){
+// Check
+    etDebugReturnOnError( etDebugActual );
+    etDebugCheckNull( etDebugActual, dbTable );
+    etDebugCheckMember( etDebugActual, dbTable->jsonColumns );
+
+// Vars
+    json_t*         jsonTableColumns = dbTable->jsonColumns;
+
+// check if we are not at the end
+    if( dbTable->jsonColumnIterator == NULL ) return etID_STATE_NODATA;
+    
+// get the column from the actual iterator
+    dbTable->jsonColumn = json_object_iter_value( dbTable->jsonColumnIterator );
+
+// read the values from the column
+    __etDBStringGet( dbTable->jsonColumn, "name", "nameNew", p_columnName, p_columnNameNew, etDebugActual );
+
+// go to the next column
+	dbTable->jsonColumnIterator = json_object_iter_next( jsonTableColumns, dbTable->jsonColumnIterator );
+
+// return
+	return etID_YES;
+}
+
+
+etID_STATE              etDBColumnNameSetFull( etDBTable *dbTable, const char *columnName, const char *columnNameNew, etDebug* etDebugActual ){
+// Check
+    etDebugReturnOnError( etDebugActual );
+	etDebugCheckNull( etDebugActual, dbTable );
+	etDebugCheckMember( etDebugActual, dbTable->jsonColumns );
+
+// Vars
+    int             jsonReturnCode = 0;
+    json_t*         jsonTempObject = NULL;
+
+// search if the column already exist
+    if( columnName != NULL ){
+        jsonTempObject = json_object_get( dbTable->jsonColumns, columnName );
+    }
+
+// if no column is present, create one
+    if( jsonTempObject == NULL ){
+    // create a new json-object for column
+        jsonTempObject = json_object();
+        if( jsonTempObject == NULL ){
+            return etDebugStateSet( etDebugActual, etID_STATE_ERROR_INTERNAL);
+        }
+
+    // column-name
+        if( columnName != NULL ){
+            jsonReturnCode |= json_object_set_new( jsonTempObject, "name", json_string(columnName) );
+        }
+
+    // get the name of the object
+        const char *tempChar = NULL;
+        if( columnNameNew != NULL ) tempChar = columnNameNew;
+        if( columnName != NULL ) tempChar = columnName;
+        
+
+    // append the json-column object
+        jsonReturnCode |= json_object_set_new( dbTable->jsonColumns, tempChar, jsonTempObject );
+        
+        #ifndef ET_DEBUG_OFF
+            const char *tableName;
+            etDBTableNameGet( dbTable, tableName, etDebugActual );
+            snprintf( etDebugTempMessage, etDebugTempMessageLen, "Append column '%s' to table '%s'", tempChar, tableName );
+            etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+        #endif
+    }
+
+// new name if needed
+	if( columnNameNew != NULL ){
+		jsonReturnCode |= json_object_set_new( jsonTempObject, "nameNew", json_string(columnNameNew) );
+	}
 
 // Check return code
 	if( jsonReturnCode != 0 ){
 		etDebugMessage( etID_LEVEL_ERR, "jansson error" );
 		return etID_STATE_ERROR_INTERNAL;
 	}
+    
+// set the actual column
+    dbTable->jsonColumn = jsonTempObject;
 
 	return etID_YES;
 }
 
 
-etID_STATE				__etDBColumnNameGet( etDB *etDBActual, const char **p_columnName, const char **p_columnNameNew ){
-	return __etDBStringGet( etDBActual->nodeColumn, "name", "nameNew", p_columnName, p_columnNameNew );
+
+
+etID_STATE              __etDBColumnNameGetFull( etDBTable *dbTable, const char **p_columnName, const char **p_columnNameNew, etDebug* etDebugActual ){
+	return __etDBStringGet( dbTable->jsonColumn, "name", "nameNew", p_columnName, p_columnNameNew, etDebugActual );
 }
 
 
-etID_STATE				etDBColumnTypeSet( etDB *etDBActual, etDBColumnType columnType ){
+
+
+etID_STATE              etDBColumnTypeSetFull( etDBTable *dbTable, etDBColumnType columnType, etDBColumnType columnTypeNew, etDebug* etDebugActual ){
 // Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeColumn );
+    etDebugReturnOnError( etDebugActual );
+	etDebugCheckNull( etDebugActual, dbTable );
+	etDebugCheckMember( etDebugActual, dbTable->jsonColumn );
+
+// Vars
+    int             jsonReturnCode = 0;
+    json_t*         jsonTableColumn = dbTable->jsonColumn;
+
 
 #ifndef ET_DEBUG_OFF
 	const char *columnName;
-	etDBColumnNameGet( etDBActual, columnName, columnName );
-	snprintf( etDebugTempMessage, etDebugTempMessageLen, "Set type of column '%s' to '%i'", columnName, columnType );
-	etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+	etDBColumnNameGet( dbTable, columnName, etDebugActual );
+    
+    if( columnType >= 0 ){    
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Set type of column '%s' to '%i'", columnName, columnType );
+        etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+    }
+
+    if( columnTypeNew >= 0 ){    
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Set new type of column '%s' to '%i'", columnName, columnTypeNew );
+        etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+    }
+	
 #endif
 
-	json_object_set_new( etDBActual->nodeColumn, "typeNew", json_integer(columnType) );
+    if( columnType >= 0 ){
+        jsonReturnCode |= json_object_set_new( jsonTableColumn, "type", json_integer(columnType) );
+    }
 
+    if( columnTypeNew >= 0 ){
+        jsonReturnCode |= json_object_set_new( jsonTableColumn, "typeNew", json_integer(columnTypeNew) );
+    }
+
+// Check return code
+	if( jsonReturnCode != 0 ){
+		etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_ERR, "jansson error" );
+		return etID_STATE_ERROR_INTERNAL;
+	}
+
+// return
 	return etID_YES;
 }
 
 
-etID_STATE				etDBColumnTypeOriginalSet( etDB *etDBActual, etDBColumnType columnType ){
-// Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeColumn );
 
-#ifndef ET_DEBUG_OFF
-	const char *columnName;
-	etDBColumnNameGet( etDBActual, columnName, columnName );
-	snprintf( etDebugTempMessage, etDebugTempMessageLen, "Set real(in DB) type of column '%s' to '%i'", columnName, columnType );
-	etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
-#endif
-
-	json_object_set_new( etDBActual->nodeColumn, "type", json_integer(columnType) );
-
-	return etID_YES;
-}
-
-
-etID_STATE				__etDBColumnTypeGet( etDB *etDBActual, etDBColumnType *p_columnType ){
-	return __etDBIntegerGet( etDBActual->nodeColumn, "type", "typeNew", (int*)p_columnType );
+etID_STATE              __etDBColumnTypeGetFull( etDBTable *dbTable, etDBColumnType *p_columnType, etDBColumnType *p_columnTypeNew, etDebug* etDebugActual ){
+	return __etDBIntegerGet( dbTable->jsonColumn, "type", "typeNew", (int*)p_columnType, (int*)p_columnTypeNew, etDebugActual );
 }
 
 
 
 
-etID_STATE				etDBColumnIdentifierSet( etDB *etDBActual ){
+etID_STATE              etDBColumnIdentifierSet( etDBTable *dbTable, etDebug* etDebugActual ){
 // Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeColumn );
+    etDebugReturnOnError( etDebugActual );
+	etDebugCheckNull( etDebugActual, dbTable );
+	etDebugCheckMember( etDebugActual, dbTable->jsonTable );
+	etDebugCheckMember( etDebugActual, dbTable->jsonColumn );
 
 // vars 
-	int 			jsonReturnCode = 0;
-	json_t*		jsonIdentifier = NULL;
-
+    int             jsonReturnCode = 0;
+    json_t*         jsonTable = dbTable->jsonTable;
+    json_t*         jsonIdentifier = NULL;
+    const char*     columnName;
 
 // set that this is the identifier
-	json_object_set_new( etDBActual->nodeColumn, "isIdentifier", json_integer(1) );
+    etDBColumnNameGet( dbTable, columnName, etDebugActual );
+    etDebugReturnOnError( etDebugActual );
 
+    jsonIdentifier = json_string( columnName );
+    if( jsonIdentifier == NULL ) return etDebugState( etID_STATE_ERROR_INTERNAL );
+    jsonReturnCode |= json_object_set_new( jsonTable, "identColumn", jsonIdentifier );
+
+// Check return code
+    if( jsonReturnCode != 0 ){
+        etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_ERR, "jansson error" );
+        return etID_STATE_ERROR_INTERNAL;
+    }
 
 #ifndef ET_DEBUG_OFF
-	const char *columnName;
-	etDBColumnNameGet( etDBActual, columnName, columnName );
 	snprintf( etDebugTempMessage, etDebugTempMessageLen, "Set identifier of column '%s' to 1", columnName );
-	etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+	etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_DETAIL_DB, etDebugTempMessage );
 #endif
 
 	return etID_YES;
 }
 
 
-etID_STATE				etDBColumnIsIdentifier( etDB *etDBActual ){
+etID_STATE              __etDBColumnIdentifierGet( etDBTable *dbTable, const char **p_identifierColumn, etDebug* etDebugActual ){
 // Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeColumn );
+    etDebugReturnOnError( etDebugActual );
+	etDebugCheckNull( etDebugActual, dbTable );
+	etDebugCheckMember( etDebugActual, dbTable->jsonTable );
 
 // vars 
-	int 			jsonReturnCode = 0;
-	json_t*		jsonIdentifier = NULL;
-	int				isIdentifier = NULL;
+    json_t*         jsonTable = dbTable->jsonTable;
+    json_t*         jsonIdentifier = NULL;
 
-// try to get the identifyer
-	jsonIdentifier = json_object_get( etDBActual->nodeColumn, "isIdentifier" );
-	if( jsonIdentifier == NULL ){
-		return etID_NO;
-	}
-	
-	isIdentifier = json_integer_value( jsonIdentifier );
-	if( isIdentifier != 1 ){
-		return etID_NO;
+// Get values
+	jsonIdentifier = json_object_get( jsonTable, "identColumn" );
+	if( jsonIdentifier != NULL ){
+		*p_identifierColumn = json_string_value(jsonIdentifier);
+		return etID_YES;
 	}
 
-	return etID_YES;
+
+	return etID_STATE_NODATA;
 }
+
+
+etID_STATE              etDBColumnIsIdentifier( etDBTable *dbTable, const char *column, etDebug* etDebugActual ){
+// check
+    etDebugReturnOnError( etDebugActual );
+    etDebugCheckNull( etDebugActual, dbTable );
+	etDebugCheckNull( etDebugActual, column );
+
+// vars
+    const char          *columnIdent = NULL;
+    
+// get the ident column
+    etDBColumnIdentifierGet( dbTable, columnIdent, etDebugActual);
+    etDebugReturnOnError( etDebugActual );
+
+    if( strncmp(columnIdent,column,strlen(column)) == 0 ) return etID_YES;
+    
+    return etID_NO;
+}
+
 

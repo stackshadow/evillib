@@ -16,12 +16,17 @@ help:
 	@echo "$(MAKE) evillib-core-dev: Build development files ( in $(includeDir)/evillib.h )"
 	@echo -n "$(CNormal)"
 
-#################################### Development / Headers ####################################
-evillib-core: $(buildPath)/evillib.$(Version).h
-evillib-core-dev: $(includeDir)/evillib.h
-evillib-core-dev-clean:
+clean:
 	@$(RM) $(headerVersion)
 	@$(RM) $(buildPath)/evillib.$(Version).h
+
+install: evillib-core-dev-install
+
+#################################### Development / Headers ####################################
+evillib-core: $(buildPath)/evillib.$(Version).h
+evillib-core-dev: $(buildPath)/evillib.$(Version).h
+evillib-core-dev-install: $(includeDir)/evillib.h
+evillib-core-dev-uninstall:
 	@$(RM) $(includeDir)/evillib/evillib.$(Version).h
 	@$(RM) $(includeDir)/evillib.h
 

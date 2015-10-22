@@ -18,9 +18,9 @@
 #	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 
 
-include ../core/MakefileBase.make
-CFLAGS=
-CLIBS=
+include ../make/vars.make
+#CFLAGS=
+#CLIBS=
 
 CFLAGS+=-DET_SINGLEMODULE
 CFLAGS+=-I ../core

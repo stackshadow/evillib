@@ -22,6 +22,7 @@
 #ifdef ET_SINGLEMODULE
 	#include "evillib_defines.h"
 	#include "evillib_depends.h"
+	#include "evillib-extra_depends.h"
 
 	#include "core/etDebug.h"
 	#include "core/etObject.h"
@@ -29,102 +30,61 @@
 	#include "memory/etMemory.h"
 	#include "string/etString.h"
 	
-	#include "etDB.h"
-	#include "etDBValue.h"
+    #include "etDBValue.h"
 #endif
 
 
-etID_STATE				etDBValueInit( etDB *etDBActual ){
-// Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeTable );
+etID_STATE          __etDBValueAlloc( etDBValue **p_etDBValues ){
+	etCheckNull( p_etDBValues );
 
-// get the "new"-values
-	if( etDBActual->nodeValuesNew == NULL ){
-		etDBActual->nodeValuesNew = json_object_get( etDBActual->nodeTable, "valuesNew" );
-	}
-// the "new"-values are not present, create the object
-	if( etDBActual->nodeValuesNew == NULL ){
-		etDBActual->nodeValuesNew = json_object();
-		json_object_set_new( etDBActual->nodeTable, "valuesNew", etDBActual->nodeValuesNew );
-	}
+// vars
+    etMemoryBlock*      etMemoryBlockActual = NULL;
+    etDBValue*          dbValues;
 
+// Allocate
+    etMemoryRequest( etMemoryBlockActual, sizeof(etDBValue) );
+    etMemoryBlockDataGet( etMemoryBlockActual, dbValues );
+    
 
-// get the "original"-values
-	if( etDBActual->nodeValues == NULL ){
-		etDBActual->nodeValues = json_object_get( etDBActual->nodeTable, "values" );
-	}
-// the "original"-values are not present, create the object
-	if( etDBActual->nodeValues == NULL ){
-		etDBActual->nodeValues = json_object();
-		json_object_set_new( etDBActual->nodeTable, "values", etDBActual->nodeValues );
-	}
+// create the json-object
+    dbValues->values = json_object();
 
+// Set the iterator to NULL
+    dbValues->iterator = NULL;
+
+	*p_etDBValues = dbValues;
 	return etID_YES;
 }
 
 
-etID_STATE				etDBValuesClean( etDB *etDBActual ){
+etID_STATE          etDBValuesClean( etDBValue *etDBValues ){
 // Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeTable );
+	etCheckNull( etDBValues );
+
 
 // Clean the "new"-values
-	if( etDBActual->nodeValuesNew != NULL ){
-		json_object_clear( etDBActual->nodeValuesNew );
-	}
+	json_object_clear( etDBValues->values );
 
 	return etID_YES;
 }
 
 
-etID_STATE				etDBValuesNewClean( etDB *etDBActual ){
+etID_STATE          etDBValueSet( etDBValue *etDBValues, const char *columnName, const char *value ){
 // Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeTable );
-
-// Clean the "new"-values
-	if( etDBActual->nodeValuesNew != NULL ){
-		json_object_clear( etDBActual->nodeValuesNew );
-		
-		/*
-		void *iterator = json_object_iter( etDBActual->nodeValuesNew );
-		json_object_clear( etDBActual->nodeValuesNew );
-		json_t *jsonValue = NULL;
-		
-		while( iterator != NULL){
-			jsonValue = json_object_iter_value( iterator );
-			json_decref(jsonValue);
-			
-			iterator = json_object_iter_next( etDBActual->nodeValuesNew, iterator );
-		}
-		
-		//json_decref( etDBActual->nodeValuesNew );
-		etDBActual->nodeValuesNew = NULL;
-		
-		 */
-	}
-
-	return etID_YES;
-}
-
-
-etID_STATE				etDBValueSet( etDB *etDBActual, const char *columnName, const char *value ){
-// Check
-	etCheckNull( etDBActual );
+	etCheckNull( etDBValues );
 	etCheckNull( columnName );
 
-// Init the value-struct
-	etDBValueInit( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeValuesNew );
+// vars
+    json_t*     jsonValues = etDBValues->values;
+
 
 // Check if this value is already present
-	json_t *jsonValue = json_object_get( etDBActual->nodeValuesNew, columnName );
+	json_t*     jsonValue = json_object_get( jsonValues, columnName );
 
 // Value not present
 	if( jsonValue == NULL ){
 		jsonValue = json_string( value );
-		json_object_set_new( etDBActual->nodeValuesNew, columnName, jsonValue );
+		json_object_set_new( jsonValues, columnName, jsonValue );
 	} 
 // Value present
 	else {
@@ -133,46 +93,6 @@ etID_STATE				etDBValueSet( etDB *etDBActual, const char *columnName, const char
 	
 	return etID_YES;
 }
-
-/** @ingroup etDBValue
-@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
-@~english
-
-This is an internal function for set the values which exists inside an DB.
-
-@warning Before use this function call etDBValueInit() !
-
-*/
-etID_STATE				etDBValueOriginalSet( etDB *etDBActual, const char *columnName, const char *value ){
-// Check
-	etCheckNull( etDBActual );
-	etCheckNull( columnName );
-	etCheckParameterSequence( etDBActual->nodeValues );
-
-// Init the value-struct
-	etDBValueInit( etDBActual );
-
-// Check if this value is already present
-	json_t *jsonValue = json_object_get( etDBActual->nodeValues, columnName );
-
-// Value not present
-	if( jsonValue == NULL ){
-		jsonValue = json_string( value );
-		json_object_set( etDBActual->nodeValues, columnName, jsonValue );
-	} 
-// Value present
-	else {
-		json_string_set( jsonValue, value );
-	}
-	
-	return etID_YES;
-}
-
-
-
-
-
-
 
 /** @ingroup etDBValue
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
@@ -192,66 +112,102 @@ which means that this value was set from the userspace.
 *- @ref etID_STATE_NEW
 *- @ref etID_STATE_NODATA
 */ 
-etID_STATE				__etDBValueGet( etDB *etDBActual, 
-							const char *columnName, 
-							const char **p_value, 
-							const char **p_valueNew
-						){
+etID_STATE          __etDBValueGet( etDBValue *etDBValues, const char *columnName, const char **p_value ){
 // Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeValues );
-	
+    etCheckNull( etDBValues );
+    etCheckNull( columnName );
+    etCheckNull( p_value );
+
 // Vars
-	etID_STATE		returnState = etID_STATE_ERROR_INTERNAL;
-	json_t 		*jsonValue = NULL;
-	const char		*value = NULL;
+    json_t*         jsonValues = etDBValues->values;
+    json_t*         jsonValue = NULL;
+    const char*     stringValue = NULL;
 
 // set all to NULL
-	*p_value = NULL;
-	*p_valueNew = NULL;
+    *p_value = NULL;
 
 
-// Get the "new"-value
-	if( jsonValue == NULL ){
-		jsonValue = json_object_get( etDBActual->nodeValues, columnName );
-		
-		if( jsonValue != NULL ){
-			value = json_string_value( jsonValue );
-			if( value != NULL ) *p_value = value;
-		}
-	}
+// Get the value
+    jsonValue = json_object_get( jsonValues, columnName );
+    if( jsonValue == NULL ) return etID_STATE_NODATA;
 
-// Get the "normal"-value
-	if( jsonValue == NULL ){
-		jsonValue = json_object_get( etDBActual->nodeValuesNew, columnName );
-		
-		if( jsonValue != NULL ){
-			value = json_string_value( jsonValue );
-			if( value != NULL ) *p_valueNew = value;
-		}
-	}
+// get the string-value
+    stringValue = json_string_value( jsonValue );
+    if( stringValue == NULL ) return etID_STATE_NODATA;
 
-
-// ERROR
-	if( *p_value == NULL && *p_valueNew == NULL ){
-		etDebugMessage( etID_LEVEL_ERR, "No value present" );
-		*p_value = NULL;
-		return etID_STATE_NODATA;
-	}
-
-
-	return returnState;
+// return
+    *p_value = stringValue;
+    return etID_YES;
 }
 
 
-etID_STATE				etDBValueGetReset( etDB *etDBActual ){
+etID_STATE          __etDBValueGetNext( etDBValue *etDBValues, const char **p_columnName, const char **p_value ){
 // Check
-	etCheckNull( etDBActual );
+    etCheckNull( etDBValues );
+    etCheckNull( p_columnName );
+    etCheckNull( p_value );
+
+// Vars
+    json_t*         jsonValues = etDBValues->values;
+    json_t*         jsonValue = NULL;
+
+// set all to NULL
+    *p_columnName = NULL;
+    *p_value = NULL;
+
+// start from beginning if iterator is null
+    if( etDBValues->iterator != NULL ){
+        etDBValues->iterator = json_object_iter_next( jsonValues, etDBValues->iterator );
+    } else {
+        etDBValues->iterator = json_object_iter( jsonValues );
+    }
 
 
-// Init the value-struct
-	etDBValueInit( etDBActual );
 
+// If iterator is NULL no more data is present
+    if( etDBValues->iterator == NULL ){
+        return etID_STATE_NODATA;
+    }
+
+// return column name
+    *p_columnName = json_object_iter_key( etDBValues->iterator );
+    
+// return columnvalue
+    jsonValue = json_object_iter_value( etDBValues->iterator );
+    if( jsonValue != NULL ){
+        *p_value = json_string_value( jsonValue );
+    }
+
+    return etID_YES;
 }
 
+
+
+etID_STATE          __etDBValueFree( etDBValue **p_etDBValues ){
+    
+// Parameter check
+	etCheckNull( p_etDBValues );
+
+
+// Vars
+    etMemoryBlock*      etMemoryBlockNew = NULL;
+    etDBValue*          etDBValues = *p_etDBValues;
+
+
+// free the json-stuff
+    if( etDBValues->values != NULL ){
+        json_decref( etDBValues->values );
+    }
+
+
+// Get the Block from the data and release the data
+    etMemoryBlockFromData( (void*)etDBValues, etMemoryBlockNew );
+    etMemoryBlockRelease( etMemoryBlockNew );
+
+
+// Return
+    *p_etDBValues = NULL;
+    return etID_YES;
+
+}
 

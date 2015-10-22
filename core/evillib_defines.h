@@ -85,6 +85,11 @@ etID_DIM;
 @~english
 @ingroup grCoreDefineStates
 @brief States
+
+The states of the evillib is divided into two parts:
+ * If the state is >0 its not an error, only a state
+ * If the state is <0 an error occure
+ * 0 means state not changed since last call
 */
 typedef enum etID_STATE {
 // Configuration of the core library
@@ -119,39 +124,39 @@ typedef enum etID_STATE {
 	etID_STATE_ERROR_INTERNAL,
 
 //Yes and No
-	etID_NO = -1,									/*!< No */
-	etID_YES = 1,									/*!< Everything okay */
-	etID_OK = 1,									/*!< Everything okay */
+	etID_NO = -1,                               /*!< No */
+	etID_STATE_NOTHING = 0,                     /*!< No state */
+	etID_YES = 1,                               /*!< Everything okay */
+	etID_OK = 1,                                /*!< Everything okay */
 
-	etID_STATE_NOTHING = 1,						/*!< No state */
-	etID_STATE_READY,								/*!< Ready */
-	etID_STATE_PENDING,							/*!< Under action */
+	etID_STATE_READY = 10,                      /*!< Ready */
+	etID_STATE_PENDING,                         /*!< Under action */
 	etID_STATE_AUTO,
 
 // Disable enable states
-	etID_STATE_DISABLED = 10,					/*!< Disabled */
-	etID_STATE_ENABLED,							/*!< Enabled */
+	etID_STATE_DISABLED = 20,                   /*!< Disabled */
+	etID_STATE_ENABLED,                         /*!< Enabled */
 
 // New, change, delete
-	etID_STATE_NEW = 20,							/*!< New */
-	etID_STATE_CHANGED,							/*!< changed */
-	etID_STATE_DELETED,							/*!< deleted */
+	etID_STATE_NEW = 30,                        /*!< New */
+	etID_STATE_CHANGED,                         /*!< changed */
+	etID_STATE_DELETED,                         /*!< deleted */
 
 // Run, wait, end
-	etID_STATE_RUN = 30,							/*!< Running */
-	etID_STATE_WAIT,								/*!< waiting */
-	etID_STATE_BREAK,								/*!< break */
-	etID_STATE_END,								/*!< ended */
+	etID_STATE_RUN = 40,                        /*!< Running */
+	etID_STATE_WAIT,                            /*!< waiting */
+	etID_STATE_BREAK,                           /*!< break */
+	etID_STATE_END,                             /*!< ended */
 
 // Connected / Disconnected
-	etID_STATE_CONNECTED = 40,					/*!< Is connected ( this can be good or bad, so this is only an information message ) */
-	etID_STATE_DISCONNECTED,						/*!< Is disconnected ( this can be good or bad, so this is only an information message ) */
+	etID_STATE_CONNECTED = 50,                  /*!< Is connected ( this can be good or bad, so this is only an information message ) */
+	etID_STATE_DISCONNECTED,                    /*!< Is disconnected ( this can be good or bad, so this is only an information message ) */
 
 // Data
-	etID_STATE_DATA_AVIABLE = 50,
+	etID_STATE_DATA_AVIABLE = 60,
 
 // Compare
-	etID_STATE_EQ = 60,
+	etID_STATE_EQ = 70,
 	etID_STATE_GREATER,
 	etID_STATE_SMALLER
 
@@ -164,6 +169,8 @@ etID_STATE;
 @~english
 @ingroup grCoreDefineLevel
 @brief Levels
+
+Smaller numbers means not so urgend messages. high number = high priority
 */
 typedef enum etID_LEVEL {
 	etID_LEVEL_ALL,
@@ -174,6 +181,7 @@ typedef enum etID_LEVEL {
 	etID_LEVEL_DETAIL_NET,				/*!< Network debug process */
 	etID_LEVEL_DETAIL_THREAD,			/*!< Threading debug process */
 	etID_LEVEL_DETAIL_DB,				/*!< Database debug messages */
+    etID_LEVEL_TEST,
 	etID_LEVEL_INFO,					/*!< Info message */
 	etID_LEVEL_WARNING,					/*!< Warning message */
 	etID_LEVEL_ERR,						/*!< Error message */

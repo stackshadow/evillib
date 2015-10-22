@@ -22,6 +22,7 @@
 #ifdef ET_SINGLEMODULE
 	#include "evillib_defines.h"
 	#include "evillib_depends.h"
+    #include "evillib-extra_depends.h"
 
 	#include "core/etDebug.h"
 	#include "core/etObject.h"
@@ -29,75 +30,115 @@
 	#include "memory/etMemory.h"
 	#include "string/etString.h"
 	
+
+    #include "etDBTable.h"
+    #include "etDBValue.h"
+    #include "etDBFilter.h"
 	#include "etDB.h"
 #endif
 
+/** @defgroup etDB etDB - Database functions of evillib
 
-etID_STATE				__etDBAlloc( etDB **p_etjDBActual ){
-	
+The etDB-Functions provide an API to DB's without thinking about querys.
+( of course for db's like sqlite, etDB create the querys for you )
+The goal ist to provide an easy to use, independent and portable interface to your DB's
+\n
+The etDB contains seperate parts:
+etDB:
+ - Your Application use this functions to run DB-Actions and get basic infos about an current connection
+
+etDBTable:
+ - The etDBTable-object represent table(s) ( even if there are not in an db ) \n
+If multiple tables are used inside one etDBTable-Object, you need to set the curren-table-pointer, \n
+all functions use the current selected table inside the etDBTable-Object \n
+
+etDBRelations:
+ - describe the relations between two columns of two tables
+
+etDBValue:
+ - an single dataset
+
+
+In 5 Minutes:
+ - Prepare etDB, etDBTable and etDBValues
+ - Select an Driver and init it
+ - use etDBActionSet to prepare etDB for run
+ - use etDBRun to execute the query
+ - use etDBNextResult to return the next ( or first ) result from the db
+
+
+*/
+
+
+const char*        etDB_ACTION_NAMES[etDB_ACTION_COUNT] = {
+    "none\0",                   // etDB_ACTION_NONE
+    "get table list\0",         // etDB_ACTION_TABLELIST_GET
+    "add table\0",              // etDB_ACTION_TABLE_ADD
+    "change table\0",           // etDB_ACTION_TABLE_CHANGE
+    "remove table\0",           // etDB_ACTION_TABLE_REMOVE
+    "get table\0",              // etDB_ACTION_TABLE_GET
+    "add column\0",             // etDB_ACTION_COLUMN_ADD
+    "change column\0",          // etDB_ACTION_COLUMN_CHANGE
+    "remove column\0",          // etDB_ACTION_COLUMN_REMOVE
+    "add data\0",               // etDB_ACTION_DATA_ADD
+    "change data\0",            // etDB_ACTION_DATA_CHANGE
+    "remove data\0",            // etDB_ACTION_DATA_REMOVE    
+    "get data\0",               // etDB_ACTION_DATA_GET
+    "done\0"
+};
+
+
+
+/**
+@ingroup etDB
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+
+@fn etID_STATE etDBAlloc( etDB *etDBActual )
+@~english
+@brief Creates an new etDB-Object
+@param[out] etDBActual - An pointer to an etDB-object
+@return 
+*- @ref etID_YES
+*- @ref etID_STATE_PARAMETER_MISSUSE
+*/
+etID_STATE          __etDBAlloc( etDB** p_etDBActual, etDebug* etDebugActual ){
+	//if( etErrorActual->state < etID_STATE_NOTHING ) return etDebugPrintState(etErrorActual);
+
 // Vars
 	etMemoryBlock 		*etMemoryBlockActual = NULL;
 	etDB 				*etDBActual = NULL;
-	int 				jsonReturnCode = 0;
 
 // Allocate
 	etMemoryRequest( etMemoryBlockActual, sizeof(etDB) );
 	etMemoryBlockDataGet( etMemoryBlockActual, etDBActual );
 
-// Setup json
-	etDBActual->nodeRoot = json_object();
-	etDBActual->nodeTables = json_object();
-
-	
-// Add version info of specification
-	jsonReturnCode |= json_object_set_new( etDBActual->nodeRoot, "ver", json_integer(1) );
-	jsonReturnCode |= json_object_set_new( etDBActual->nodeRoot, "tables", etDBActual->nodeTables );
-
-	if( jsonReturnCode != 0 ){
-		etDebugMessage( etID_LEVEL_ERR, "json error !" );
-		*p_etjDBActual = NULL;
-		return etID_STATE_ERROR_INTERNAL;
-	}
 		
-	*p_etjDBActual = etDBActual;
+	*p_etDBActual = etDBActual;
 	return etID_YES;
 }
 
+/**
+@ingroup etDB
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
-etID_STATE				__etDBFree( etDB **p_etjDBActual ){
+@fn etID_STATE etDBFree( etDB *etDBActual )
+@~english
+@brief Release the memory of an etDB-Object and its connected driver !
+@param[out] etDBActual - An pointer to an etDB-object
+@return 
+*- @ref etID_YES
+*- @ref etID_STATE_PARAMETER_MISSUSE
+*/
+etID_STATE          __etDBFree( etDB** p_etDBActual, etDebug* etDebugActual ){
 
 // Vars
-	etDB 				*etDBActual = *p_etjDBActual;
+	etDB 				*etDBActual = *p_etDBActual;
 	etMemoryBlock 		*etMemoryBlockActual = NULL;
 
-// Free the tables
-	if( etDBActual->nodeTables != NULL ){
-		while( etDBActual->nodeTables->refcount > 0 ){
-			json_decref( etDBActual->nodeTables );
-		}
-	}
-
-// Free the tables
-	if( etDBActual->nodeTable != NULL ){
-		while( etDBActual->nodeTable->refcount > 0 ){
-			json_decref( etDBActual->nodeTable );
-		}
-	}
-	
-// Free the columns
-	if( etDBActual->nodeColumns != NULL ){
-		while( etDBActual->nodeColumns->refcount > 0 ){
-			json_decref( etDBActual->nodeColumns );
-		}
-	}
-
-// Free root
-	if( etDBActual->nodeRoot != NULL ){
-		while( etDBActual->nodeRoot->refcount > 0 ){
-			json_decref( etDBActual->nodeRoot );
-		}
-	}
-
+// free the underlying driver
+    if( etDBActual->functions.free != NULL ){
+        etDBActual->functions.free(etDBActual, etDebugActual);
+    }
 
 // Release our etMemory
 	etMemoryBlockFromData( etDBActual, etMemoryBlockActual );
@@ -106,92 +147,169 @@ etID_STATE				__etDBFree( etDB **p_etjDBActual ){
 	return etID_YES;
 }
 
+/**
+@ingroup etDBRelation
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@internal
+@~english
+@brief Get an string from an json-object
 
-etID_STATE				__etDBStringGet( json_t *jsonObject, 
-							const char *keyNormal, 
-							const char *keyNew, 
-							const char **p_value,
-							const char **p_valueNew
-						){
+This is an internal helper function.
+The Function perform two steps:
+ - get the json-string with the name keyNormal and return it to p_value.
+ - get the json-string with the name keyNew and return it to p_valueNew.
+So the basic idea is to provide two functionality:
+1. get the "new" and the "normal" as seperate values.
+2. If you provide the same pointer to p_value and p_valueNew the original-value ( if it exists ) has priority
+
+@param[in] jsonObject
+@param[in] keyNormal
+@param[in] keyNew
+@param[out] p_value
+@param[out] p_valueNew
+@return 
+*- @ref etID_YES
+*- @ref etID_STATE_PARAMETER_MISSUSE
+*- @ref etID_STATE_NODATA
+ 
+ */
+etID_STATE          __etDBStringGet( json_t *jsonObject, 
+                        const char *keyNormal, 
+                        const char *keyNew, 
+                        const char **p_value,
+                        const char **p_valueNew, 
+                        etDebug* etDebugActual ){
 
 // Check
-	etCheckNull( jsonObject );
-	etCheckNull( p_value );
-	etCheckNull( p_valueNew );
+    etDebugReturnOnError( etDebugActual );
+	etDebugCheckNull( etDebugActual, jsonObject );
 
 // Vars
-	json_t			*jsonValue = NULL;
-	const char 	*value = NULL;
+    json_t*         jsonValue = NULL;
+    const char*     value = NULL;
 
-// set all to NULL
-	*p_value = NULL;
-	*p_valueNew = NULL;
+// set to NULL
+    if( p_value != NULL ) *p_value = NULL;
+    if( p_valueNew != NULL ) *p_valueNew = NULL;
 
+// reset state
+    etDebugStateSet( etDebugActual, etID_STATE_NOTHING );
 
-// try get "nameNew"
+// try get "new"-value
 	if( keyNew != NULL ){
-		jsonValue = json_object_get( jsonObject, keyNew );
-		if( jsonValue != NULL ){
-			value = json_string_value( jsonValue );
-			if( value != NULL ) *p_valueNew = value;
-		}
-	}
+        if( p_valueNew != NULL ){
+            jsonValue = json_object_get( jsonObject, keyNew );
+            if( jsonValue != NULL ){
+                
+            // get the string value from the json-object
+                value = json_string_value( jsonValue );
+                
+            // return it as NEW
+                *p_valueNew = value;
+                
+            // set state to NEW
+                etDebugStateSet( etDebugActual, etID_STATE_NEW );
+            }        
+        }
+    }
 
 
-// try get "name"
-	if( keyNormal != NULL ){
-		jsonValue = json_object_get( jsonObject, keyNormal );
-		if( jsonValue != NULL ){
-			value = json_string_value( jsonValue );
-			if( value != NULL ) *p_value = value;
-		}
-	}
+// try get "original"-value
+    if( keyNormal != NULL ){
+        if( p_value != NULL ){
+            jsonValue = json_object_get( jsonObject, keyNormal );
+            if( jsonValue != NULL ){
+                
+            // get the string value from the json-object
+                value = json_string_value( jsonValue );
+                
+            // return it as original-value
+                *p_value = value;
+                
+            // set state to aviable data
+                etDebugStateSet( etDebugActual, etID_STATE_DATA_AVIABLE );
+            }
+        }
+    }
 
 // ERROR
-	if( *p_valueNew == NULL && *p_value == NULL ){
-		etDebugMessage( etID_LEVEL_WARNING, "No value present" );
-		*p_value = NULL;
-		return etID_STATE_NODATA;
-	}
-
-// return
-	return etID_YES;
+    if( etDebugActual->state == etID_STATE_NOTHING ){
+        etDebugStateSet( etDebugActual, etID_STATE_NODATA );
+    }
+    
+    return etDebugActual->state;
 }
 
 
-etID_STATE				__etDBIntegerGet( json_t *jsonObject, const char *keyNormal, const char *keyNew, int *p_value ){
+etID_STATE          __etDBIntegerGet( json_t *jsonObject, 
+                        const char *keyNormal, 
+                        const char *keyNew, 
+                        int *p_value,
+                        int *p_valueNew, 
+                        etDebug* etDebugActual ){
+
 // Check
-	etCheckNull( jsonObject );
-	etCheckNull( p_value );
+    etDebugReturnOnError( etDebugActual );
+	etDebugCheckNull( etDebugActual, jsonObject );
 
 // Vars
-	etID_STATE		returnState = etID_STATE_ERROR_INTERNAL;
-	json_t			*jsonValue = NULL;
+    json_t*         jsonValue = NULL;
+    int             value = NULL;
 
-// try get "name"
-	jsonValue = json_object_get( jsonObject, keyNormal );
-	returnState = etID_YES;
+// set to NULL
+    if( p_value != NULL ) *p_value = etDB_COL_TYPE_DEFAULT;
+    if( p_valueNew != NULL ) *p_valueNew = etDB_COL_TYPE_DEFAULT;
 
-// try get "nameNew"
-	if( jsonValue == NULL ){
-		jsonValue = json_object_get( jsonObject, keyNew );
-		returnState = etID_STATE_NEW;
-	}
+// reset state
+    etDebugStateSet( etDebugActual, etID_STATE_NOTHING );
+
+// try get "new"-value
+	if( keyNew != NULL ){
+        if( p_valueNew != NULL ){
+            jsonValue = json_object_get( jsonObject, keyNew );
+            if( jsonValue != NULL ){
+                
+            // get the string value from the json-object
+                value = json_integer_value( jsonValue );
+                
+            // return it as NEW
+                *p_valueNew = value;
+                
+            // set state to NEW
+                etDebugStateSet( etDebugActual, etID_STATE_NEW );
+            }        
+        }
+    }
+
+
+// try get "original"-value
+    if( keyNormal != NULL ){
+        if( p_value != NULL ){
+            jsonValue = json_object_get( jsonObject, keyNormal );
+            if( jsonValue != NULL ){
+                
+            // get the string value from the json-object
+                value = json_integer_value( jsonValue );
+                
+            // return it as original-value
+                *p_value = value;
+                
+            // set state to aviable data
+                etDebugStateSet( etDebugActual, etID_STATE_DATA_AVIABLE );
+            }
+        }
+    }
 
 // ERROR
-	if( jsonValue == NULL ){
-		etDebugMessage( etID_LEVEL_WARNING, "No value present" );
-		*p_value = 0;
-		return etID_STATE_NODATA;
-	}
-
-// return
-	*p_value = json_integer_value(jsonValue);
-	return returnState;
+    if( etDebugActual->state == etID_STATE_NOTHING ){
+        etDebugStateSet( etDebugActual, etID_STATE_NODATA );
+    }
+    
+    return etDebugActual->state;
 }
 
 
-etID_STATE				etDBInDBSet( json_t *jsonObject, const char *keyNormal, const char *keyNew ){
+etID_STATE          etDBInDBSet( json_t *jsonObject, const char *keyNormal, const char *keyNew, etDebug* etDebugActual ){
 // Check
 	etCheckNull( jsonObject );
 
@@ -207,13 +325,13 @@ etID_STATE				etDBInDBSet( json_t *jsonObject, const char *keyNormal, const char
 		jsonReturnCode |= json_object_set_new( jsonObject, keyNormal, jsonValue );
 		
 		if( jsonReturnCode != 0 ){
-			etDebugMessage( etID_LEVEL_ERR, "json error !" );
+			etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_ERR, "json error !" );
 			return etID_STATE_ERROR_INTERNAL;
 		}
 		
 		#ifndef ET_DEBUG_OFF
 			snprintf( etDebugTempMessage, etDebugTempMessageLen, "Set from %s to %s", keyNew, keyNormal );
-			etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+			etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_DETAIL_DB, etDebugTempMessage );
 		#endif
 		
 
@@ -226,18 +344,116 @@ etID_STATE				etDBInDBSet( json_t *jsonObject, const char *keyNormal, const char
 	return etID_YES;
 }
 
+/** @ingroup etDB
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@~english
+@brief Prepare the etDB-Object to execute an action
+@param[in] etDBActual The pointer to an etDB-Object
+@param[in] etDBActionNew The actoion you would like to execute @see etDB_ACTION
+@return 
+*- @ref etID_YES
+*- @ref etID_STATE_PARAMETER_MISSUSE
+*/
+etID_STATE          etDBActionSet( etDB *etDBActual, etDB_ACTION etDBActionNew, etDebug* etDebugActual ){
+// Check
+    etDebugReturnOnError( etDebugActual );
+    etDebugCheckNull( etDebugActual, etDBActual);
 
-void					etDBDumpf( etDB *etDBActual ){
-	
-	char *dump = json_dumps( etDBActual->nodeRoot, JSON_INDENT(4) | JSON_PRESERVE_ORDER );
-	etDebugMessage( etID_LEVEL_INFO, dump );
-	free(dump);
-	//fprintf( stdout, ) );
+
+	etDBActual->action = etDBActionNew;
+
+#ifndef ET_DEBUG_OFF
+    snprintf( etDebugTempMessage, etDebugTempMessageLen, 
+        "Set action to '%s'(%i)", etDB_ACTION_NAMES[etDBActual->action], etDBActual->action );
+    etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+#endif
+
+	return etID_YES;
 }
 
 
+etDB_ACTION         etDBActionGet( etDB *etDBActual, etDebug* etDebugActual ){
+// Check
+	etCheckNull( etDBActual );
+	return etDBActual->action;
+}
 
 
+etID_STATE          etDBIsConnected( etDB *etDBActual, etDebug* etDebugActual ){
+	if( etDBActual->functions.isConnected == NULL ) return etID_NO;
+
+	return etDBActual->functions.isConnected( etDBActual, etDebugActual );
+}
+
+
+etID_STATE          etDBRun( etDB *etDBActual, etDBTable *dbTable, etDBFilter *dbFilter, etDBValue *dbValues, etDebug* etDebugActual ){
+// Check
+	etCheckNull( etDBActual );
+	if( etDBActual->action == etDB_ACTION_NONE ) return etID_NO;
+	if( etDBActual->action == etDB_ACTION_DONE ) return etID_NO;
+	if( etDBActual->action == etDB_ACTION_COUNT ) return etID_NO;
+
+    snprintf( etDebugTempMessage, etDebugTempMessageLen, 
+        "Try to run action '%s'(%i)", etDB_ACTION_NAMES[etDBActual->action], etDBActual->action );
+    etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+    
+switch( etDBActual->action ){
+
+    case etDB_ACTION_TABLELIST_GET:
+        if( etDBActual->functions.tableListGet != NULL ){
+            return etDBActual->functions.tableListGet( etDBActual, etDebugActual );
+        }
+        
+
+    case etDB_ACTION_TABLE_ADD:
+        if( etDBActual->functions.tableAdd != NULL ){
+            return etDBActual->functions.tableAdd ( etDBActual, dbTable, etDebugActual );
+        }
+    
+    case etDB_ACTION_TABLE_CHANGE:
+    
+    case etDB_ACTION_TABLE_REMOVE:
+
+    case etDB_ACTION_TABLE_GET:
+        if( etDBActual->functions.tableGet != NULL ){
+            return etDBActual->functions.tableGet( etDBActual, dbTable, etDebugActual );
+        }
+    
+    case etDB_ACTION_DATA_ADD:
+        if( etDBActual->functions.dataAdd != NULL ){
+            return etDBActual->functions.dataAdd( etDBActual, dbTable, dbValues, etDebugActual );
+        }
+
+    case etDB_ACTION_DATA_CHANGE:
+        if( etDBActual->functions.dataChange != NULL ){
+            return etDBActual->functions.dataChange( etDBActual, dbTable, dbValues, etDebugActual );
+        }
+        
+    case etDB_ACTION_DATA_REMOVE:
+        if( etDBActual->functions.dataRemove != NULL ){
+            return etDBActual->functions.dataRemove( etDBActual, dbTable, dbValues, etDebugActual );
+        }
+
+    case etDB_ACTION_DATA_GET:
+        if( etDBActual->functions.dataGet != NULL ){
+            return etDBActual->functions.dataGet( etDBActual, dbTable, dbFilter, etDebugActual );
+        }
+        
+    default:
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Action '%s'(%i) not supported by driver", etDB_ACTION_NAMES[etDBActual->action], etDBActual->action );
+        etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+        break;    
+}
+
+	return etID_STATE_NODATA;
+}
+
+
+etID_STATE 			etDBNextResult( etDB *etDBActual, etDBValue *nodeValues, etDebug* etDebugActual ){
+	if( etDBActual->functions.nextResult == NULL ) return etID_NO;
+
+	return etDBActual->functions.nextResult( etDBActual, nodeValues, etDebugActual );
+}
 
 
 

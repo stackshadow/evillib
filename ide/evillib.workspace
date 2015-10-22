@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Workspace Name="evillib" Database="">
+<CodeLite_Workspace Name="evillib" Database="" SWTLW="No">
   <Project Name="evillib" Path="evillib.project" Active="Yes"/>
   <Environment>
     <![CDATA[]]>
@@ -19,7 +19,9 @@
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="app - debug" Selected="yes">
       <Project Name="evillib" ConfigName="app - debug"/>
-      <Project Name="raspdispd" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="share library" Selected="no">
+      <Project Name="evillib" ConfigName="shared library - debug"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

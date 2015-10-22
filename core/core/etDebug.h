@@ -25,22 +25,29 @@
 @cond DEV
 @ingroup etDebug
 */
-typedef struct etDebug {
-	pthread_mutex_t		Sync;
+typedef struct etDebug_s etDebug;
+struct etDebug_s {
+    pthread_mutex_t     Sync;
 
-	const char*			Program; 			/*!< Program-name ( normaly evillib ) */
+    const char*         Program;                /*!< Program-name ( normaly evillib ) */
 
-	etID_LEVEL			Level;				/*!< Warning, debug etc */
-	etID_LEVEL			LevelVisible;
+    etID_STATE          state;
+    etID_LEVEL          Level;                  /*!< Warning, debug etc */
+    etID_LEVEL          LevelVisible;
 
-	const char*			Function; 			/*!< calling Function */
-	int					FunctionLine;		/*!< Line of calling function */
-	const char*			Message; 			/*!< Message */
-} etDebug;
+    const char*         FunctionOrigin;
+    int                 FunctionOriginLine;
+    const char*         Function;               /*!< calling Function */
+    int                 FunctionLine;           /*!< Line of calling function */
+    const char*         Message;                /*!< Message */
+    
+    void                (*printMessage)( etDebug* etDebugActual );
+};
 
 extern etDebug 			etDebugEvillib[1];
 extern int				etDebugTempMessageLen;
 extern char 			etDebugTempMessage[256];
+
 
 #ifdef __WIN32__
 	struct mallinfo mallinfo();
@@ -67,6 +74,8 @@ extern char 			etDebugTempMessage[256];
 #else
 	#define _etDebugMessage _etDebugMessageIntern
 #endif
+
+
 
 
 #if __GNUC__ >= 2
@@ -128,6 +137,7 @@ etID_STATE			etDebugProgramNameSet( const char *programName );
 etID_STATE			etDebugLevelSet( etID_LEVEL debugLevels );
 
 
+etDebug*            __etDebugSetCaller( etDebug* etDebugActual, const char *function, int line );
 
 
 
@@ -137,19 +147,67 @@ etID_STATE			etDebugLevelSet( etID_LEVEL debugLevels );
 
 
 
+// ######################### NEW DEBUGGING SYSTEM
 
 
 
+etID_STATE              etDebugInit( etDebug* etDebugActual );
+
+
+etID_STATE              etDebugMapStateToMessage( etDebug* etDebugActual );
+
+
+etID_STATE              etDebugPrintMessage( etDebug* etDebugActual );
+
+// caller ( inside the function who calls it
+etDebug*                etDebugSetCaller( etDebug* etDebugActual, const char *function, int line );
+#define __etDebugSetCaller( etDebugActual, function, line ) ( etDebugSetCaller(etDebugActual, function, line) )
+#define caller( etDebugActual ) ( __etDebugSetCaller(etDebugActual, __ET_DEBUG_FUNCTION, __LINE__) )
+
+
+#define                 etDebugStateSet( etDebugActual, state ) __etDebugStateSet( etDebugActual, state, __ET_DEBUG_FUNCTION, __LINE__ )
+etID_STATE              __etDebugStateSet( etDebug* etDebugActual, etID_STATE state, const char *function, int line );
+
+#define                 etDebugReset( etDebugActual ) __etDebugReset( etDebugActual, __ET_DEBUG_FUNCTION, __LINE__ )
+etID_STATE              __etDebugReset( etDebug* etDebugActual, const char *function, int line );
+
+// check functions
+#define                 etDebugReturnOnError( etDebugActual ) \
+                        if( (etDebugActual)->state < etID_STATE_NOTHING ){ \
+                            return etDebugActual->state; \
+                        }
+
+#define                 etDebugCheckNull( etDebugActual, objectVariable) \
+                        if( objectVariable == NULL ){ \
+                            snprintf( etDebugTempMessage, etDebugTempMessageLen, "%s is null", "objectVariable" ); \
+                            etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage ); \
+                            etDebugStateSet( etDebugActual, etID_STATE_PARAMETER_MISSUSE ); \
+                            return etDebugActual->state; \
+                        }
+
+#define                 etDebugCheckMember( etDebugActual, structMember ) \
+                        if( structMember == NULL ){ \
+                            snprintf( etDebugTempMessage, etDebugTempMessageLen, "Member variable %s is null", "structMember" ); \
+                            etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage ); \
+                            etDebugStateSet( etDebugActual, etID_STATE_PARAMETER_MISSUSE ); \
+                            return etDebugActual->state; \
+                        }
 
 
 
-
-
-
-
-
-
-
+// custom messaging
+#ifdef ET_INTERNAL
+    etID_STATE etDebugPrintCustomMessage_intern( etDebug* etDebugActual, etID_LEVEL messageLevel, const char* message, const char *function, int line );
+	#define _etDebugPrintCustomMessage etDebugPrintCustomMessage_intern
+#else
+	#define _etDebugPrintCustomMessage etDebugPrintCustomMessage_intern
+#endif
+#ifndef ET_DEBUG_OFF
+	// debug stuff
+	#define etDebugPrintCustomMessage( etDebugActual, messageLevel, message ) (_etDebugPrintCustomMessage( etDebugActual, messageLevel, message, __ET_DEBUG_FUNCTION, __LINE__ ))
+#else
+	#define etDebugPrintCustomMessage( etDebugActual, messageLevel, message ) 
+#endif
 
 
 
@@ -160,3 +218,8 @@ etID_STATE			etDebugLevelSet( etID_LEVEL debugLevels );
 /**
 @endcond 
 */
+
+
+
+
+

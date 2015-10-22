@@ -34,7 +34,7 @@ Debuging inside the evillib is simple and can be used by other programs.
 
 
 
-struct etDebug 			etDebugEvillib[1] = {
+etDebug 			etDebugEvillib[1] = {
 	{
 		.Sync = PTHREAD_MUTEX_INITIALIZER,
 	// Standart visible levels
@@ -43,7 +43,8 @@ struct etDebug 			etDebugEvillib[1] = {
 };
 int						etDebugTempMessageLen = 256;
 char 					etDebugTempMessage[256];
-void 					(*etDebugPrintMessage)() = _etDebugPrintMessage;
+
+
 // For snprintf()
 
 
@@ -81,104 +82,6 @@ struct mallinfo		etDebugPrintMallocInfo_( const char *function, const char *opti
 
 #endif
 }
-
-
-void				_etDebugPrintMessage(){
-
-// Return function if level is not visible
-	if( etDebugEvillib->Level < etDebugEvillib->LevelVisible && etDebugEvillib->Level != etID_LEVEL_CRITICAL ) return;
-
-
-	pthread_mutex_lock( &etDebugEvillib->Sync );
-
-// OutputStream
-	_IO_FILE *OutputStream = stderr;
-	switch( etDebugEvillib->Level ){
-		case etID_LEVEL_ERR:
-				OutputStream = stderr; break;
-		default:
-				OutputStream = stdout;
-	}
-
-// Program
-	if( etDebugEvillib->Program != NULL ){
-		fprintf( OutputStream, "[%s] ", etDebugEvillib->Program );
-	}
-
-// Level of message
-	switch( etDebugEvillib->Level ){
-
-		case etID_LEVEL_DETAIL:
-			fprintf( OutputStream, "\e[0;36m[DEBUG] [DETAIL]" );
-			break;
-
-		case etID_LEVEL_DETAIL_MEM:
-			fprintf( OutputStream, "\033[0;36m[DEBUG] [MEMORY]" );
-			break;
-
-		case etID_LEVEL_DETAIL_EVENT:
-			fprintf( OutputStream, "\033[0;46m[DEBUG] [EVENT]" );
-			break;
-
-		case etID_LEVEL_DETAIL_PROCESS:
-			fprintf( OutputStream, "\033[0;47m[DEBUG] [PROCESS]" );
-			break;
-
-		case etID_LEVEL_DETAIL_NET:
-			fprintf( OutputStream, "\033[0;48m[DEBUG] [NET]" );
-			break;
-			
-		case etID_LEVEL_DETAIL_THREAD:
-			fprintf( OutputStream, "\033[0;48m[DEBUG] [THREAD]" );
-			break;
-			
-		case etID_LEVEL_DETAIL_DB:
-			fprintf( OutputStream, "\033[0;48m[DEBUG] [DB]" );
-			break;
-
-		case etID_LEVEL_INFO:
-			fprintf( OutputStream, "[INFO]" );
-			break;
-
-		case etID_LEVEL_WARNING:
-			fprintf( OutputStream, "\033[1;43m[WARNING]" );
-			break;
-
-		case etID_LEVEL_ERR:
-			fprintf( OutputStream, "\033[0;41m[ERROR]" );
-			break;
-
-		case etID_LEVEL_CRITICAL:
-			fprintf( OutputStream, "[CRITICAL]" );
-			break;
-	// Default is Error
-		default:
-			fprintf( OutputStream, "[ERROR]" );
-	}
-
-// Function and line
-	fprintf( OutputStream, " [%s", etDebugEvillib->Function );
-	fprintf( OutputStream, ": %i]", etDebugEvillib->FunctionLine );
-
-
-// Message
-	if( etDebugEvillib->Message != NULL ){
-		fprintf( OutputStream, "\033[00m %s\n", etDebugEvillib->Message );
-	} else {
-		fprintf( OutputStream, " " );
-	}
-
-
-// Flush
-	fflush( OutputStream );
-
-
-
-
-	pthread_mutex_unlock( &etDebugEvillib->Sync );
-	return;
-}
-
 
 
 etID_STATE			_etDebugStateExtern( etID_STATE state, const char *function, int line ){
@@ -235,7 +138,7 @@ etID_STATE			_etDebugStateExtern( etID_STATE state, const char *function, int li
 	}
 
 // Printout the error
-	etDebugPrintMessage();
+
 
 // If critical, exit
 	if( etDebugEvillib->Level == etID_LEVEL_CRITICAL ){
@@ -271,7 +174,7 @@ void				_etDebugMessageExtern( etID_LEVEL messageLevel, const char *function, in
 	etDebugEvillib->Message = message;
 
 // Printout the error
-	etDebugPrintMessage();
+
 	
 // If critical, exit
 	if( etDebugEvillib->Level == etID_LEVEL_CRITICAL ){
@@ -309,6 +212,278 @@ etID_STATE			etDebugLevelSet( etID_LEVEL debugLevels ){
 
 
 
+
+
+
 /**
 @endcond 
 */
+
+
+
+// ######################### NEW DEBUGGING SYSTEM
+
+void                    etDebugDefaultPrintMessage( etDebug* etDebugActual );
+
+
+etID_STATE              etDebugInit( etDebug* etDebugActual ){
+
+// zero the struct
+    memset( etDebugActual, 0, sizeof(etDebug) );
+
+// set the default visible level
+    //etDebugActual->LevelVisible = etID_LEVEL_INFO;
+    etDebugActual->LevelVisible = etID_LEVEL_ALL;
+    
+// setup default message function
+    etDebugActual->printMessage = etDebugDefaultPrintMessage;
+    return etID_YES;
+}
+
+
+etDebug*                etDebugSetCaller( etDebug* etDebugActual, const char *function, int line ){
+    etDebugActual->FunctionOriginLine = line;
+    etDebugActual->FunctionOrigin = function;
+    return etDebugActual;
+}
+
+
+
+etID_STATE              etDebugMapStateToMessage( etDebug* etDebugActual ){
+
+// Calculate Level
+	switch( etDebugActual->state ){
+            
+        case etID_STATE_NODATA:
+			etDebugActual->Level = etID_LEVEL_WARNING;
+			etDebugActual->Message = "No data present";
+			break;
+
+	// Special things
+		case etID_STATE_PARAMETER_MISSUSE:
+			etDebugActual->Level = etID_LEVEL_ERR;
+			etDebugActual->Message = "Parameter missuse";
+			break;
+
+		case etID_STATE_NOMEMORY:
+			etDebugActual->Level = etID_LEVEL_CRITICAL;
+			etDebugActual->Message = "No More System Memory";
+			break;
+
+		case etID_STATE_TIMEOUT:
+			etDebugActual->Level = etID_LEVEL_WARNING;
+			etDebugActual->Message = "Timeout";
+			break;
+
+		case etID_STATE_USED:
+			etDebugActual->Level = etID_LEVEL_ERR;
+			etDebugActual->Message = "Already in use";
+			break;
+	
+		case etID_STATE_ERROR_INTERNAL:
+			etDebugActual->Level = etID_LEVEL_WARNING;
+			etDebugActual->Message = "Internal Error";
+			break;
+
+		case etID_STATE_NOTINLIB:
+			etDebugActual->Level = etID_LEVEL_WARNING;
+			etDebugActual->Message = "Function not aviable in the library";
+			break;
+			
+		case etID_STATE_SEQERR:
+			etDebugActual->Level = etID_LEVEL_ERR;
+			etDebugActual->Message = "Sequencial Error, you need to run another function before this function. Read the documentation about this function.";
+			break;
+
+		default:
+            if( etDebugActual->state > 0 ){
+                etDebugActual->Level = etID_LEVEL_DETAIL;
+            
+            } else {
+                etDebugActual->Level = etID_LEVEL_ERR;
+            }
+            snprintf( etDebugTempMessage, etDebugTempMessageLen, "etID_STATE: %i", etDebugActual->state );
+			etDebugActual->Message = etDebugTempMessage;
+	}
+
+
+	return etDebugActual->state;
+}
+
+
+etID_STATE              __etDebugStateSet( etDebug* etDebugActual, etID_STATE state, const char *function, int line ){
+
+// save infos
+    etDebugActual->state = state;
+    etDebugActual->Function = function;
+    etDebugActual->FunctionLine = line;
+
+// map state to messate
+    etDebugMapStateToMessage( etDebugActual );
+
+    return etDebugPrintMessage(etDebugActual);
+}
+
+
+etID_STATE              __etDebugReset( etDebug* etDebugActual, const char *function, int line ){
+    etDebugActual->FunctionOriginLine = line;
+    etDebugActual->FunctionOrigin = function;
+
+    etDebugActual->state = etID_YES;
+    etDebugActual->Level = etID_LEVEL_DETAIL;
+    etDebugActual->Message = "Reset debugging state";
+    
+    etDebugPrintMessage( etDebugActual );
+
+    etDebugActual->state = etID_STATE_NOTHING;
+    etDebugActual->Message = NULL;
+    
+    return etID_YES;
+}
+
+
+void                    etDebugDefaultPrintMessage( etDebug* etDebugActual ){
+
+// show message if level is active and not critical
+	if( etDebugActual->Level < etDebugActual->LevelVisible && etDebugActual->Level != etID_LEVEL_CRITICAL ) return;
+    if( etDebugActual->state == etID_STATE_NOTHING ) return;
+
+
+	pthread_mutex_lock( &etDebugActual->Sync );
+
+// OutputStream
+	_IO_FILE *OutputStream = stderr;
+	switch( etDebugActual->Level ){
+		case etID_LEVEL_ERR:
+				OutputStream = stderr; break;
+		default:
+				OutputStream = stdout;
+	}
+
+// Program
+	if( etDebugActual->Program != NULL ){
+		fprintf( OutputStream, "[%s] ", etDebugActual->Program );
+	}
+
+// Level of message
+	switch( etDebugActual->Level ){
+
+		case etID_LEVEL_DETAIL:
+			fprintf( OutputStream, "\e[0;36m[DEBUG]\033[00m [DETAIL]" );
+			break;
+
+		case etID_LEVEL_DETAIL_MEM:
+			fprintf( OutputStream, "\033[0;36m[DEBUG]\033[00m [MEMORY]" );
+			break;
+
+		case etID_LEVEL_DETAIL_EVENT:
+			fprintf( OutputStream, "\033[0;46m[DEBUG]\033[00m [EVENT]" );
+			break;
+
+		case etID_LEVEL_DETAIL_PROCESS:
+			fprintf( OutputStream, "\033[0;47m[DEBUG]\033[00m [PROCESS]" );
+			break;
+
+		case etID_LEVEL_DETAIL_NET:
+			fprintf( OutputStream, "\033[0;48m[DEBUG]\033[00m [NET]" );
+			break;
+			
+		case etID_LEVEL_DETAIL_THREAD:
+			fprintf( OutputStream, "\033[0;48m[DEBUG]\033[00m [THREAD]" );
+			break;
+			
+		case etID_LEVEL_DETAIL_DB:
+			fprintf( OutputStream, "\033[0;48m[DEBUG]\033[00m [DB]" );
+			break;
+            
+        case etID_LEVEL_TEST:
+            fprintf( OutputStream, "\033[0;48m[DEBUG]\033[00m [TEST]" );
+			break;
+
+		case etID_LEVEL_INFO:
+			fprintf( OutputStream, "[INFO]" );
+			break;
+
+		case etID_LEVEL_WARNING:
+			fprintf( OutputStream, "\033[1;43m[WARNING]\033[00m" );
+			break;
+
+		case etID_LEVEL_ERR:
+			fprintf( OutputStream, "\033[0;41m[ERROR]\033[00m" );
+			break;
+
+		case etID_LEVEL_CRITICAL:
+			fprintf( OutputStream, "[CRITICAL]" );
+			break;
+	// Default is Error
+		default:
+			fprintf( OutputStream, "[ERROR]" );
+	}
+
+// caller function
+	fprintf( OutputStream, " [%s", etDebugActual->FunctionOrigin );
+	fprintf( OutputStream, ": %i]->", etDebugActual->FunctionOriginLine );
+
+// Function and line
+	fprintf( OutputStream, "[%s", etDebugActual->Function );
+	fprintf( OutputStream, ": %i]", etDebugActual->FunctionLine );
+
+
+// Message
+	if( etDebugActual->Message != NULL ){
+		fprintf( OutputStream, " %s\n", etDebugActual->Message );
+	} else {
+		fprintf( OutputStream, " " );
+	}
+
+
+// Flush
+	fflush( OutputStream );
+
+
+
+
+	pthread_mutex_unlock( &etDebugActual->Sync );
+
+
+// If critical, exit
+	if( etDebugActual->Level == etID_LEVEL_CRITICAL ){
+		exit( EXIT_FAILURE );
+	}
+
+}
+
+
+etID_STATE              etDebugPrintMessage( etDebug* etDebugActual ){
+    if( etDebugActual->printMessage == NULL ) return etDebugActual->state;
+    
+    etDebugActual->printMessage( etDebugActual );
+    return etDebugActual->state;
+}
+
+
+etID_STATE              etDebugPrintCustomMessage_intern( etDebug* etDebugActual, etID_LEVEL messageLevel, const char* message, const char *function, int line ){
+
+// the actual program name
+	const char *ProgramName = etDebugActual->Program;
+
+// but we are inside the evillib ;)
+	etDebugActual->Program = "evillib";
+
+// print message
+    etDebugActual->state = etID_YES;
+    etDebugActual->Level = messageLevel;
+    etDebugActual->Message = message;
+    etDebugActual->Function = function;
+    etDebugActual->FunctionLine = line;
+	etDebugPrintMessage( etDebugActual );
+
+// set the original program name back
+	etDebugActual->Program = ProgramName;
+    
+    return etID_YES;
+}
+
+
+
+

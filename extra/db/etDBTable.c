@@ -22,6 +22,8 @@
 #ifdef ET_SINGLEMODULE
 	#include "evillib_defines.h"
 	#include "evillib_depends.h"
+    
+    #include "evillib-extra_depends.h"
 
 	#include "core/etDebug.h"
 	#include "core/etObject.h"
@@ -29,9 +31,7 @@
 	#include "memory/etMemory.h"
 	#include "string/etString.h"
 	
-	#include "etDB.h"
 	#include "etDBTable.h"
-	#include "etDBColumn.h"
 #endif
 
 
@@ -40,234 +40,213 @@
 
 // Table Stuff
 
-etID_STATE				etDBTableStructInit( etDB *etDBActual ){
-// Check
-	etCheckNull( etDBActual );
-
-	etDBActual->nodeColumn = NULL;
-	etDBActual->nodeColumns = NULL;
-	etDBActual->nodeColumnsIterator = NULL; 
-	
-	etDBActual->nodeValuesNew = NULL;
-	etDBActual->nodeValuesNewIterator = NULL;
-	etDBActual->nodeValues = NULL;
-	etDBActual->nodeValuesIterator = NULL;
-
-	etDBActual->nodeValuesFilters = NULL;
-	etDBActual->nodeValuesFilter = NULL;
-	etDBActual->nodeValuesIterator = NULL;
-
-	
-	return etID_YES;
-}
-
-
-etID_STATE				etDBTableAppend( etDB *etDBActual, const char *tableName ){
-// Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeTables );
-
-// Vars
-	int 				jsonReturnCode = 0;
-
-
-// Create a new table
-	etDBActual->nodeTable = json_object();
-	
-// Append table to tables
-	jsonReturnCode |= json_object_set_new( etDBActual->nodeTables, tableName, etDBActual->nodeTable );
-
-// Table update
-	etDBTableStructInit( etDBActual );
-
-
-// table-name
-	jsonReturnCode |= json_object_set_new( etDBActual->nodeTable, "nameNew", json_string(tableName) );
-
-
-// Check return code
-	if( jsonReturnCode != 0 ){
-		etDebugMessage( etID_LEVEL_ERR, "jansson error" );
-		return etID_STATE_ERROR_INTERNAL;
-	}
-
-#ifndef ET_DEBUG_OFF
-	snprintf( etDebugTempMessage, etDebugTempMessageLen, "Append table %s", tableName );
-	etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
-#endif
-
-// return
-	return etID_YES;
-}
-
-
-etID_STATE				etDBTableSeek( etDB *etDBActual, const char *tableName ){
-// Check
-	etCheckNull( etDBActual );
-	etCheckNull( tableName );
-	etCheckParameterSequence( etDBActual->nodeTables );
+etID_STATE                  __etDBTableAlloc( etDBTable **p_etDBTable, etDebug* etDebugActual ){
+	etDebugReturnOnError( etDebugActual );
+    etDebugCheckNull( etDebugActual, p_etDBTable );
 
 // vars
-	json_t			*table;
+    etMemoryBlock*      etMemoryBlockActual = NULL;
+    etDBTable*          dbTable;
+    
+// Allocate
+	etMemoryRequest( etMemoryBlockActual, sizeof(etDBTable) );
+	etMemoryBlockDataGet( etMemoryBlockActual, dbTable );
 
-// Get table
-	table = json_object_get( etDBActual->nodeTables, tableName );
-	if( table == NULL ) return etID_STATE_NODATA;
-
-// Get Data from Table
-	etDBActual->nodeTable = table;
-	etDBTableStructInit( etDBActual );
-
-	return etID_YES;
-}
-
-
-etID_STATE				etDBTableGetFirst( etDB *etDBActual ){
-// Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeTables );
-
-	etDBActual->nodeColumnsIterator = NULL;
-
-// Set the iterator to the first column
-	etDBActual->nodeTablesIterator = json_object_iter( etDBActual->nodeTables );
-	if( etDBActual->nodeTablesIterator == NULL ) return etID_STATE_NODATA;
-
-// Get table from iter
-	etDBActual->nodeTable = json_object_iter_value( etDBActual->nodeTablesIterator );
-
-// Get Data from Table
-	etDBTableStructInit( etDBActual );
+// Allocate an empty json-object for the table
+    dbTable->jsonTables = json_object();
+    dbTable->jsonTable = NULL;
+    dbTable->jsonColumns = NULL;
+    dbTable->jsonColumn = NULL;
+    dbTable->jsonColumnIterator = NULL;
 
 // return
+    *p_etDBTable = dbTable;
 	return etID_YES;
 }
 
 
-etID_STATE				etDBTableGetNext( etDB *etDBActual ){
+etID_STATE                  __etDBTableFree( etDBTable **p_etDBTable, etDebug* etDebugActual ){
+    etDebugReturnOnError( etDebugActual );
+    etDebugCheckNull( etDebugActual, p_etDBTable );
+
+// vars
+    etDBTable*          dbTable = *p_etDBTable;
+
+    json_decref( dbTable->jsonTables );
+    
+    return etID_YES;
+}
+
+
+etID_STATE                  __etDBTableDumps( etDBTable* dbTable, const char** p_jsonChar, etDebug* etDebugActual ){
 // Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeTables );
+    etDebugReturnOnError( etDebugActual );
+	etDebugCheckNull( etDebugActual, dbTable );
+	etDebugCheckMember( etDebugActual, dbTable->jsonTables );
 
-
-// Set the iterator to the first column
-	etDBActual->nodeTablesIterator = json_object_iter_next( etDBActual->nodeTables, etDBActual->nodeTablesIterator );
-	if( etDBActual->nodeTablesIterator == NULL ) return etID_STATE_NODATA;
-
-// Get table from iter
-	etDBActual->nodeTable = json_object_iter_value( etDBActual->nodeTablesIterator );
-
-// Get Data from Table
-	etDBTableStructInit( etDBActual );
-
-// return
+    *p_jsonChar = json_dumps( dbTable->jsonTables, JSON_INDENT(4) | JSON_PRESERVE_ORDER );
 	return etID_YES;
 }
 
 
+etID_STATE                  etDBTableAppend( etDBTable *dbTable, const char *tableName, etDebug* etDebugActual ){
+    return etDBTableNameSetFull( dbTable, NULL, tableName, etDebugActual );
+}
 
 
-etID_STATE				etDBTableNameOriginalSet( etDB *etDBActual, const char *tableName ){
+etID_STATE                  etDBTableSeek( etDBTable *dbTable, const char *tableName, etDebug* etDebugActual ){
 // Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeTable );
+    etCheckNull( dbTable );
+    etCheckNull( dbTable->jsonTables );
+    etCheckNull( tableName );
 
 // Vars
-	int 				jsonReturnCode = 0;
+    json_t*         jsonTables = dbTable->jsonTables;
+    json_t*         jsonTable = NULL;
+    json_t*         jsonTableColumns = NULL;
+    
+// get the table from tables
+    jsonTable = json_object_get( jsonTables, tableName );
+    if( jsonTable == NULL ) return etID_STATE_NODATA;
+    
+// get columns
+    jsonTableColumns = json_object_get( jsonTable, "columns" );
 
-// table-name
-	jsonReturnCode |= json_object_set_new( etDBActual->nodeTable, "name", json_string(tableName) );
+
+// Set the internal pointer to the table
+    dbTable->jsonTable = jsonTable;
+    dbTable->jsonColumns = jsonTableColumns;
+    dbTable->jsonColumn = NULL;
+    dbTable->jsonColumnIterator = NULL;
+    
+    return etID_YES;
+}
+
+
+etID_STATE                  etDBTableDumpf( etDBTable *dbTable, etDebug* etDebugActual ){
+// check
+    etDebugReturnOnError( etDebugActual );
+    etDebugCheckNull( etDebugActual, dbTable );
+    etDebugCheckNull( etDebugActual, dbTable->jsonTable );
+    
+	char *dump = json_dumps( dbTable->jsonTable, JSON_INDENT(4) | JSON_PRESERVE_ORDER );
+	etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_INFO, dump );
+	free(dump);
+	//fprintf( stdout, ) );
+    
+    return etID_YES;
+}
+
+
+
+etID_STATE                  etDBTableNameSetFull( etDBTable *etDBTableActual, const char *tableName, const char *tableNameNew, etDebug* etDebugActual ){
+// Check
+    etDebugReturnOnError( etDebugActual );
+    etDebugCheckNull( etDebugActual, etDBTableActual );
+    etDebugCheckNull( etDebugActual, etDBTableActual->jsonTables );
+
+// Vars
+    int             jsonReturnCode = 0;
+    json_t*         jsonTable = NULL;
+    json_t*         jsonTableColumns = NULL;
+
+// search if the table already exist
+    if( tableName != NULL ){
+        jsonTable = json_object_get( etDBTableActual->jsonTables, tableName );
+    }
+
+// if no table is present, create one
+    if( jsonTable == NULL ){
+        
+    // get the name of the object
+        const char *tempChar = NULL;
+        if( tableNameNew != NULL ) tempChar = tableNameNew;
+        if( tableName != NULL ) tempChar = tableName;
+        
+    // Create a new table
+        jsonTable = json_object();
+        jsonReturnCode |= json_object_set_new( etDBTableActual->jsonTables, tempChar, jsonTable );
+        
+    // create the column-object inside the table
+        jsonTableColumns = json_object();
+        jsonReturnCode |= json_object_set_new( jsonTable, "columns", jsonTableColumns );
+
+    // Set the internal pointer to the new created table
+        etDBTableActual->jsonTable = jsonTable;
+        etDBTableActual->jsonColumns = jsonTableColumns;
+        etDBTableActual->jsonColumn = NULL;
+        etDBTableActual->jsonColumnIterator = NULL;
+
+    // set the name of the table
+        if( tableName != NULL ){
+            jsonReturnCode |= json_object_set_new( jsonTable, "name", json_string(tableName) );
+            #ifndef ET_DEBUG_OFF
+                snprintf( etDebugTempMessage, etDebugTempMessageLen, "Set table-name to '%s' ", tableName );
+                etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+            #endif
+        }
+
+    }
+
+
+// set the name
+    if( tableNameNew != NULL ){
+		jsonReturnCode |= json_object_set_new( jsonTable, "nameNew", json_string(tableNameNew) );
+		#ifndef ET_DEBUG_OFF
+			snprintf( etDebugTempMessage, etDebugTempMessageLen, "Set new table-name to '%s' ", tableNameNew );
+			etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+		#endif
+	}
 
 
 // Check return code
 	if( jsonReturnCode != 0 ){
-		etDebugMessage( etID_LEVEL_ERR, "jansson error" );
-		return etID_STATE_ERROR_INTERNAL;
+		etDebugPrintCustomMessage( etDebugActual, etID_LEVEL_ERR, "jansson error" );
+		return etDebugStateSet( etDebugActual, etID_STATE_ERROR_INTERNAL);
 	}
 
-	return etID_YES;
+	return etDebugStateSet( etDebugActual, etID_YES);
 }
 
 
-etID_STATE				__etDBTableNameGet( etDB *etDBActual, const char **p_tableName, const char **p_tableNameNew ){
-	return __etDBStringGet( etDBActual->nodeTable, "name", "nameNew", p_tableName, p_tableNameNew );
+
+etID_STATE                  __etDBTableNameGetFull( etDBTable *etDBTableActual, const char **p_tableName, const char **p_tableNameNew, etDebug* etDebugActual ){
+    return __etDBStringGet( etDBTableActual->jsonTable, "name", "nameNew", p_tableName, p_tableNameNew, etDebugActual );
 }
 
 
-etID_STATE				etDBTableVisibleNameSet( etDB *etDBActual, const char *visibleName ){
+etID_STATE                  etDBTableVisibleNameSet( etDBTable *etDBTableActual, const char *visibleName, etDebug* etDebugActual ){
 // Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeTable );
-
+    etDebugReturnOnError( etDebugActual );
+	etDebugCheckNull( etDebugActual, etDBTableActual );
+	etDebugCheckNull( etDebugActual, etDBTableActual->jsonTable );
 
 // Vars
-	int 				jsonReturnCode = 0;
+    int             jsonReturnCode = 0;
+    json_t*         jsonTable = etDBTableActual->jsonTable;
+
 
 
 // Add table names
-	jsonReturnCode |= json_object_set_new( etDBActual->nodeTable, "visibleName", json_string(visibleName) );
+	jsonReturnCode |= json_object_set_new( jsonTable, "visibleName", json_string(visibleName) );
 
 // Check return code
 	if( jsonReturnCode != 0 ){
 		etDebugMessage( etID_LEVEL_ERR, "jansson error" );
-		return etID_STATE_ERROR_INTERNAL;
+		return etDebugStateSet( etDebugActual, etID_STATE_ERROR_INTERNAL);
 	}
 
 // return
-	return etID_YES;
+	return etDebugStateSet( etDebugActual, etID_YES);
 }
 
 
-etID_STATE				__etDBTableVisibleNameGet( etDB *etDBActual, const char **p_visibleName ){
-	return __etDBStringGet( etDBActual->nodeTable, "visibleName", NULL, p_visibleName, p_visibleName );
-}
-
-
-
-
-etID_STATE				etDBTableActionSet( etDB *etDBActual, etjDBAction etjDBActionNew ){
+etID_STATE                  __etDBTableVisibleNameGet( etDBTable *etDBTableActual, const char **p_visibleName, etDebug* etDebugActual ){
 // Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeTable );
+	etDebugCheckNull( etDebugActual, etDBTableActual );
 
-// Add table names
-	json_object_set_new( etDBActual->nodeTable, "action", json_integer(etjDBActionNew) );
-
-
-#ifndef ET_DEBUG_OFF
-	const char *tableName;
-	etDBTableNameGet( etDBActual, tableName, tableName );
-	snprintf( etDebugTempMessage, etDebugTempMessageLen, "Set action for table %s to %i", tableName, etjDBActionNew );
-	etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
-#endif
-
-	return etID_YES;
+	return __etDBStringGet( etDBTableActual->jsonTable, "visibleName", NULL, p_visibleName, NULL, etDebugActual );
 }
-
-
-etjDBAction			etDBTableActionGet( etDB *etDBActual ){
-// Check
-	etCheckNull( etDBActual );
-	etCheckParameterSequence( etDBActual->nodeTable );
-
-// Vars
-	json_t				*jsonAction;
-	etjDBAction			etjDBActionActual = etDB_ACTION_NONE;
-
-// Get the json-value
-	jsonAction = json_object_get( etDBActual->nodeTable, "action" );
-	if( jsonAction != NULL ){
-	// get the value itselfe
-		etjDBActionActual = json_integer_value( jsonAction );
-	}
-
-	return etjDBActionActual;
-}
-
-
-
-
-
 
 
 

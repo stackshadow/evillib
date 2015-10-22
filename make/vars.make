@@ -28,8 +28,8 @@ export CComment=\033[36m
 export COK=\033[32m
 
 # Compiler
-export CC              		= ${CROSSCOMPILE}gcc
-export CXX                 	= ${CROSSCOMPILE}g++
+export CC						= ${CROSSCOMPILE}gcc
+export CXX						= ${CROSSCOMPILE}g++
 export AR                 	= ${CROSSCOMPILE}ar
 export RANLIB             	= ${CROSSCOMPILE}ranlib
 export RM                 	= rm -v -f

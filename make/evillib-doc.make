@@ -17,29 +17,26 @@
 #	You should have received a copy of the GNU Lesser General Public License
 #	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 
-ifneq ($(VARS),1)
-	include vars.make
-endif
+include vars.make
+include evillib-version.make
 
 .DEFAULT:
-	@echo "$(COK)Welcome to the evillib-build-system $(CNormal)"
-	@echo ""
-	@$(MAKE) --no-print-directory -f evillib-core-dev.make $@
-	@$(MAKE) --no-print-directory -f evillib-core.make $@
-	@$(MAKE) --no-print-directory -f evillib-extra-dev.make $@
-	@$(MAKE) --no-print-directory -f evillib-extra.make $@
-	@$(MAKE) --no-print-directory -f evillib-doc.make $@
+	@sleep 0
+
+help:
+	@echo -n "$(CComment)"
+	@echo "\nDocumentation:"
+	@echo "\t$(MAKE) evillib-doc: Build the documentation ( in $(docDir)/evillib/$(Version) )"
 	@echo -n "$(CNormal)"
 
-touch:
-	find .. -exec touch {} \;
+clean:
+	$(RM) -R $(docDir)/evillib/$(Version)
 
-debian/libevillib-core/DEBIAN/control:
-	parts="core" dpkg-buildpackage -us -uc -b
-evillib-core-debian: debian/libevillib-core/DEBIAN/control
+evillib-doc: $(docDir)/evillib/$(Version)
 
-debian/libevillib-extra/DEBIAN/control:
-	parts="extra" dpkg-buildpackage -us -uc -b
-evillib-extra-debian: debian/libevillib-extra/DEBIAN/control
-	@echo "done"
 
+$(docDir)/evillib/$(Version):
+	mkdir -p $(docDir)/evillib/$(Version)
+	cd ../documentation && SOURCEDIR=.. OUTPUTDIR="$(docDir)/evillib/$(Version)" doxygen 
+
+.PHONY: $(docDir)/evillib/$(Version)

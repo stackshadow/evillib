@@ -51,19 +51,21 @@ help:
 	@echo -n "$(CNormal)"
 
 clean: evillib-core-dev-clean evillib-core-clean evillib-app-clean
-	@find $(buildPath) -name "*.o" -print -delete
-
-
-#################################### Library ####################################
-evillib-core: $(libDir)/libevillib.so $(shareDir)/pkgconfig/evillib.pc
-evillib-core-static: $(libDir)/libevillib.a
-evillib-core-clean:
 	@$(RM) $(buildPath)/evillib.$(Version).c
 	@$(RM) $(buildPath)/libevillib.o
 	@$(RM) $(buildPath)/$(CoreLibraryShared)
+
+install: evillib-core-install
+
+#################################### Library ####################################
+evillib-core: $(buildPath)/$(CoreLibraryShared)
+evillib-core-install: $(libDir)/libevillib.so $(shareDir)/pkgconfig/evillib.pc
+evillib-core-uninstall: 
 	@$(RM) $(libDir)/evillib/$(CoreLibraryShared)
 	@$(RM) $(libDir)/libevillib.$(VerMajor).$(VerMinor).so
 	@$(RM) $(libDir)/libevillib.so
+	@$(RM) $(shareDir)/pkgconfig/evillib.pc
+evillib-core-static: $(libDir)/libevillib.a
 
 
 $(buildPath)/evillib.$(Version).c: evillib_version.h $(buildPath)/evillib.$(Version).h

@@ -26,16 +26,14 @@
 #include "sqlite3.h"
 
 typedef struct etDBSQLite {
-// The driver struct ( as static var to allocate the needed memory for etDBDriver )
-	etDBDriver		driverClass;
-
 // Our data
-	etString 			*query;
+    etString*           query;
+    etString*           queryValues;
 
-	sqlite3 			*dbSqlite;
-	sqlite3_stmt		*dbSqliteResult;
-	int					sqliteResultIndex;
-	int					dbSQLiteState;
+    sqlite3*            dbSqlite;
+    sqlite3_stmt*       dbSqliteResult;
+    int                 sqliteResultIndex;
+    int                 dbSQLiteState;
 
 } etDBSQLite;
 
@@ -53,11 +51,12 @@ extern const char *etjDB_COMP_SQLITE[etjDB_COMP_SQLITE_MAX];
 
 
 
-#define				etDBSQLiteAlloc( etjDBDriverActual ) __etDBSQLiteAlloc( &etjDBDriverActual )
-etID_STATE			__etDBSQLiteAlloc( etDBDriver **p_etjDBDriverActual );
+etID_STATE			etDBSQLiteInit( etDB *etDBActual, etDebug* etDebugActual );
 
 
-etID_STATE			etDBSQLiteConnect( etDBDriver *etjDBDriverActual, const char *path );
+etID_STATE			etDBSQLiteConnect( etDB *etDBActual, const char *path, etDebug* etDebugActual );
+
+
 
 
 #endif

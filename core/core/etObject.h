@@ -45,6 +45,17 @@ typedef struct etObject_t {
 		return; \
 	}
 
+#define etCheckParameterSequence( objectVariable ) \
+	if( objectVariable == NULL ){ \
+		return etDebugState( etID_STATE_SEQERR ); \
+	}
+
+#define etCheckParameterSequenceVoid( objectVariable ) \
+	if( objectVariable == NULL ){ \
+		etDebugState( etID_STATE_SEQERR ); \
+		return; \
+	}
+
 #define etObjectIsOkay( objectVariable ) \
 	objectVariable->state != etID_OK
 

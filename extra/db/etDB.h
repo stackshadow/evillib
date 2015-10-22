@@ -21,77 +21,117 @@
 #define _H_etjDB
 
 
-#include "jansson.h"
+
+/** @ingroup etDB
+Actions of etDB
+*/
+typedef enum        etDB_ACTION {
+    etDB_ACTION_NONE = 0,
 
 
+    etDB_ACTION_TABLELIST_GET, /*!< This will query all tables inside an connected etDB. You can query the containing tables with etDBNextResult. \n
+The tables are saved inside the column with the name "table" 
+##### Needed parameter for etDBRun:
+ - no additional parameter needed\n
+*/
+    etDB_ACTION_TABLE_ADD, /*!< @todo implement etDB_ACTION_TABLE_CHANGE */
+    etDB_ACTION_TABLE_CHANGE,
+/** Remove an etDBTable from an connected etDB */
+    etDB_ACTION_TABLE_REMOVE,
+    etDB_ACTION_TABLE_GET,
+    etDB_ACTION_COLUMN_ADD,
+    etDB_ACTION_COLUMN_CHANGE,
+    etDB_ACTION_COLUMN_REMOVE,
+    etDB_ACTION_DATA_ADD,
+    etDB_ACTION_DATA_CHANGE,
+    etDB_ACTION_DATA_REMOVE,
+    etDB_ACTION_DATA_GET,
+    etDB_ACTION_DONE,
+    etDB_ACTION_COUNT
+} etDB_ACTION;
+
+extern const char*  etDB_ACTION_NAMES[etDB_ACTION_COUNT];
+
+typedef struct			etDB etDB;
 typedef struct 		etDB {
-	
-	json_t*		nodeRoot;
-	
-// Node for all tables
-	json_t*		nodeTable;
-	json_t*		nodeTables;
-	void*			nodeTablesIterator;
 
-// Node for all columns
-	json_t*		nodeColumn;
-	json_t*		nodeColumns;
-	void*			nodeColumnsIterator;
+    etDB_ACTION     action;
 
-// values
-	json_t*		nodeValuesNew;				// json-object for new values
-	void*			nodeValuesNewIterator;
-	json_t*		nodeValues;				// json-object for original ( actual ) values
-	void*			nodeValuesIterator;
 
-// filter
-	json_t*		nodeValuesFilters;
-	json_t*		nodeValuesFilter;
-	void*			nodeValuesFilterIterator;
+// functions
+    etID_STATE      (*preRun)( etDB *etDBActual, etDebug* etDebugActual );
 
+    struct {
+    // free
+        etID_STATE      (*free)( etDB *etDBActual, etDebug* etDebugActual );
+        
+    // function that provide infos about the driver
+        etID_STATE      (*isConnected)( etDB *etDBActual, etDebug* etDebugActual );
+
+    // Special stuff
+        etID_STATE      (*tableListGet)( etDB *etDBActual, etDebug* etDebugActual );
+        
+    // table
+        etID_STATE      (*tableAdd)( etDB *etDBActual, etDBTable *dbTable, etDebug* etDebugActual );
+        etID_STATE      (*tableChange)( etDB *etDBActual, etDBTable *dbTable, etDebug* etDebugActual );
+        etID_STATE      (*tableRemove)( etDB *etDBActual, etDBTable *dbTable, etDebug* etDebugActual );
+        etID_STATE      (*tableGet)( etDB *etDBActual, etDBTable *dbTable, etDebug* etDebugActual );
+
+    // data
+        etID_STATE      (*dataAdd)( etDB *etDBActual, etDBTable *dbTable, etDBValue *dbValues, etDebug* etDebugActual );
+        etID_STATE      (*dataChange)( etDB *etDBActual, etDBTable *dbTable, etDBValue *dbValues, etDebug* etDebugActual );
+        etID_STATE      (*dataRemove)( etDB *etDBActual, etDBTable *dbTable, etDBValue *dbValues, etDebug* etDebugActual );
+        etID_STATE      (*dataGet)( etDB *etDBActual, etDBTable *dbTable, etDBFilter *dbFilter, etDebug* etDebugActual );
+
+        etID_STATE      (*nextResult)( etDB *etDBActual, etDBValue *nodeValues, etDebug* etDebugActual );
+    } functions;
+
+// data
+    void*           data;
 } etDB;
 
 
-typedef enum		etDBAction {
-	etDB_ACTION_NONE = 0,
-	etDB_ACTION_TABLE_ADD,
-	etDB_ACTION_TABLE_GET,
-	etDB_ACTION_TABLE_GET_ALL,
-	etDB_ACTION_TABLE_REMOVE,
-	etDB_ACTION_COLUMN_ADD,
-	etDB_ACTION_DATA_ADD,
-	etDB_ACTION_DATA_GET,
-	etDB_ACTION_DATA_REMOVE,
-	etDB_ACTION_DONE
-} etjDBAction;
+
+#define                 etDBAlloc( etDBActual, etDebugActual ) __etDBAlloc( &etDBActual, etDebugActual )
+etID_STATE              __etDBAlloc( etDB** p_etDBActual, etDebug* etDebugActual );
+
+#define                 etDBFree( etDBActual, etDebugActual ) __etDBFree( &etDBActual, etDebugActual )
+etID_STATE              __etDBFree( etDB** p_etDBActual, etDebug* etDebugActual );
+
+
+etID_STATE              __etDBStringGet( json_t *jsonObject, 
+                            const char *keyNormal, 
+                            const char *keyNew, 
+                            const char **p_value,
+                            const char **p_valueNew, 
+                            etDebug* etDebugActual );
+
+
+etID_STATE              __etDBIntegerGet( json_t *jsonObject, 
+                            const char *keyNormal, 
+                            const char *keyNew, 
+                            int *p_value,
+                            int *p_valueNew, 
+                            etDebug* etDebugActual );
+
+etID_STATE              etDBInDBSet( json_t *jsonObject, const char *keyNormal, const char *keyNew, etDebug* etDebugActual );
+
+
+etID_STATE              etDBActionSet( etDB *etDBActual, etDB_ACTION etDBActionNew, etDebug* etDebugActual );
 
 
 
 
-
-#define				etDBAlloc( etDBActual ) __etDBAlloc( &etDBActual )
-etID_STATE				__etDBAlloc( etDB **p_etjDBActual );
-
-#define				etDBFree( etDBActual ) __etDBFree( &etDBActual )
-etID_STATE				__etDBFree( etDB **p_etjDBActual );
+etDB_ACTION             etDBActionGet( etDB *etDBActual, etDebug* etDebugActual );
 
 
-etID_STATE				__etDBStringGet( json_t *jsonObject, 
-							const char *keyNormal, 
-							const char *keyNew, 
-							const char **p_value,
-							const char **p_valueNew
-						);
-
-#define				etDBIntegerGet( jsonObject, keyNormal, keyNew, p_value ) __etDBIntegerGet( jsonObject, keyNormal, keyNew, &p_value )
-etID_STATE				__etDBIntegerGet( json_t *jsonObject, const char *keyNormal, const char *keyNew, int *p_value );
+etID_STATE              etDBIsConnected( etDB *etDBActual, etDebug* etDebugActual );
 
 
-etID_STATE				etDBInDBSet( json_t *jsonObject, const char *keyNormal, const char *keyNew );
+etID_STATE              etDBRun( etDB *etDBActual, etDBTable *dbTable, etDBFilter *dbFilter, etDBValue *dbValues, etDebug* etDebugActual );
 
 
-void					etDBDumpf( etDB *etDBActual );
-
+etID_STATE              etDBNextResult( etDB *etDBActual, etDBValue *nodeValues, etDebug* etDebugActual );
 
 
 

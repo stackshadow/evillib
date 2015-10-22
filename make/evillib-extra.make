@@ -45,12 +45,17 @@ help:
 	@echo -n "$(CNormal)"
 
 clean:
-	@$(RM) $(buildPath)/libevillib-extra.$(Version).so
+	@$(RM) $(buildPath)/$(ExtraLibraryShared)
+	@$(RM) $(buildPath)/libevillib-extra.$(Version).c
+
+install: evillib-extra-install
 
 #################################### Library ####################################
-evillib-extra: $(libDir) $(libDir)/libevillib-extra.so
+evillib-extra: $(libDir) $(buildPath)/$(ExtraLibraryShared)
+evillib-extra-install: $(libDir)/libevillib-extra.so
 
-
+$(buildPath):
+	@$(MKDIR) $@
 $(buildPath)/libevillib-extra.$(Version).c: $(buildPath)
 	@echo "${CCommand}make $@ ${CNormal}"
 	#cat $(buildPath)/$(CoreHeader) > $@
@@ -66,7 +71,7 @@ $(buildPath)/$(ExtraLibraryShared): $(buildPath)/libevillib-extra.$(Version).c
 	$< -o $@
 
 
-$(libDir)/libevillib-extra.so: $(buildPath)/libevillib-extra.$(Version).so
+$(libDir)/libevillib-extra.so: $(buildPath)/$(ExtraLibraryShared)
 	@$(MKDIR) $(libDir)/evillib
 	@$(CP) $< $(libDir)/evillib/
 	@$(LN) evillib/libevillib-extra.$(Version).so $@

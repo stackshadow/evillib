@@ -35,6 +35,8 @@ CLIBS+=-ljansson
 CLIBS+=-lsqlite3
 
 sources+=$(shell ls *.c)
+
+
 sourcesFull=$(addprefix $(PWD)/,$(sources))
 
 objects=$(sources:.c=.o)
@@ -59,11 +61,14 @@ evillib-app-debug: evillib-app-debug-clean $(objectsFull)
 
 evillib-app-debug-clean:
 	@$(RM) $(objectsFull)
+	@$(RM) -f $(tempPath)/db.sqlite
+	@$(MKDIR) -p $(tempPath)
 
 
 evillib-app-run: $(buildPath)/$(CoreLibraryShared) $(buildPath)/evillib
 	LD_PRELOAD=$(buildPath)/$(CoreLibraryShared) $(buildPath)/evillib --apicheck all
-
+evillib-app-memcheck:
+	LD_PRELOAD=$(buildPath)/$(CoreLibraryShared) valgrind $(buildPath)/evillib --apicheck all
 
 $(buildPath)/app/%.o: $(PWD)/%.c
 	@mkdir -v -p $$(dirname $@)

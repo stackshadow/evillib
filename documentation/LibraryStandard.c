@@ -1,20 +1,20 @@
 /* Documentation
-	Copyright (C) 2012-2014 by Martin Langlotz
+    Copyright (C) 2012-2014 by Martin Langlotz
 
-	This file is part of evillib.
+    This file is part of evillib.
 
-	evillib is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    evillib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	evillib is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    evillib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /** Library standard
@@ -58,12 +58,10 @@ Every function return a @ref etID_STATE
 
 @defgroup gr_internal_function Internal Functions
 @{
-@anchor internal_function Internal Functions
-@warning Internal functions should not used in your program
-This functions are called inside the evillib
-
+    @anchor internal_function Internal Functions
+    @warning Internal functions should not used in your program
+    This functions are called inside the evillib
 @}
-
 
 
 @}

@@ -1,20 +1,20 @@
 /* Documentation
-	Copyright (C) 2012-2014 by Martin Langlotz
+    Copyright (C) 2012-2014 by Martin Langlotz
 
-	This file is part of evillib.
+    This file is part of evillib.
 
-	evillib is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    evillib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	evillib is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    evillib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
@@ -56,14 +56,7 @@ You can clone or download the evillib from github
 - use \code{.cpp} make help \endcode to get the targets
 to see how you can change the default compile settings of the evillib, see @ref compileOptions
 */
-/** @defgroup compileOptions Compile options
-@ingroup compile
 
-##### ET_DEBUG_OFF
-@copydoc ET_DEBUG_OFF
-
-
-*/
 
 
 

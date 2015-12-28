@@ -1,0 +1,3 @@
+// This file exist only to trick doxygen, to transform our makro to functions
+etID_STATE etDBAlloc( etDB *etDBActual );
+etID_STATE etDBFree( etDB *etDBActual );

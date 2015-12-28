@@ -18,37 +18,39 @@
 # Variables
 # SOURCEDIR: Directory of sources
 
-PROJECT_NAME				= "evillib"
-PROJECT_BRIEF				= "An small, fast and easy to use library according to the K.I.S.S principle"
-OUTPUT_DIRECTORY			= "$(OUTPUTDIR)/$(SECTION)/"
-OUTPUT_LANGUAGE				= "English"
+PROJECT_NAME            = "evillib"
+PROJECT_BRIEF           = "An small, fast and easy to use library according to the K.I.S.S principle"
+OUTPUT_DIRECTORY        = "$(OUTPUTDIR)/"
+OUTPUT_LANGUAGE         = "English"
 
 # Build related
-HIDE_UNDOC_MEMBERS			= YES
-SORT_MEMBER_DOCS			= NO
-SOURCE_BROWSER 				= NO
-HAVE_DOT					= YES
+HIDE_UNDOC_MEMBERS      = YES
+SORT_MEMBER_DOCS        = NO
+SOURCE_BROWSER          = NO
+HAVE_DOT                = YES
 
 # File handling
-FILE_PATTERNS 				= *.c *.h *.mk *.prep
-EXTENSION_MAPPING 			= mk=C prep=C
+FILE_PATTERNS           = *.c *.h *.mk *.prep *.dox
+EXTENSION_MAPPING       = mk=C prep=C dox=C
 
 # Input
-INPUT 						= $(SOURCEDIR)/documentation/ \
-							  $(SOURCEDIR)/core
-  							  $(SOURCEDIR)/extra
-EXAMPLE_PATH 				= $(SOURCEDIR)
-EXCLUDE_PATTERNS			= */develop/* \
-							  */debian/*
-DOTFILE_DIRS				= $(SOURCEDIR) \ 
-							  $(SOURCEDIR)/core
-RECURSIVE					= YES
-ENABLE_PREPROCESSING		= YES
-SEARCH_INCLUDES				= YES
-INCLUDE_PATH				= $(SOURCEDIR)/core
-INTERNAL_DOCS				= YES
-HIDE_UNDOC_MEMBERS   		= YES
-HIDE_UNDOC_CLASSES   		= YES
+INPUT                   = $(SOURCEDIR)/documentation/ \
+                            $(SOURCEDIR)/core \
+                            $(SOURCEDIR)/extra
+EXAMPLE_PATH            = $(SOURCEDIR)
+EXCLUDE_PATTERNS        = */develop/* \
+                            */debian/*
+DOTFILE_DIRS            = $(SOURCEDIR) \ 
+                            $(SOURCEDIR)/core
+RECURSIVE               = YES
+ENABLE_PREPROCESSING    = YES
+MACRO_EXPANSION         = YES
+EXPAND_AS_DEFINED = DEFCLASS
+SEARCH_INCLUDES         = YES
+INCLUDE_PATH            = $(SOURCEDIR)/core
+INTERNAL_DOCS           = YES
+HIDE_UNDOC_MEMBERS      = YES
+HIDE_UNDOC_CLASSES      = YES
 
 # Output
 OPTIMIZE_OUTPUT_FOR_C		= YES

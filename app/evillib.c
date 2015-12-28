@@ -22,15 +22,60 @@
 #include "evillib_version.h"
 
 #include "etApicheck.h"
+#include "etApicheck.c"
 #include "core/etInit.h"
 
 #include "core/etDebug.c"
 #include "core/etVersion.c"
 #include "core/etInit.c"
 
+#include <dlfcn.h>
+
 /** @defgroup grApp The evillib-app
 @brief The evillib App can be used to check, if the installed library works correctly
+
+just start the app with -h to get help :)
 */
+
+
+int runSharedObjectFunction( const char *path, const char *name ){
+
+    char        filename[512];
+    int         pathLen = strlen( path );
+    int         nameLen = strlen( name );
+    
+    if( (pathLen + nameLen + 2) > 512 ) exit(-1);
+    
+// build the full path filename
+    memcpy( &filename[0], path, pathLen );
+    memcpy( &filename[pathLen], "/", 1 );
+    memcpy( &filename[pathLen+1], name, nameLen );
+    filename[pathLen+nameLen+1] = 0;
+    
+    void *handle = dlopen( filename, RTLD_LAZY);
+    if (!handle) {
+        fprintf(stderr, "%s\n", dlerror());
+        return 0;
+        //exit(EXIT_FAILURE);
+    }                        
+    
+// build the function name
+    memcpy( &filename[0], name, nameLen );
+    memcpy( &filename[nameLen-3], "Check", 5 );
+    filename[nameLen-3+5] = 0;
+
+// try to run this function
+    int (*symbol)(void);
+    symbol = dlsym ( handle, filename );
+    if ( symbol == NULL ) {
+        fprintf(stderr, "%s\n", dlerror());
+        return 0;
+        //exit(EXIT_FAILURE);
+    }
+    
+    return symbol();
+}
+
 
 int main( int argc, const char* argv[] ){
     etInit( argc, argv );
@@ -38,99 +83,87 @@ int main( int argc, const char* argv[] ){
     __builtin_return_address(0);
 
 
-/*
-    void *handle;
-    double (*cosine)(double);
-    char *error;
-
-   handle = dlopen("libm.so", RTLD_LAZY);
-    if (!handle) {
-        fprintf(stderr, "%s\n", dlerror());
-        exit(EXIT_FAILURE);
-    }
-
-   dlerror();
-
-
-
-   *(void **) (&cosine) = dlsym(handle, "cos");
-
-   if ((error = dlerror()) != NULL)  {
-        fprintf(stderr, "%s\n", error);
-        exit(EXIT_FAILURE);
-    }
-
-    return 0;
-*/
-
-    const char *Argument1 = NULL;
-    const char *Argument2 = NULL;
+    const char *argument1 = NULL;
+    const char *argument2 = NULL;
+    const char *argument3 = NULL;
                 
     if( argc > 0 ){
 
         int index = 1;
         for ( index = 1; index <= argc; index ++ ){
 
-                Argument1 = argv[index];
-                
-                if( index+1 <= argc ){
-                    Argument2 = argv[index+1];
-                } else {
-                    Argument2 = NULL;
-                }
+        // arguement 1
+            argument1 = argv[index];
+            
+        // argument 2
+            if( index+1 <= argc ){
+                argument2 = argv[index+1];
+            } else {
+                argument2 = NULL;
+            }
 
-                if( Argument1 != NULL ){
-
-                    if( strncmp(Argument1, "--apicheck", 10) == 0 ){
-                        etDebugLevelSet( etID_LEVEL_WARNING );
-                        etDebugLevelSet( etID_LEVEL_ALL );
-                        etDebugProgramNameSet( "apicheck" );
-                        
-                        int checkAll = 0;
-
-                        if( Argument2 == NULL ){
-                            Argument2 = "all";
-                        }
-                            
-                            if( strncmp(Argument2, "all", 8) == 0 ){
-                                checkAll = 1;
-                            }
-
-                            if( strncmp(Argument2, "etMemory", 8) == 0 || checkAll == 1 ){
-                                //etApichecketMemoryBlock();
-                                //etApichecketMemory();
-                            }
-                            if( strncmp(Argument2, "etString", 8) == 0 || checkAll == 1 ){
-                                //etStringTest();
-                                //etStringCharTest();
-                            }
-                            if( strncmp(Argument2, "etThread", 8) == 0 || checkAll == 1 ){
-                                //etThreadTest();
-                            }
-                            if( strncmp(Argument2, "etComm", 8) == 0 || checkAll == 1 ){
-                                //etCommTest();
-                            }
-                            if( strncmp(Argument2, "etDB", 8) == 0 || checkAll == 1 ){
-                                //etjDBTest();
-                                //etDBSQLiteTest();
-                            }                    
-
-                        
+        // argument 3
+            if( index+2 <= argc ){
+                argument3 = argv[index+2];
+            } else {
+                argument3 = NULL;
+            }
 
 
-                        
-                        continue;
+            if( argument1 != NULL ){
+
+                if( strncmp(argument1, "--apicheck", 10) == 0 ){
+                    etDebugLevelSet( etID_LEVEL_WARNING );
+                    etDebugLevelSet( etID_LEVEL_ALL );
+                    etDebugProgramNameSet( "apicheck" );
+                    
+                // we need args 2 + 3
+                    if( argument2 == NULL || argument3 == NULL ){
+                        exit(-1);
                     }
                     
 
-                    if( strncmp( Argument1, "-h", 2 ) == 0 || strncmp( Argument1, "--help", 6 ) == 0 ){
-                        fprintf( stdout, "APP:\n" );
-                        fprintf( stdout, "--apicheck:   check the api and integrity of the evillib\n" );
-                        fprintf( stdout, "\n" );
+                    DIR                 *directory;
+                    struct dirent       *directoryEntry;
+                    
+                        
+                    // Open device directory
+                    directory = opendir( argument2 );
+                    if( directory == NULL ) {
+                        perror ("Couldn't open the directory");
+                        exit(0);
                     }
 
+                    if( strncmp(argument3, "all", 3) == 0 ){
+                        
+                        // Read every entry
+                        while( (directoryEntry = readdir(directory)) && ( directoryEntry != NULL ) ){
+                            
+                        // ignore . / ..
+                            if( strncmp( directoryEntry->d_name, ".", 1 ) == 0 ) continue;
+                            
+                            runSharedObjectFunction( argument2, directoryEntry->d_name );
+                        }
+                    } else {
+                        runSharedObjectFunction( argument2, argument3 );
+                    }
+
+
+
+                    
+                    continue;
                 }
+                    
+
+                if( strncmp( argument1, "-h", 2 ) == 0 || strncmp( argument1, "--help", 6 ) == 0 ){
+                    fprintf( stdout, "APP:\n" );
+                    fprintf( stdout, "--apicheck <path> <all|name>:  check the api and integrity of the evillib\n" );
+                    fprintf( stdout, "\n" );
+                }
+
+        
             }
+        }
     }
 
 

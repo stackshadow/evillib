@@ -26,7 +26,7 @@ include make/evillib-version.make
 
 
 sourcePath=$(PWD)/core
-sources = $(shell find ./core -name "*.c" ! -wholename "*specialheaders/*" ! -wholename "*develop/*" -printf "%p " )
+sources = $(shell find ./core -name "*.c" ! -wholename "*specialheaders/*" ! -wholename "*develop/*" ! -wholename "*tests/*" -printf "%p " )
 sourcesFull=$(sources)
 objects=$(sources:.c=.o)
 objectsFull=$(addprefix $(buildPath)/core/,$(objects))
@@ -85,7 +85,6 @@ evillib-core-source: $(buildPath)/evillib.$(Version).c
 
 $(buildPath)/evillib.$(Version).concat.c:
 	@echo "${CCommand}make $@ ${CNormal}"
-	#cat $(buildPath)/evillib.$(Version).h > $@
 	@cat $(sourcePath)/specialheaders/evillib_start.c >> $@
 	@cat $(sourcesFull) >> $@
 	@cat $(sourcePath)/specialheaders/evillib_end.c >> $@

@@ -23,7 +23,6 @@ clean:
 install: evillib-core-dev-install
 
 #################################### Development / Headers ####################################
-evillib-core: $(buildPath)/evillib.$(Version).h
 evillib-core-dev: $(buildPath)/evillib.$(Version).h
 evillib-core-dev-install: $(includeDir)/evillib.h
 evillib-core-dev-uninstall:

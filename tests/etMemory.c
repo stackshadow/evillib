@@ -23,7 +23,6 @@
 
 #include "core/etObject.h"
 #include "core/etDebug.h"
-#include "etApicheck.h"
 #include "memory/etMemoryBlock.h"
 #include "memory/etMemory.h"
 
@@ -146,8 +145,8 @@ etID_STATE            etMemoryTestData(){
 }
 
 
-etID_STATE            etApichecketMemory(){
-    etApicheckTimerInit();
+etID_STATE            etMemoryCheck(){
+    //etApicheckTimerInit();
 
     etMemoryTestNULL();
     etMemoryTestAlloc();

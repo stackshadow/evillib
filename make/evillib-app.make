@@ -18,15 +18,16 @@
 #	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 
 
-include ../make/vars.make
+ifneq ($(VARS),1)
+	include make/vars.make
+endif
+
+
 #CFLAGS=
 #CLIBS=
 
-CFLAGS+=-DET_SINGLEMODULE
-CFLAGS+=-I ../core
-CFLAGS+=-I ../extra
-CFLAGS+=-I ../extra/db
-CFLAGS+=-I ../extra/dbdriver
+CFLAGS+=-I ./core
+CFLAGS+=-I ./extra
 CFLAGS+=-g
 
 CLIBS+=-lpthread
@@ -34,32 +35,39 @@ CLIBS+=-ldl
 CLIBS+=-ljansson
 CLIBS+=-lsqlite3
 
-sources+=$(shell ls *.c)
-
-
-sourcesFull=$(addprefix $(PWD)/,$(sources))
+sources = $(shell find ./tests -name "*.c" -printf "%p " )
+sourcesFull=$(sources)
 
 objects=$(sources:.c=.o)
-objectsFull=$(addprefix $(buildPath)/app/,$(objects))
+objectsFull=$(addprefix $(buildPath)/,$(objects))
 
+sharedObjects=$(sources:.c=.so)
+sharedObjectsFull=$(addprefix $(buildPath)/,$(sharedObjects))
+
+.EXPORT_ALL_VARIABLES:
+
+.DEFAULT:
+	@sleep 0
 
 #################################### APP ####################################
 evillib-app: $(binDir)/evillib
-evillib-app-clean: evillib-core-clean
+clean: evillib-core-clean
 	@echo "${CCommand}make $@ ${CNormal}"
-	@find $(buildPath) -name "*.o" -print -delete
+	@$(RM) $(objectsFull)
+	@$(RM) $(sharedObjectsFull)
 	@$(RM) $(binDir)/evillib
 	@$(RM) $(buildPath)/evillib
 
 
 evillib-app-debug: evillib-app-debug-clean $(objectsFull)
 	@echo "${CCommand}make $@ ${CNormal}"
-	$(CC) $(objectsFull) \
+	#$(CC) $(objectsFull) \
 	$(CFLAGS) \
 	$(CLIBS) \
 	-o $(buildPath)/evillib
 
 evillib-app-debug-clean:
+	@echo "${CCommand}make $@ ${CNormal}"
 	@$(RM) $(objectsFull)
 	@$(RM) -f $(tempPath)/db.sqlite
 	@$(MKDIR) -p $(tempPath)
@@ -70,17 +78,26 @@ evillib-app-run: $(buildPath)/$(CoreLibraryShared) $(buildPath)/evillib
 evillib-app-memcheck:
 	LD_PRELOAD=$(buildPath)/$(CoreLibraryShared) valgrind $(buildPath)/evillib --apicheck all
 
-$(buildPath)/app/%.o: $(PWD)/%.c
+$(buildPath)/%.so: $(buildPath)/%.o
 	@mkdir -v -p $$(dirname $@)
-	$(CC) -fPIC -I. -Wall -DET_SINGLEMODULE -c $(CFLAGS) $< -o $@
-
-
-$(buildPath)/evillib: $(CoreAppObjectsFull) evillib_version.h $(libDir)/libevillib.so 
-	@echo "${CCommand}make $@ ${CNormal}"
-	gcc $(CoreAppObjectsFull) \
-	-L$(buildPath) -levillib \
+	@echo ""
+	$(CC) -shared \
+	-L$(buildPath) -levillib.$(Version) \
 	$(CFLAGS) \
-	-o $(buildPath)/evillib
+	$< \
+	-o $@
+
+$(buildPath)/%.o: $(PWD)/%.c
+	@mkdir -v -p $$(dirname $@)
+	@echo ""
+	$(CC) -fPIC -I. -Wall -c $(CFLAGS) $< -o $@
+
+
+$(buildPath)/evillib: $(sharedObjectsFull)
+	@echo "${CCommand}make $@ ${CNormal}"
+	$(CC) -I. -Wall $(CFLAGS) -c app/evillib.c -o $@.o
+	$(CC) -I. -Wall $(CFLAGS) $(CLIBS) -L$(buildPath) -levillib.$(Version) $@.o -o $@
+	@$(RM) $(objectsFull)
 
 
 $(binDir)/evillib: $(buildPath)/evillib

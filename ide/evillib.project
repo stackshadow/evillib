@@ -74,17 +74,6 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="core">
-    <File Name="../core/Makefile"/>
-    <File Name="../core/configure"/>
-    <File Name="../core/evillib.cmake.pc"/>
-    <File Name="../core/evillib_defines.h"/>
-    <File Name="../core/evillib_depends.h"/>
-    <File Name="../core/evillib_end.c"/>
-    <File Name="../core/evillib_end.h"/>
-    <File Name="../core/evillib_full.h"/>
-    <File Name="../core/evillib_start.c"/>
-    <File Name="../core/evillib_start.h"/>
-    <File Name="../core/evillib_version.h"/>
     <VirtualDirectory Name="core">
       <File Name="../core/core/etDebug.c"/>
       <File Name="../core/core/etDebug.h"/>
@@ -94,6 +83,9 @@
       <File Name="../core/core/etObject.h"/>
       <File Name="../core/core/etVersion.c"/>
       <File Name="../core/core/etVersion.h"/>
+      <File Name="../core/core/etDebug.dox"/>
+      <File Name="../core/core/etIDState.c"/>
+      <File Name="../core/core/etIDState.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="memory">
       <File Name="../core/memory/etMemory.c"/>
@@ -102,26 +94,31 @@
       <File Name="../core/memory/etMemoryBlock.h"/>
       <File Name="../core/memory/etMemoryList.c"/>
       <File Name="../core/memory/etMemoryList.h"/>
-    </VirtualDirectory>
-    <VirtualDirectory Name="net">
-      <File Name="../core/net/etComm.c"/>
-      <File Name="../core/net/etComm.h"/>
-      <File Name="../core/net/etCommTCP.c"/>
-      <File Name="../core/net/etCommTCP.h"/>
+      <File Name="../core/memory/etMemory.dox"/>
     </VirtualDirectory>
     <VirtualDirectory Name="string">
       <File Name="../core/string/etString.c"/>
       <File Name="../core/string/etString.h"/>
-      <File Name="../core/string/etString.orig"/>
       <File Name="../core/string/etStringChar.c"/>
       <File Name="../core/string/etStringChar.h"/>
+      <File Name="../core/string/etString.dox"/>
+      <File Name="../core/string/etStringChar.dox"/>
     </VirtualDirectory>
     <VirtualDirectory Name="system">
       <File Name="../core/system/etThread.h"/>
       <File Name="../core/system/etThread.c"/>
       <File Name="../core/system/etThreadUsage.dot"/>
     </VirtualDirectory>
-    <File Name="../core/MakefileBase.make"/>
+    <VirtualDirectory Name="specialheaders">
+      <File Name="../core/specialheaders/evillib_end.c"/>
+      <File Name="../core/specialheaders/evillib_end.h"/>
+      <File Name="../core/specialheaders/evillib_start.c"/>
+      <File Name="../core/specialheaders/evillib_start.h"/>
+      <File Name="../core/specialheaders/copyright.h"/>
+    </VirtualDirectory>
+    <File Name="../core/evillib.cmake.pc"/>
+    <File Name="../core/evillib_defines.h"/>
+    <File Name="../core/evillib_depends.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="doc">
     <File Name="../documentation/LibraryStandard.c"/>
@@ -131,6 +128,7 @@
     <File Name="../documentation/doxyfile"/>
     <File Name="../core/evillib_full.c"/>
     <File Name="../documentation/etDB.dox"/>
+    <File Name="../documentation/compileOptions.dox"/>
   </VirtualDirectory>
   <VirtualDirectory Name="extra">
     <File Name="../extra/Makefile"/>
@@ -139,16 +137,19 @@
       <File Name="../extra/db/etDB.h"/>
       <File Name="../extra/db/etDBColumn.c"/>
       <File Name="../extra/db/etDBColumn.h"/>
-      <File Name="../extra/db/etDBTable.c"/>
       <File Name="../extra/db/etDBFilter.c"/>
       <File Name="../extra/db/etDBFilter.h"/>
       <File Name="../extra/db/etDBQuery.c"/>
       <File Name="../extra/db/etDBQuery.h"/>
       <File Name="../extra/db/etDBRelations.c"/>
       <File Name="../extra/db/etDBRelations.h"/>
-      <File Name="../extra/db/etDBTable.h"/>
       <File Name="../extra/db/etDBValue.c"/>
       <File Name="../extra/db/etDBValue.h"/>
+      <File Name="../extra/db/etDBValue.dox"/>
+      <File Name="../extra/db/etDB.dox"/>
+      <File Name="../extra/db/etDBObject.c"/>
+      <File Name="../extra/db/etDBObject.h"/>
+      <File Name="../extra/db/etDBColumn.dox"/>
     </VirtualDirectory>
     <VirtualDirectory Name="dbdriver">
       <File Name="../extra/dbdriver/etDBSQLite.c"/>
@@ -158,10 +159,6 @@
     <File Name="../extra/evillib-extra_depends.h"/>
     <File Name="../extra/evillib-extra_end.h"/>
     <File Name="../extra/evillib-extra_start.h"/>
-  </VirtualDirectory>
-  <VirtualDirectory Name=".">
-    <File Name="../Makefile"/>
-    <File Name="../MakefileBase.make"/>
   </VirtualDirectory>
   <VirtualDirectory Name="debian">
     <File Name="../debian/changelog"/>
@@ -185,8 +182,8 @@
     <File Name="../app/etThread.c"/>
     <File Name="../app/evillib.c"/>
     <File Name="../app/evillib.h"/>
-    <File Name="../app/Makefile"/>
     <File Name="../app/etJsonDB.c"/>
+    <File Name="../app/Makefile"/>
   </VirtualDirectory>
   <Dependencies Name="app"/>
   <Dependencies Name="app - all disabled"/>
@@ -205,6 +202,19 @@
     <File Name="../make/evillib-version.make"/>
     <File Name="../make/evillib-doc.make"/>
   </VirtualDirectory>
+  <VirtualDirectory Name="develop">
+    <VirtualDirectory Name="net">
+      <File Name="../develop/net/etComm.c"/>
+      <File Name="../develop/net/etComm.h"/>
+      <File Name="../develop/net/etCommTCP.c"/>
+      <File Name="../develop/net/etCommTCP.h"/>
+    </VirtualDirectory>
+    <VirtualDirectory Name="system">
+      <File Name="../develop/system/etFile.c"/>
+      <File Name="../develop/system/etFile.dox"/>
+      <File Name="../develop/system/etFile.h"/>
+    </VirtualDirectory>
+  </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
       <Compiler Options="" C_Options="" Assembler="">
@@ -215,16 +225,17 @@
       </Linker>
       <ResourceCompiler Options=""/>
     </GlobalSettings>
-    <Configuration Name="app" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g -Wall" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+    <Configuration Name="SingleFileCompilation" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g -Wall -fvisibility=hidden -fPIC " C_Options="-g -Wall -fvisibility=hidden -fPIC " Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
+        <IncludePath Value="$(ProjectPath)/../core/"/>
       </Compiler>
-      <Linker Options="-O0" Required="yes">
+      <Linker Options="-O0" Required="no">
         <LibraryPath Value="."/>
         <LibraryPath Value="Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/.build/evillib" CommandArguments="--apicheck --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="" IntermediateDirectory="/tmp/evillib/build" Command="/tmp/.build/evillib" CommandArguments="--apicheck --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[]]>
       </Environment>
@@ -235,58 +246,16 @@
       </Debugger>
       <PreBuild/>
       <PostBuild/>
-      <CustomBuild Enabled="yes">
+      <CustomBuild Enabled="no">
         <RebuildCommand/>
-        <CleanCommand>make evillib-app-clean</CleanCommand>
+        <CleanCommand>make -f make/Makefile clean</CleanCommand>
         <BuildCommand>export CFLAGS="-g" &amp;&amp;
-make evillib-app</BuildCommand>
+make -f make/Makefile clean evillib-core-source</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
         <ThirdPartyToolName/>
-        <WorkingDirectory>../core/</WorkingDirectory>
-      </CustomBuild>
-      <AdditionalRules>
-        <CustomPostBuild/>
-        <CustomPreBuild/>
-      </AdditionalRules>
-      <Completion EnableCpp11="no" EnableCpp14="no">
-        <ClangCmpFlagsC/>
-        <ClangCmpFlags/>
-        <ClangPP/>
-        <SearchPaths/>
-      </Completion>
-    </Configuration>
-    <Configuration Name="app - all disabled" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g -Wall" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
-        <IncludePath Value="."/>
-      </Compiler>
-      <Linker Options="-O0" Required="yes">
-        <LibraryPath Value="."/>
-        <LibraryPath Value="Debug"/>
-      </Linker>
-      <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/.build/evillib" CommandArguments="--apicheck" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="no" IsGUIProgram="no" IsEnabled="yes"/>
-      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
-        <![CDATA[]]>
-      </Environment>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
-        <DebuggerSearchPaths/>
-        <PostConnectCommands/>
-        <StartupCommands/>
-      </Debugger>
-      <PreBuild/>
-      <PostBuild/>
-      <CustomBuild Enabled="yes">
-        <RebuildCommand/>
-        <CleanCommand>make evillib-app-clean</CleanCommand>
-        <BuildCommand>export CFLAGS="-g -DET_WITHOUT_BLOCKDEVICE -DET_SECURE_MEMORY_OFF" &amp;&amp;
-make evillib-app</BuildCommand>
-        <PreprocessFileCommand/>
-        <SingleFileCommand/>
-        <MakefileGenerationCommand/>
-        <ThirdPartyToolName/>
-        <WorkingDirectory>../core/</WorkingDirectory>
+        <WorkingDirectory>../</WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
         <CustomPostBuild/>
@@ -426,6 +395,48 @@ make evillib-core-dev</BuildCommand>
         <SearchPaths/>
       </Completion>
     </Configuration>
+    <Configuration Name="evillib-core-source" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g -Wall" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="-O0" Required="yes">
+        <LibraryPath Value="."/>
+        <LibraryPath Value="Debug"/>
+      </Linker>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/.build/evillib" CommandArguments="--apicheck --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
+        <DebuggerSearchPaths/>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand/>
+        <CleanCommand>make -f make/Makefile clean</CleanCommand>
+        <BuildCommand>export CFLAGS="-g" &amp;&amp;
+make -f make/Makefile clean evillib-core-source</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory>../</WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths/>
+      </Completion>
+    </Configuration>
     <Configuration Name="shared library - debug" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g -Wall" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
@@ -469,4 +480,11 @@ make evillib-core evillib-extra</BuildCommand>
       </Completion>
     </Configuration>
   </Settings>
+  <VirtualDirectory Name=".">
+    <File Name="../.gitignore"/>
+    <File Name="../LICENSE"/>
+    <File Name="../README.md"/>
+    <File Name="../configure"/>
+    <File Name="../lgpl-3.0.txt"/>
+  </VirtualDirectory>
 </CodeLite_Project>

@@ -1,3 +1,4 @@
 #!/bin/bash
 
-echo "There is no configure, just use make from the root directory of the evillib"
+echo "There is no configure, just use make"
+make -f make/Makefile help

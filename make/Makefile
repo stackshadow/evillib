@@ -18,17 +18,18 @@
 #	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 
 ifneq ($(VARS),1)
-	include vars.make
+	include make/vars.make
 endif
+
 
 .DEFAULT:
 	@echo "$(COK)Welcome to the evillib-build-system $(CNormal)"
 	@echo ""
-	@$(MAKE) --no-print-directory -f evillib-core-dev.make $@
-	@$(MAKE) --no-print-directory -f evillib-core.make $@
-	@$(MAKE) --no-print-directory -f evillib-extra-dev.make $@
-	@$(MAKE) --no-print-directory -f evillib-extra.make $@
-	@$(MAKE) --no-print-directory -f evillib-doc.make $@
+	@$(MAKE) --no-print-directory -f make/evillib-core-dev.make $@
+	@$(MAKE) --no-print-directory -f make/evillib-core.make $@
+	@#$(MAKE) --no-print-directory -f make/evillib-extra-dev.make $@
+	@#$(MAKE) --no-print-directory -f make/evillib-extra.make $@
+	@#$(MAKE) --no-print-directory -f make/evillib-doc.make $@
 	@echo -n "$(CNormal)"
 
 touch:

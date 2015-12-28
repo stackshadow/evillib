@@ -17,21 +17,31 @@
 #	You should have received a copy of the GNU Lesser General Public License
 #	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 
-include evillib-version.make
-include evillib-core-sources.make
+ifneq ($(VARS),1)
+	include make/vars.make
+endif
+
+include make/evillib-version.make
+
+
+
+sourcePath=$(PWD)/core
+sources = $(shell find ./core -name "*.c" ! -wholename "*specialheaders/*" ! -wholename "*develop/*" -printf "%p " )
+sourcesFull=$(sources)
+objects=$(sources:.c=.o)
+objectsFull=$(addprefix $(buildPath)/core/,$(objects))
+
 
 # librarys
 CFLAGS+=-rdynamic
+CFLAGS+=-I $(sourcePath)
+CFLAGS+=-I $(buildPath)
+
 
 CLIBS =-lpthread
 CLIBS+=-lc
 CLIBS+=-lblkid
 CLIBS+=-ldl
-
-
-
-objects=$(sources:.c=.o)
-objectsFull=$(addprefix $(buildPath)/core/,$(objects))
 
 
 #CoreSourceFiles+=
@@ -44,14 +54,19 @@ CoreLibraryStatic=libevillib.$(Version).a
 	@sleep 0
 
 help:
+	@echo ""
 	@echo -n "$(CComment)"
 	@echo "##################### Core library #####################"
-	@echo "$(MAKE) evillib-core: Build evillib-core library ( in $(libDir)/libevillib.so )"
-	@echo "$(MAKE) evillib-core-clean: Clean the build directory of core"
+	@echo "$(MAKE) -f make/Makefile evillib-core: Build evillib-core library ( in $(libDir)/libevillib.so )"
+	@echo "$(MAKE) -f make/Makefile evillib-core-clean: Clean the build directory of core"
+	@echo "$(MAKE) -f make/Makefile evillib-core-install: copy the created evillib to $(libDir)/libevillib.so"
+	@echo "$(MAKE) -f make/Makefile evillib-core-uninstall: remove the evillib"
 	@echo -n "$(CNormal)"
 
 clean: evillib-core-dev-clean evillib-core-clean evillib-app-clean
 	@$(RM) $(buildPath)/evillib.$(Version).c
+	@$(RM) $(buildPath)/evillib.$(Version).concat.c
+	@$(RM) $(buildPath)/evillib.$(Version).prep.c
 	@$(RM) $(buildPath)/libevillib.o
 	@$(RM) $(buildPath)/$(CoreLibraryShared)
 
@@ -59,21 +74,33 @@ install: evillib-core-install
 
 #################################### Library ####################################
 evillib-core: $(buildPath)/$(CoreLibraryShared)
-evillib-core-install: $(libDir)/libevillib.so $(shareDir)/pkgconfig/evillib.pc
+evillib-core-install: $(libDir)/    .so $(shareDir)/pkgconfig/evillib.pc
 evillib-core-uninstall: 
 	@$(RM) $(libDir)/evillib/$(CoreLibraryShared)
 	@$(RM) $(libDir)/libevillib.$(VerMajor).$(VerMinor).so
 	@$(RM) $(libDir)/libevillib.so
 	@$(RM) $(shareDir)/pkgconfig/evillib.pc
 evillib-core-static: $(libDir)/libevillib.a
+evillib-core-source: $(buildPath)/evillib.$(Version).c
 
-
-$(buildPath)/evillib.$(Version).c: evillib_version.h $(buildPath)/evillib.$(Version).h
+$(buildPath)/evillib.$(Version).concat.c:
 	@echo "${CCommand}make $@ ${CNormal}"
-	cat $(buildPath)/evillib.$(Version).h > $@
-	cat $(sourcePath)/evillib_start.c >> $@
-	cat $(sourcesFull) >> $@
-	cat $(sourcePath)/evillib_end.c >> $@
+	#cat $(buildPath)/evillib.$(Version).h > $@
+	@cat $(sourcePath)/specialheaders/evillib_start.c >> $@
+	@cat $(sourcesFull) >> $@
+	@cat $(sourcePath)/specialheaders/evillib_end.c >> $@
+
+$(buildPath)/evillib.$(Version).prep.c: $(buildPath)/evillib.$(Version).concat.c
+	@echo "${CCommand}make $@ ${CNormal}"
+	@$(CC) -E \
+	-D_H_etDepends \
+	$(CFLAGS) \
+	$< > $@
+
+$(buildPath)/evillib.$(Version).c: $(buildPath)/evillib.$(Version).prep.c
+	@echo "${CCommand}make $@ ${CNormal}"
+	@cat core/evillib_depends.h > $@
+	@cat $< >> $@
 
 $(buildPath)/libevillib.o: $(buildPath)/evillib.$(Version).c
 	@echo "${CCommand}make $@ ${CNormal}"
@@ -127,6 +154,8 @@ $(buildPath)/%.o: $(sourcePath)/%.c
 #evillib-app-single: $(buildDir)/evillib-single
 #$(buildDir)/evillib-single: $(SingleObjects)
 #	gcc $(apicheckObjects) $(SingleObjects) -o $(buildDir)/evillib
+
+
 
 output:
 	@echo $(objects)

@@ -1,8 +1,8 @@
 
-include evillib-version.make
-include evillib-core-sources.make
+include make/evillib-version.make
+include make/evillib-core-sources.make
 
-headerVersion=$(buildPath)/evillib-core_version.h
+headerVersion=$(buildPath)/evillib_version.h
 
 headers=$(sources:.c=.h)
 headersFull=$(addprefix $(sourcePath)/,$(headers))
@@ -29,7 +29,7 @@ evillib-core-dev-install: $(includeDir)/evillib.h
 evillib-core-dev-uninstall:
 	@$(RM) $(includeDir)/evillib/evillib.$(Version).h
 	@$(RM) $(includeDir)/evillib.h
-
+evillib-core-source: $(headerVersion)
 
 $(headerVersion): 
 	@echo "${CCommand}make $@ ${CNormal}"

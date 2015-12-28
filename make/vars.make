@@ -30,23 +30,31 @@ export COK=\033[32m
 # Compiler
 export CC						= ${CROSSCOMPILE}gcc
 export CXX						= ${CROSSCOMPILE}g++
-export AR                 	= ${CROSSCOMPILE}ar
-export RANLIB             	= ${CROSSCOMPILE}ranlib
-export RM                 	= rm -v -f
-export CP                  	= cp -v -f
-export LN                  	= ln -v -f -s
-export MKDIR               	= mkdir -p -v
-export RMDIR             	= rmdir -v
+export AR                 		= ${CROSSCOMPILE}ar
+export RANLIB             		= ${CROSSCOMPILE}ranlib
+export RM                 		= rm -v -f
+export CP                  		= cp -v -f
+export LN                  		= ln -v -f -s
+export MKDIR               		= mkdir -p -v
+export RMDIR					= rmdir -v
 
 # Directorys
 export buildPath	        	?= /tmp/evillib/build
+export tempPath					?= /tmp/evillib/tmp
 export prefix	            	?= /tmp/evillib/target
 
-export includeDir	        	= $(prefix)/include
-export binDir	            	= $(prefix)/bin
-export libDir	            	= $(prefix)/lib
-export shareDir	        	= $(prefix)/share
-export docDir	            	= $(prefix)/share/doc
+export includeDir				= $(prefix)/include
+export binDir					= $(prefix)/bin
+export libDir					= $(prefix)/lib
+export shareDir					= $(prefix)/share
+export docDir					= $(prefix)/share/doc
+
+
+# Version of evillib
+VerMajor=00
+VerMinor=15
+VerPatch=00
+Version=$(VerMajor).$(VerMinor)-$(VerPatch)
 
 
 
@@ -63,5 +71,5 @@ $(libDir):
 $(shareDir):
 	$(MKDIR) $@
 $(docDir):
-	$(MKDIR) $@
+	MKDIR) $@
 

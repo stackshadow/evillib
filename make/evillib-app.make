@@ -78,6 +78,17 @@ evillib-app-run: $(buildPath)/$(CoreLibraryShared) $(buildPath)/evillib
 evillib-app-memcheck:
 	LD_PRELOAD=$(buildPath)/$(CoreLibraryShared) valgrind $(buildPath)/evillib --apicheck all
 
+
+$(binDir)/evillib: $(buildPath)/evillib $(sharedObjectsFull)
+	@$(MKDIR) $(binDir)
+	@$(CP) $(buildPath)/evillib $@
+	
+$(buildPath)/evillib: app/evillib.c
+	@echo "${CCommand}make $@ ${CNormal}"
+	$(CC) -I. -Wall $(CFLAGS) -c app/evillib.c -o $@.o
+	$(CC) -I. -Wall $(CFLAGS) $(CLIBS) -L$(buildPath) -levillib.$(Version) $@.o -o $@
+
+
 $(buildPath)/%.so: $(buildPath)/%.o
 	@mkdir -v -p $$(dirname $@)
 	@echo ""
@@ -93,16 +104,8 @@ $(buildPath)/%.o: $(PWD)/%.c
 	$(CC) -fPIC -I. -Wall -c $(CFLAGS) $< -o $@
 
 
-$(buildPath)/evillib: $(sharedObjectsFull)
-	@echo "${CCommand}make $@ ${CNormal}"
-	$(CC) -I. -Wall $(CFLAGS) -c app/evillib.c -o $@.o
-	$(CC) -I. -Wall $(CFLAGS) $(CLIBS) -L$(buildPath) -levillib.$(Version) $@.o -o $@
-	@$(RM) $(objectsFull)
 
 
-$(binDir)/evillib: $(buildPath)/evillib
-	@$(MKDIR) $(binDir)
-	@$(CP) $(buildPath)/evillib $@
 
 
 

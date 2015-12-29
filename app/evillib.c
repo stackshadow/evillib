@@ -21,8 +21,7 @@
 #include "evillib_depends.h"
 #include "evillib_version.h"
 
-#include "etApicheck.h"
-#include "etApicheck.c"
+
 #include "core/etInit.h"
 
 #include "core/etDebug.c"
@@ -40,12 +39,21 @@ just start the app with -h to get help :)
 
 int runSharedObjectFunction( const char *path, const char *name ){
 
+// vars
     char        filename[512];
     int         pathLen = strlen( path );
     int         nameLen = strlen( name );
-    
+
+// check boundrys
     if( (pathLen + nameLen + 2) > 512 ) exit(-1);
-    
+
+// check if the file ended with .so
+    if( strncmp( &name[nameLen-3], ".so", 3 ) != 0 ){
+        fprintf( stdout, "%s is not an shared Object\n", name );
+        return -1;
+    }
+
+
 // build the full path filename
     memcpy( &filename[0], path, pathLen );
     memcpy( &filename[pathLen], "/", 1 );

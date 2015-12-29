@@ -13,7 +13,7 @@
       <Project Name="evillib" ConfigName="develop"/>
       <Project Name="raspdispd" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="app - debug" Selected="no">
+    <WorkspaceConfiguration Name="app - debug" Selected="yes">
       <Project Name="evillib" ConfigName="app - debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="share library" Selected="no">
@@ -22,7 +22,7 @@
     <WorkspaceConfiguration Name="evillib-core-source" Selected="no">
       <Project Name="evillib" ConfigName="evillib-core-source"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="SingleFileCompilation" Selected="yes">
+    <WorkspaceConfiguration Name="SingleFileCompilation" Selected="no">
       <Project Name="evillib" ConfigName="SingleFileCompilation"/>
     </WorkspaceConfiguration>
   </BuildMatrix>

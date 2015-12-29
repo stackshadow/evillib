@@ -174,16 +174,8 @@
   <VirtualDirectory Name="app">
     <File Name="../app/etApicheck.c"/>
     <File Name="../app/etApicheck.h"/>
-    <File Name="../app/etComm.c"/>
-    <File Name="../app/etMemory.c"/>
-    <File Name="../app/etMemoryBlock.c"/>
-    <File Name="../app/etString.c"/>
-    <File Name="../app/etStringChar.c"/>
-    <File Name="../app/etThread.c"/>
     <File Name="../app/evillib.c"/>
     <File Name="../app/evillib.h"/>
-    <File Name="../app/etJsonDB.c"/>
-    <File Name="../app/Makefile"/>
   </VirtualDirectory>
   <Dependencies Name="app"/>
   <Dependencies Name="app - all disabled"/>
@@ -201,6 +193,7 @@
     <File Name="../make/evillib-extra-dev.make"/>
     <File Name="../make/evillib-version.make"/>
     <File Name="../make/evillib-doc.make"/>
+    <File Name="../make/evillib-app.make"/>
   </VirtualDirectory>
   <VirtualDirectory Name="develop">
     <VirtualDirectory Name="net">
@@ -214,6 +207,23 @@
       <File Name="../develop/system/etFile.dox"/>
       <File Name="../develop/system/etFile.h"/>
     </VirtualDirectory>
+    <File Name="../develop/system/etFolder.c"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name=".">
+    <File Name="../.gitignore"/>
+    <File Name="../LICENSE"/>
+    <File Name="../README.md"/>
+    <File Name="../configure"/>
+    <File Name="../lgpl-3.0.txt"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="tests">
+    <File Name="../tests/etComm.c"/>
+    <File Name="../tests/etJsonDB.c"/>
+    <File Name="../tests/etMemory.c"/>
+    <File Name="../tests/etMemoryBlock.c"/>
+    <File Name="../tests/etString.c"/>
+    <File Name="../tests/etStringChar.c"/>
+    <File Name="../tests/etThread.c"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -277,9 +287,9 @@ make -f make/Makefile clean evillib-core-source</BuildCommand>
         <LibraryPath Value="Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/evillib" CommandArguments="--apicheck all --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/usr/src/evillib/extra" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/evillib" CommandArguments="--apicheck /tmp/evillib/build/tests etMemory.so --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
-        <![CDATA[]]>
+        <![CDATA[LD_PRELOAD=/tmp/evillib/build/libevillib.00.15-00.so]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
         <DebuggerSearchPaths/>
@@ -290,14 +300,14 @@ make -f make/Makefile clean evillib-core-source</BuildCommand>
       <PostBuild/>
       <CustomBuild Enabled="yes">
         <RebuildCommand/>
-        <CleanCommand>make evillib-app-debug-clean</CleanCommand>
-        <BuildCommand>export CFLAGS="-g -DET_INTERNAL" &amp;&amp;
-make evillib-app-debug</BuildCommand>
+        <CleanCommand>make -f make/Makefile clean</CleanCommand>
+        <BuildCommand>export CFLAGS="-g" &amp;&amp;
+make -f make/Makefile evillib-core evillib-app</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
         <ThirdPartyToolName/>
-        <WorkingDirectory>../app/</WorkingDirectory>
+        <WorkingDirectory>../</WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
         <CustomPostBuild/>
@@ -459,14 +469,14 @@ make -f make/Makefile clean evillib-core-source</BuildCommand>
       <PostBuild/>
       <CustomBuild Enabled="yes">
         <RebuildCommand/>
-        <CleanCommand>make clean</CleanCommand>
+        <CleanCommand>make -f make/Makefile clean</CleanCommand>
         <BuildCommand>export CFLAGS="-g" &amp;&amp;
-make evillib-core evillib-extra</BuildCommand>
+make -f make/Makefile evillib-core evillib-extra</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
         <ThirdPartyToolName/>
-        <WorkingDirectory>../make</WorkingDirectory>
+        <WorkingDirectory>../</WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
         <CustomPostBuild/>
@@ -480,11 +490,4 @@ make evillib-core evillib-extra</BuildCommand>
       </Completion>
     </Configuration>
   </Settings>
-  <VirtualDirectory Name=".">
-    <File Name="../.gitignore"/>
-    <File Name="../LICENSE"/>
-    <File Name="../README.md"/>
-    <File Name="../configure"/>
-    <File Name="../lgpl-3.0.txt"/>
-  </VirtualDirectory>
 </CodeLite_Project>

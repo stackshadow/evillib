@@ -23,6 +23,18 @@ ifneq ($(VARS),1)
 endif
 
 
+sourcePath=$(sourceBasePath)
+buildPath=$(buildBasePath)
+
+sources = $(shell find ./tests -name "*.c" -printf "%p " )
+sourcesFull=$(sources)
+
+objects=$(sources:.c=.o)
+objectsFull=$(addprefix $(buildPath)/,$(objects))
+
+sharedObjects=$(sources:.c=.so)
+sharedObjectsFull=$(addprefix $(buildPath)/,$(sharedObjects))
+
 #CFLAGS=
 #CLIBS=
 
@@ -35,14 +47,7 @@ CLIBS+=-ldl
 CLIBS+=-ljansson
 CLIBS+=-lsqlite3
 
-sources = $(shell find ./tests -name "*.c" -printf "%p " )
-sourcesFull=$(sources)
 
-objects=$(sources:.c=.o)
-objectsFull=$(addprefix $(buildPath)/,$(objects))
-
-sharedObjects=$(sources:.c=.so)
-sharedObjectsFull=$(addprefix $(buildPath)/,$(sharedObjects))
 
 .EXPORT_ALL_VARIABLES:
 
@@ -86,14 +91,14 @@ $(binDir)/evillib: $(buildPath)/evillib $(sharedObjectsFull)
 $(buildPath)/evillib: app/evillib.c
 	@echo "${CCommand}make $@ ${CNormal}"
 	$(CC) -I. -Wall $(CFLAGS) -c app/evillib.c -o $@.o
-	$(CC) -I. -Wall $(CFLAGS) $(CLIBS) -L$(buildPath) -levillib.$(Version) $@.o -o $@
+	$(CC) -I. -Wall $(CFLAGS) $(CLIBS) -L$(buildPath)/core/obj -levillib.$(Version) $@.o -o $@
 
 
 $(buildPath)/%.so: $(buildPath)/%.o
 	@mkdir -v -p $$(dirname $@)
 	@echo ""
 	$(CC) -shared \
-	-L$(buildPath) -levillib.$(Version) \
+	-L$(buildPath)/core/obj -levillib.$(Version) \
 	$(CFLAGS) \
 	$< \
 	-o $@

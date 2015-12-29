@@ -28,9 +28,8 @@
 #include "string/etString.h"
 #include "string/etStringChar.h"
 
-#ifdef ET_SINGLEMODULE
-    #include "string/etStringChar.c"
-#endif
+#include "app/etApicheck.h"
+#include "app/etApicheck.c"
 
 etID_STATE            etStringCharTest(){
     etDebugMessage( etID_LEVEL_DETAIL, "Start test.." );

@@ -27,9 +27,9 @@
 #include "memory/etMemory.h"
 #include "string/etString.h"
 
-#ifdef ET_SINGLEMODULE
-    #include "string/etString.c"
-#endif
+#include "app/etApicheck.h"
+#include "app/etApicheck.c"
+
 
 etID_STATE            etStringTest(){
     etDebugMessage( etID_LEVEL_DETAIL, "Start test.." );

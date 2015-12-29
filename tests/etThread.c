@@ -27,9 +27,9 @@
 #include "memory/etMemory.h"
 #include "system/etThread.h"
 
-#ifdef ET_SINGLEMODULE
-    #include "system/etThread.c"
-#endif
+#include "app/etApicheck.h"
+#include "app/etApicheck.c"
+
 
 //! [etThread function]
 void    ThreadFunction( void *etThreadVoid ){

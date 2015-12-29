@@ -26,11 +26,8 @@
 #include "memory/etMemoryBlock.h"
 #include "memory/etMemory.h"
 
-#ifdef ET_SINGLEMODULE
-    #include "memory/etMemoryBlock.c"
-    #include "memory/etMemoryList.c"
-    #include "memory/etMemory.c"
-#endif
+#include "app/etApicheck.h"
+#include "app/etApicheck.c"
 
 
 // Vars

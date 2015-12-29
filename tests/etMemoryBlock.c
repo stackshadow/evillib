@@ -27,6 +27,8 @@
 #include "memory/etMemoryList.h"
 #include "memory/etMemory.h"
 
+#include "app/etApicheck.h"
+#include "app/etApicheck.c"
 
 etID_STATE            etApichecketMemoryBlock(){
     etApicheckTimer( "etMemoryBlock: check" );

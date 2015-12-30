@@ -74,6 +74,8 @@ clean: evillib-core-dev-clean evillib-core-clean evillib-app-clean
 	@$(RM) $(buildPath)/evillib.$(Version).prep.c
 	@$(RM) $(buildPath)/libevillib.o
 	@$(RM) $(buildPath)/$(CoreLibraryShared)
+	@$(RM) $(objectsFull)
+	@$(RM) $(buildPath)/obj/$(CoreLibraryShared)
 
 install: evillib-core-install
 

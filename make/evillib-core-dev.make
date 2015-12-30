@@ -1,6 +1,6 @@
 
 include make/evillib-version.make
-include make/evillib-core-sources.make
+
 
 headerVersion=$(buildPath)/evillib_version.h
 

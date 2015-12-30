@@ -62,6 +62,7 @@ clean: evillib-core-clean
 	@$(RM) $(sharedObjectsFull)
 	@$(RM) $(binDir)/evillib
 	@$(RM) $(buildPath)/evillib
+	@$(RM) $(buildPath)/evillib.o
 
 
 evillib-app-debug: evillib-app-debug-clean $(objectsFull)

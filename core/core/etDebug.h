@@ -23,6 +23,8 @@
 #include "evillib_depends.h"
 #include "evillib_defines.h"
 
+#include "core/etIDState.h"
+
 
 typedef struct etDebug_s etDebug;
 struct etDebug_s {
@@ -109,6 +111,21 @@ etID_STATE              etDebugLevelSet( etID_LEVEL debugLevels );
 #define                 etDebugCaller \
                             etDebugEvillib->FunctionOrigin = __ET_DEBUG_FUNCTION; \
                             etDebugEvillib->FunctionOriginLine = 0;
+
+
+#define     etDebugCheckNull( objectVariable ) \
+                if( objectVariable == NULL ){ \
+                    snprintf( etDebugTempMessage, etDebugTempMessageLen, "objectVariable is null" ); \
+                    etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage ); \
+                    return  etID_STATE_ERR_PARAMETER; \
+                }
+
+#define     etDebugCheckNullVoid( objectVariable ) \
+                if( objectVariable == NULL ){ \
+                    snprintf( etDebugTempMessage, etDebugTempMessageLen, "objectVariable is null" ); \
+                    etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage ); \
+                    return; \
+                }
 
 
 

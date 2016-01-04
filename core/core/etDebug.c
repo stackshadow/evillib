@@ -184,58 +184,49 @@ void                    etDebugPrintMessage(){
 
 etID_STATE              etDebugStateToMessage( etID_STATE state, const char *function, int line ){
 
-    // Set default level
-    etDebugEvillib->Level = etID_LEVEL_ERR;
-
-    // Set info
+// Set info
     etDebugEvillib->Function = function;
     etDebugEvillib->FunctionLine = line;
 
-    // Calculate Level
+// set level
+    if( state > 0 && state < etID_STATE_WARN ){
+        etDebugEvillib->Level = etID_LEVEL_INFO;
+    }
+    if( state > etID_STATE_WARN && state < etID_STATE_ERR ){
+        etDebugEvillib->Level = etID_LEVEL_WARNING;
+    }
+    if( state > etID_STATE_ERR && state < etID_STATE_CRIT ){
+        etDebugEvillib->Level = etID_LEVEL_ERR;
+    }
+    if( state > etID_STATE_CRIT ){
+        etDebugEvillib->Level = etID_LEVEL_CRITICAL;
+    }
+
+// Calculate Level
     switch( state ){
 
     // Special things
         case etID_STATE_ERR_PARAMETER:
-            etDebugEvillib->Level = etID_LEVEL_ERR;
             etDebugEvillib->Message = "Parameter missuse";
             break;
 
-        case etID_STATE_NOMEMORY:
-            etDebugEvillib->Level = etID_LEVEL_CRITICAL;
+        case etID_STATE_CRIT_NOMEMORY:
             etDebugEvillib->Message = "No More System Memory";
             break;
 
-        case etID_STATE_TIMEOUT:
-            etDebugEvillib->Level = etID_LEVEL_WARNING;
+        case etID_STATE_WARN_TIMEOUT:
             etDebugEvillib->Message = "Timeout";
             break;
 
         case etID_STATE_USED:
-            etDebugEvillib->Level = etID_LEVEL_ERR;
             etDebugEvillib->Message = "Already in use";
             break;
 
-        case etID_STATE_ERROR_INTERNAL:
-            etDebugEvillib->Level = etID_LEVEL_WARNING;
-            etDebugEvillib->Message = "Internal Error";
-            break;
-
-        case etID_STATE_NOTINLIB:
-            etDebugEvillib->Level = etID_LEVEL_WARNING;
-            etDebugEvillib->Message = "Function not aviable in the library";
-            break;
-            
-        case etID_STATE_SEQERR:
-            etDebugEvillib->Level = etID_LEVEL_ERR;
+        case etID_STATE_WARN_SEQERR:
             etDebugEvillib->Message = "Sequencial Error, you need to run another function before this function. Read the documentation about this function.";
             break;
 
         default:
-            if( state < 0 ){
-                etDebugEvillib->Level = etID_LEVEL_ERR;
-            } else {
-                etDebugEvillib->Level = etID_LEVEL_INFO;
-            }
             etDebugEvillib->Message = "";
     }
 

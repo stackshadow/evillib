@@ -98,6 +98,7 @@ typedef enum etID_STATE {
 // Function errors
     etID_STATE_WARN_PARAMETER,                      /*!< Wrong parameter was passed to the function */
 
+    etID_STATE_WARN_INTERR,
 
 // ######################################### error states #########################################
 // object is broken, we only can init it and try it again

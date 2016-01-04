@@ -64,29 +64,29 @@ int runSharedObjectFunction( const char *path, const char *name ){
     if (!handle) {
         fprintf(stderr, "%s\n", dlerror());
         return 0;
-        //exit(EXIT_FAILURE);
     }                        
     
 // build the function name
     memcpy( &filename[0], name, nameLen );
-    memcpy( &filename[nameLen-3], "Check", 5 );
-    filename[nameLen-3+5] = 0;
+    memcpy( &filename[nameLen-3], "ApiCheck", 8 );
+    filename[nameLen-3+8] = 0;
 
 // try to run this function
     int (*symbol)(void);
     symbol = dlsym ( handle, filename );
     if ( symbol == NULL ) {
         fprintf(stderr, "%s\n", dlerror());
+        dlclose(handle);
         return 0;
-        //exit(EXIT_FAILURE);
     }
     
     return symbol();
+    
+    dlclose(handle);
 }
 
 
 int main( int argc, const char* argv[] ){
-    etInit( argc, argv );
 
     __builtin_return_address(0);
 
@@ -155,6 +155,8 @@ int main( int argc, const char* argv[] ){
                     } else {
                         runSharedObjectFunction( argument2, argument3 );
                     }
+                    
+                    closedir(directory);
 
 
 

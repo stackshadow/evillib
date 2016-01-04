@@ -26,14 +26,6 @@
 // Type
 #define etID_MEM_TYPE_BYTE                char
 
-typedef struct             etMemoryListElement_t etMemoryListElement;
-
-
-
-
-
-
-
 
 
 // Basics
@@ -46,28 +38,25 @@ void                        etMemoryExit();
 
 
 
-#define                     etMemoryAlloc( etMemoryBlock, size ) __etMemoryAlloc( &etMemoryBlock, size )
-etID_STATE                  __etMemoryAlloc( etMemoryBlock **p_etMemoryBlockActual, size_t size );
+#define                     etMemoryAlloc( data, size ) __etMemoryAlloc( (void**)&data, size )
+etID_STATE                  __etMemoryAlloc( void **p_data, size_t size );
 
-#define                     etMemoryRequest( etMemoryBlock, size ) __etMemoryRequest( &etMemoryBlock, size )
-etID_STATE                  __etMemoryRequest( etMemoryBlock **p_etMemoryBlockActual, size_t size );
+#define                     etMemoryRequest( data, size ) __etMemoryRequest( &data, size )
+etID_STATE                  __etMemoryRequest( void **p_data, size_t size );
 
-#define                     etMemoryRelease( etMemoryBlock ) __etMemoryRelease( &etMemoryBlock )
-void                        __etMemoryRelease( etMemoryBlock **p_etMemoryBlockActual );
-
-#define                     etMemorySet( etMemoryBlock, dataSource, size ) __etMemorySet( &etMemoryBlock, dataSource, size )
-etID_STATE                  __etMemorySet( etMemoryBlock **p_etMemoryBlockActual, void *dataSource, size_t size );
-
-#define                     etMemorySetOffset( etMemoryBlock, dataSource, offset, size ) __etMemorySetOffset( &etMemoryBlock, dataSource, offset, size )
-etID_STATE                  __etMemorySetOffset( etMemoryBlock **p_etMemoryBlockActual, void *dataSource, size_t offset, size_t size );
+#define                     etMemoryRelease( data ) __etMemoryRelease( &data )
+void                        __etMemoryRelease( void **p_data );
 
 
-// Optimisation
+etID_STATE                  etMemoryClean( void *data );
 
-etID_STATE                  etMemoryOptFreeUnused();
+#define                     etMemorySet( dest, source, size ) __etMemorySet( &dest, source, size )
+etID_STATE                  __etMemorySet( void **p_dest, void *source, size_t size );
+
+#define                     etMemorySetOffset( data, dataSource, offset, size ) __etMemorySetOffset( &data, dataSource, offset, size )
+etID_STATE                  __etMemorySetOffset( void **p_data, void *dataSource, size_t offset, size_t size );
 
 
-etID_STATE                  etMemoryOptResort();
 
 
 

@@ -82,7 +82,10 @@ evillib-app-debug-clean:
 evillib-app-run: $(buildPath)/$(CoreLibraryShared) $(buildPath)/evillib
 	LD_PRELOAD=$(buildPath)/$(CoreLibraryShared) $(buildPath)/evillib --apicheck all
 evillib-app-memcheck:
-	LD_PRELOAD=$(buildPath)/$(CoreLibraryShared) valgrind $(buildPath)/evillib --apicheck all
+	LD_PRELOAD=/tmp/evillib/build/core/obj/libevillib.00.15-00.so \
+	valgrind  --suppressions=/usr/src/projects/evillib/tests/valgrind.supp \
+	$(buildPath)/evillib --apicheck /tmp/evillib/build/tests etMemoryBlockList.so --debug
+	
 
 
 $(binDir)/evillib: $(buildPath)/evillib $(sharedObjectsFull)

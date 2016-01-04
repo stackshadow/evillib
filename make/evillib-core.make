@@ -129,13 +129,14 @@ $(buildPath)/obj/$(CoreLibraryShared): $(objectsFull)
 	@echo "${CCommand}make $@ ${CNormal}"
 	@mkdir -v -p $$(dirname $@)
 	$(CC) -shared -Wl,-soname,libevillib.so \
+	$(CFLAGS) -g \
 	$(CLIBS) \
 	$(objectsFull) \
 	-o $@
 
 $(buildPath)/%.o: $(sourcePath)/%.c
 	@mkdir -v -p $$(dirname $@)
-	$(CC) -fPIC -I. -Wall -DET_SINGLEMODULE -c $(CFLAGS) $< -o $@
+	$(CC) -fPIC -I. -Wall -DET_SINGLEMODULE -g -c $(CFLAGS) $< -o $@
 
 
 

@@ -19,7 +19,27 @@
 #ifndef _H_evillib_etMemoryBlock
 #define _H_evillib_etMemoryBlock
 
-/** @cond DEV */
+#include "core/etIDState.h"
+
+
+/** @ingroup grMemoryBlock
+@~english
+
+@brief This object, define one Block of memory inside the memory-system
+*/
+typedef struct etMemoryBlock_s etMemoryBlock;
+struct         etMemoryBlock_s {
+    unsigned char       type;               /**< This indicates normaly the header */
+
+    unsigned char       state;              /**< State of the memory-block @see grMemoryBlockStates */
+    size_t              size;               /**< The size in bytes */
+
+    void                *data;              /**< userdata */
+
+    etMemoryBlock       *next;              /**< The next Block in the line */
+};
+
+
 /** @ingroup grMemoryBlock
 
 */
@@ -32,44 +52,21 @@
 
 
 
-
-/** @ingroup grMemoryBlock
-@~english
-
-@brief This object, define one Block of memory inside the memory-system
-*/
-typedef struct etMemoryBlock etMemoryBlock;
-typedef struct         etMemoryBlock {
-    unsigned char       type;                   /** This indicates normaly the header */
-
-    int                 memState;               /**< State of the memory-block @see grMemoryBlockStates */
-    size_t              Size;                   /**< The size in bytes */
-
-    etMemoryBlock       *next;                  /**< The next Block in the line */
-
-// object-state
-    unsigned char       bObjectState;           /** Future: the memory for the object state */
-    unsigned char       *ObjectState;           /** Future: The pointer to bObjectState */
-
-} etMemoryBlock;
-
-
-
 // Aloc / free
-#define                    etMemoryBlockAlloc( etMemoryBlockActual, size ) __etMemoryBlockAlloc( &etMemoryBlockActual, size )
-void                    __etMemoryBlockAlloc( etMemoryBlock **p_etMemoryBlock, size_t size );
+#define                     etMemoryBlockAlloc( etMemoryBlockActual, size ) __etMemoryBlockAlloc( &etMemoryBlockActual, size )
+void                        __etMemoryBlockAlloc( etMemoryBlock **p_etMemoryBlock, size_t size );
 
 
-void                    etMemoryBlockRelease( etMemoryBlock *etMemoryBlockActual );
+void                        etMemoryBlockRelease( etMemoryBlock *etMemoryBlockActual, etID_BOOL releaseIt );
 
 
-void                    etMemoryBlockFree( etMemoryBlock *etMemoryBlockActual );
+void                        etMemoryBlockFree( etMemoryBlock *etMemoryBlockActual );
 
 
-etID_STATE                etMemoryBlockIsFree( etMemoryBlock *etMemoryBlockActual );
+etID_STATE                  etMemoryBlockIsFree( etMemoryBlock *etMemoryBlockActual );
 
 
-DLL_LOCAL etID_STATE        etMemoryBlockHasSpace( etMemoryBlock *etMemoryBlockActual, size_t size );
+etID_STATE                  etMemoryBlockHasSpace( etMemoryBlock *etMemoryBlockActual, size_t size );
 
 #define                     etMemoryBlockDataGetOffset( etMemoryBlockActual, offset, data ) __etMemoryBlockDataGetOffset( etMemoryBlockActual, offset, (void**)(&data) );
 etID_STATE                  __etMemoryBlockDataGetOffset( etMemoryBlock *etMemoryBlockActual, size_t offset, void **data );
@@ -77,30 +74,26 @@ etID_STATE                  __etMemoryBlockDataGetOffset( etMemoryBlock *etMemor
 #define                     etMemoryBlockDataGet( etMemoryBlockActual, data ) __etMemoryBlockDataGet( etMemoryBlockActual, (void**)(&data) );
 etID_STATE                  __etMemoryBlockDataGet( etMemoryBlock *etMemoryBlockActual, void **data );
 
-#define                     etMemoryBlockFromData( data, etMemoryBlockActual ) __etMemoryBlockFromData( data, &etMemoryBlockActual );
-etID_STATE                  __etMemoryBlockFromData( void *data, etMemoryBlock **p_etMemoryBlockActual );
 
 
 
-// Manipulate
-
-etID_STATE                etMemoryBlockClean( etMemoryBlock *etMemoryBlockActual );
+etID_STATE                  etMemoryBlockClean( etMemoryBlock *etMemoryBlockActual );
 
 
-etID_STATE                etMemoryBlockCopy( etMemoryBlock *etMemoryBlockDest, etMemoryBlock *etMemoryBlockSource, size_t size );
+etID_STATE                  etMemoryBlockCopy( etMemoryBlock *etMemoryBlockDest, etMemoryBlock *etMemoryBlockSource, size_t size );
 
 
-etID_STATE                etMemoryBlockDataSet( etMemoryBlock *etMemoryBlockActual, void *data, size_t offset, size_t size );
+etID_STATE                  etMemoryBlockDataSet( etMemoryBlock *etMemoryBlockActual, void *data, size_t offset, size_t size );
 
 
 
-
-
-
-
-
-
-
+#define                     etMemoryBlockCheck( etMemoryBlock ) \
+                            etDebugCheckNull( etMemoryBlock ); \
+                            if( etMemoryBlock->state & etID_MEM_STATE_ERROR ){ \
+                                snprintf( etDebugTempMessage, etDebugTempMessageLen, "etMemoryBlock is in error state !" ); \
+                                etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage ); \
+                                return  etID_STATE_ERR_INTERR; \
+                            }
 
 
 
@@ -111,6 +104,11 @@ etID_STATE                etMemoryBlockDataSet( etMemoryBlock *etMemoryBlockActu
 
 
 
-/** @endcond */
+
+
+
+
+
+
 #endif
 

@@ -55,37 +55,38 @@ Use this function to set, copy or get data from/to the etMemoryBlock
 *- @ref etID_YES
 *- @ref etID_STATE_NOMEMORY
 */
-void                    __etMemoryBlockAlloc( etMemoryBlock **p_etMemoryBlock, size_t size ){
+void                        __etMemoryBlockAlloc( etMemoryBlock **p_etMemoryBlock, size_t size ){
 // Check
-    etCheckNullVoid( p_etMemoryBlock );
+    etDebugCheckNullVoid( p_etMemoryBlock );
     
 // Allocate new memory
-    etMemoryBlock *etMemoryBlockNew = (etMemoryBlock*)malloc( sizeof(etMemoryBlock) + size );
+    etMemoryBlock *etMemoryBlockNew = (etMemoryBlock*)malloc( sizeof(etMemoryBlock) );
     if( etMemoryBlockNew == NULL ){
         *p_etMemoryBlock = NULL;
-        etDebugState( etID_STATE_NOMEMORY );
+        etDebugState( etID_STATE_CRIT_NOMEMORY );
         return;
     }
+    memset( etMemoryBlockNew, 0, sizeof(etMemoryBlock) );
+
+// set properties
+    etMemoryBlockNew->state = etID_MEM_STATE_ALLOCED | etID_MEM_STATE_USED;
+    etMemoryBlockNew->size = size;
+
+// allocate payload
+    etMemoryBlockNew->data = (etMemoryBlock*)malloc( size );
+    if( etMemoryBlockNew->data == NULL ){
+        *p_etMemoryBlock = NULL;
+        etDebugState( etID_STATE_CRIT_NOMEMORY );
+        return;
+    }
+    memset( etMemoryBlockNew->data, 0, size );
+
 
 // Debug
     #ifndef ET_DEBUG_OFF
         snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p alloced %li", etMemoryBlockNew, size );
         etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
     #endif
-
-// Clean
-    memset( etMemoryBlockNew, 0, sizeof(etMemoryBlock) + size );
-
-// Debug
-    #ifndef ET_DEBUG_OFF
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p cleaned", etMemoryBlockNew );
-        etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
-    #endif
-
-
-// set properties
-    etMemoryBlockNew->Size = size;
-    etMemoryBlockNew->memState = etID_MEM_STATE_ALLOCED | etID_MEM_STATE_USED;
 
 
 // Return
@@ -105,36 +106,43 @@ If ET_SECURE_MEMORY_OFF is not defined, the memory-block will be cleaned.
 
 @param[in] etMemoryBlockActual The pointer to an etMemoryBlock object \n
 */
-void                    etMemoryBlockRelease( etMemoryBlock *etMemoryBlockActual ){
+void                        etMemoryBlockRelease( etMemoryBlock *etMemoryBlockActual, etID_BOOL releaseIt ){
 // Check
-    if ( etMemoryBlockActual == NULL ){
-        return;
-    }
+    etDebugCheckNullVoid( etMemoryBlockActual );
 
-
-// State okay ?
-    if( etMemoryBlockActual->memState & etID_MEM_STATE_ERROR ){
-        etDebugState( etID_STATE_ERROR_INTERNAL );
-        return;
-    }
 
 // Clean
-#ifndef ET_SECURE_MEMORY_OFF
+    #ifndef ET_SECURE_MEMORY_OFF
     if( etMemoryBlockClean( etMemoryBlockActual ) != etID_YES ){
-        etDebugState( etID_STATE_ERROR_INTERNAL );
+        etDebugState( etID_STATE_ERR_INTERR );
         return;
     }
-#endif
+    #endif
 
 // Set properties
-    etMemoryBlockActual->memState &= ~etID_MEM_STATE_USED;
-    etMemoryBlockActual->memState |= etID_MEM_STATE_FREE;
+    if( releaseIt == etID_TRUE ){
+        etMemoryBlockActual->state &= ~etID_MEM_STATE_USED;
+        etMemoryBlockActual->state |= etID_MEM_STATE_FREE;
 
-// Debug
-#ifndef ET_DEBUG_OFF
-    snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p released", etMemoryBlockActual );
-    etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
-#endif
+    // Debug
+        #ifndef ET_DEBUG_OFF
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p->state = free", etMemoryBlockActual );
+        etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
+        #endif
+
+    } else {
+        etMemoryBlockActual->state &= ~etID_MEM_STATE_FREE;
+        etMemoryBlockActual->state |= etID_MEM_STATE_USED;        
+
+    // Debug
+        #ifndef ET_DEBUG_OFF
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p->state = used", etMemoryBlockActual );
+        etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
+        #endif
+
+    }
+
+
 
 // Out
     return;
@@ -151,16 +159,30 @@ Free an etMemoryBlock directly. \n
 This is for internaly use only !
 @param[in] etMemoryBlockActual The pointer to an etMemoryBlock object \n
 */
-void                    etMemoryBlockFree( etMemoryBlock *etMemoryBlockActual ){
-    etCheckNullVoid( etMemoryBlockActual );
+void                        etMemoryBlockFree( etMemoryBlock *etMemoryBlockActual ){
+    etDebugCheckNullVoid( etMemoryBlockActual );
+
+    #ifndef ET_SECURE_MEMORY_OFF
+    if( etMemoryBlockClean( etMemoryBlockActual ) != etID_YES ){
+        etDebugState( etID_STATE_ERR_INTERR );
+        return;
+    }
+    #endif
+
+
+    if( etMemoryBlockActual->state & etID_MEM_STATE_ALLOCED ){
+        free( etMemoryBlockActual->data );
+    }
+
+    
+    free(etMemoryBlockActual);
 
 // Debug
-#ifndef ET_DEBUG_OFF
-    snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p freed", etMemoryBlockActual );
-    etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
-#endif
+    #ifndef ET_DEBUG_OFF
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p freed", etMemoryBlockActual );
+        etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
+    #endif
 
-    free(etMemoryBlockActual);
 }
 
 /** @ingroup grMemoryBlock
@@ -176,15 +198,15 @@ If the etMemoryBlock is locked or in use, this function return etID_NO
 *- @ref etID_YES - etMemoryBlock can be used
 *- @ref etID_NO - etMemoryBlock is locked or in use
 */
-etID_STATE                etMemoryBlockIsFree( etMemoryBlock *etMemoryBlockActual ){
+etID_STATE                  etMemoryBlockIsFree( etMemoryBlock *etMemoryBlockActual ){
 
 // Block is in use
-    if( ! (etMemoryBlockActual->memState & etID_MEM_STATE_FREE) || (etMemoryBlockActual->memState & etID_MEM_STATE_USED) ){
+    if( ! (etMemoryBlockActual->state & etID_MEM_STATE_FREE) || (etMemoryBlockActual->state & etID_MEM_STATE_USED) ){
 
     // Debug
         #ifndef ET_DEBUG_OFF
-            snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p is already in use\n", etMemoryBlockActual );
-            etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p is already in use\n", etMemoryBlockActual );
+        etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
         #endif
 
     // Out
@@ -192,12 +214,12 @@ etID_STATE                etMemoryBlockIsFree( etMemoryBlock *etMemoryBlockActua
     }
 
 // Block is locked
-    if( etMemoryBlockActual->memState & etID_MEM_STATE_LOCKED ){
+    if( etMemoryBlockActual->state & etID_MEM_STATE_LOCKED ){
 
         // Debug
         #ifndef ET_DEBUG_OFF
-            snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p is locked\n", etMemoryBlockActual );
-            etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p is locked\n", etMemoryBlockActual );
+        etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
         #endif
 
     // Out
@@ -226,18 +248,18 @@ etID_STATE                etMemoryBlockIsFree( etMemoryBlock *etMemoryBlockActua
 *- @ref etID_YES - etMemoryBlock has enough space
 *- @ref etID_NO - etMemoryBlock has not enough space
 */
-etID_STATE                etMemoryBlockHasSpace( etMemoryBlock *etMemoryBlockActual, size_t size ){
+etID_STATE                  etMemoryBlockHasSpace( etMemoryBlock *etMemoryBlockActual, size_t size ){
 // Check
     if ( etMemoryBlockActual == NULL ){
         return etID_NO;
     }
 
 // Check if size is enough
-    if( size > etMemoryBlockActual->Size ){
+    if( size > etMemoryBlockActual->size ){
 
     // Debug
     #ifndef ET_DEBUG_OFF
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p has only %li and can not hold %li", etMemoryBlockActual, etMemoryBlockActual->Size, size );
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p has only %li and can not hold %li", etMemoryBlockActual, etMemoryBlockActual->size, size );
         etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
     #endif
     // Out
@@ -246,7 +268,7 @@ etID_STATE                etMemoryBlockHasSpace( etMemoryBlock *etMemoryBlockAct
 
 // Debug
     #ifndef ET_DEBUG_OFF
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p has enoug space(%li) and can hold %li", etMemoryBlockActual, etMemoryBlockActual->Size, size );
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p has enoug space(%li) and can hold %li", etMemoryBlockActual, etMemoryBlockActual->size, size );
         etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
     #endif
 
@@ -270,21 +292,21 @@ etID_STATE                etMemoryBlockHasSpace( etMemoryBlock *etMemoryBlockAct
 *- The void-pointer with an offset
 *- NULL if an error occure
 */
-etID_STATE                __etMemoryBlockDataGetOffset( etMemoryBlock *etMemoryBlockActual, size_t offset, void **data ){
+etID_STATE                  __etMemoryBlockDataGetOffset( etMemoryBlock *etMemoryBlockActual, size_t offset, void **data ){
 // Check
-    etCheckNull( data );
+    etDebugCheckNull( data );
     
     if( etMemoryBlockActual == NULL ){
         *data = NULL;
         return etID_STATE_NODATA;
     }
 
-    if( offset >= etMemoryBlockActual->Size ){
+    if( offset >= etMemoryBlockActual->size ){
         *data = NULL;
         return etID_STATE_NODATA;
     }
 
-    size_t sPointer = (size_t)etMemoryBlockActual + sizeof(etMemoryBlock);
+    size_t sPointer = (size_t)etMemoryBlockActual->data;
     sPointer += offset;
     *data = (void*)sPointer;
 // Out
@@ -308,37 +330,15 @@ Pease use etMemoryBlockDataSet() to set the value of an etMemoryBlock \n
 *- The void-pointer which represent the preallocated data
 *- NULL if an error occure
 */
-etID_STATE                __etMemoryBlockDataGet( etMemoryBlock *etMemoryBlockActual, void **data ){
-// Out
-     return __etMemoryBlockDataGetOffset( etMemoryBlockActual, 0, data);
-}
-
-/** @ingroup grMemoryBlock
-@internal
-@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
-@def etMemoryBlockFromData( data, etMemoryBlockActual )
-
-@~english
-@brief Return the etMemoryBlock from an void pointer
-
-@param data The void-pointer of an etMemoryBlock
-@param etMemoryBlockActual Pointer to an etMemoryBlock
-@return The corresponding etMemoryBlock of an void-pointer or NULL if an error occure \n
-*/
-etID_STATE                __etMemoryBlockFromData( void *data, etMemoryBlock **p_etMemoryBlockActual ){
+etID_STATE                  __etMemoryBlockDataGet( etMemoryBlock *etMemoryBlockActual, void **data ){
 // Check
-    etCheckNull( data );
-    etCheckNull( p_etMemoryBlockActual );
-
-// Go back
-    size_t sPointer = (size_t)data - sizeof(etMemoryBlock);
-
-// Out
-    *p_etMemoryBlockActual = (void*)sPointer;
+    etDebugCheckNull( etMemoryBlockActual );
+    etDebugCheckNull( data );
     
+    *data = etMemoryBlockActual->data;
+
     return etID_YES;
 }
-
 
 
 // Manipulate
@@ -354,28 +354,18 @@ etID_STATE                __etMemoryBlockFromData( void *data, etMemoryBlock **p
 *- @ref etID_YES - data of the etMemoryBlock was correctly cleaned
 *- or an @ref etID_STATE
 */
-etID_STATE                etMemoryBlockClean( etMemoryBlock *etMemoryBlockActual ){
+etID_STATE                  etMemoryBlockClean( etMemoryBlock *etMemoryBlockActual ){
 // Check
-    if( etMemoryBlockActual == NULL ){
-        return etDebugState( etID_STATE_ERR_PARAMETER );
-    }
-
-
-// Vars
-    void *etMemoryBlockData = NULL;
-    etMemoryBlockDataGet( etMemoryBlockActual, etMemoryBlockData );
-    if( etMemoryBlockData == NULL )  return etID_YES;
-
+    etDebugCheckNull( etMemoryBlockActual );
 
 // Overwrite Data ( only if not 0 )
-    if( etMemoryBlockActual->Size > 0 ){
+    if( etMemoryBlockActual->size > 0 ){
+        memset( etMemoryBlockActual->data, 0, etMemoryBlockActual->size );
 
-    #ifndef ET_DEBUG_OFF
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p cleaned", etMemoryBlockActual );
-        etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
-    #endif
-
-        memset( etMemoryBlockData, 0, etMemoryBlockActual->Size );
+        #ifndef ET_DEBUG_OFF
+            snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p cleaned", etMemoryBlockActual );
+            etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
+        #endif
     }
 
 /* Future
@@ -410,7 +400,7 @@ First the size if both blocks will be compared. \n
 *- @ref etID_YES
 *- @ref etID_NO
 */
-etID_STATE                etMemoryBlockCopy( etMemoryBlock *etMemoryBlockDest, etMemoryBlock *etMemoryBlockSource, size_t size ){
+etID_STATE                  etMemoryBlockCopy( etMemoryBlock *etMemoryBlockDest, etMemoryBlock *etMemoryBlockSource, size_t size ){
 //Checks
     if( etMemoryBlockDest == NULL ) return etDebugState( etID_STATE_ERR_PARAMETER );
     if( etMemoryBlockSource == NULL ) return etDebugState( etID_STATE_ERR_PARAMETER );
@@ -419,12 +409,12 @@ etID_STATE                etMemoryBlockCopy( etMemoryBlock *etMemoryBlockDest, e
     size_t etMemoryBlockSizeCopy = 0;
 
 // Target is bigger than the Source
-    if( etMemoryBlockDest->Size > etMemoryBlockSource->Size )
-        etMemoryBlockSizeCopy = etMemoryBlockSource->Size;
+    if( etMemoryBlockDest->size > etMemoryBlockSource->size )
+        etMemoryBlockSizeCopy = etMemoryBlockSource->size;
 
 // Source is bigger than the Target
-    if( etMemoryBlockSource->Size > etMemoryBlockDest->Size )
-        etMemoryBlockSizeCopy = etMemoryBlockDest->Size;
+    if( etMemoryBlockSource->size >= etMemoryBlockDest->size )
+        etMemoryBlockSizeCopy = etMemoryBlockDest->size;
 
 // Copy Size
     if( size < etMemoryBlockSizeCopy )

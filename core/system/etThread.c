@@ -60,7 +60,7 @@ Here is an example for an etThread use:
 */
 etID_STATE              __etThreadAlloc( etThread **p_etThreadActual ){
 // Check
-    etCheckNull( p_etThreadActual );
+    etDebugCheckNull( p_etThreadActual );
 
 
 // Vars
@@ -73,7 +73,7 @@ etID_STATE              __etThreadAlloc( etThread **p_etThreadActual ){
     etMemoryBlockDataGet( etMemoryBlockNew, etThreadActual );
     if( etThreadActual == NULL ){
             *p_etThreadActual = NULL;
-            return etDebugState(etID_STATE_NOMEMORY);
+            return etDebugState(etID_STATE_CRIT_NOMEMORY);
     }
 
 // Debug
@@ -106,7 +106,7 @@ This also kills an running thread
 */
 etID_STATE              __etThreadFree( etThread **p_etThreadActual ){
 // Check
-    etCheckNull( p_etThreadActual );
+    etDebugCheckNull( p_etThreadActual );
     
 // Vars
     etMemoryBlock     *etMemoryBlockActual = NULL;
@@ -115,8 +115,7 @@ etID_STATE              __etThreadFree( etThread **p_etThreadActual ){
     etThreadKill( *p_etThreadActual );
     
 // release memory
-    etMemoryBlockFromData( *p_etThreadActual, etMemoryBlockActual );
-    etMemoryRelease( etMemoryBlockActual );
+    etMemoryRelease( *p_etThreadActual );
 
 // return
     *p_etThreadActual = NULL;
@@ -135,7 +134,7 @@ The function is just set and will not run until you call etThreadRun().
 */
 void                    etThreadSetFunction( etThread *etThreadActual, void (*ThreadFunction)(void*) ){
 // Check
-    etCheckNullVoid( etThreadActual );
+    etDebugCheckNullVoid( etThreadActual );
 
     etThreadActual->ThreadFunction = (void* (*)(void*))ThreadFunction;
 
@@ -154,7 +153,7 @@ This sets the userdata which can be obtained by etThreadGetUserdata() inside the
 */
 void                    etThreadSetUserdata( etThread *etThreadActual, void *userData ){
 // Check
-    etCheckNullVoid( etThreadActual );
+    etDebugCheckNullVoid( etThreadActual );
 
     etThreadActual->userData = userData;
 }
@@ -172,7 +171,7 @@ Get the userdata from the etThread-object which was set before etThreadSetUserda
 */
 void                    __etThreadGetUserdata( etThread *etThreadActual, void **p_userData ){
 // Check
-    etCheckNullVoid( etThreadActual );
+    etDebugCheckNullVoid( etThreadActual );
 
     *p_userData = etThreadActual->userData;
 }
@@ -194,7 +193,7 @@ The thread only starts if etThread is in etID_STATE_READY state \n
 */
 etID_STATE              etThreadRun( etThread *etThreadActual ){
 // Check
-    etCheckNull( etThreadActual );
+    etDebugCheckNull( etThreadActual );
     
 // Check state
     if( etThreadActual->state != etID_STATE_READY ){
@@ -238,7 +237,7 @@ If the thread is not in "run"-state nothing will be done
 */
 etID_STATE              etThreadKill( etThread *etThreadActual ){
 // Check
-    etCheckNull( etThreadActual );
+    etDebugCheckNull( etThreadActual );
 
     if( etThreadActual->state == etID_STATE_RUN ){
 
@@ -287,7 +286,7 @@ to ready. If you run tis function outside an thread nothing will be done.
 */
 etID_STATE              etThreadFinish( etThread *etThreadActual ){
 // Check
-    etCheckNull( etThreadActual );
+    etDebugCheckNull( etThreadActual );
     
 // Works only inside the thread
     if( etThreadActual->thread == pthread_self() ){
@@ -320,7 +319,7 @@ etID_STATE              etThreadFinish( etThread *etThreadActual ){
 */
 void                    etThreadWait( etThread *etThreadActual ){
 // Check
-    etCheckNullVoid( etThreadActual );
+    etDebugCheckNullVoid( etThreadActual );
 
 // Debug
     #ifndef ET_DEBUG_OFF

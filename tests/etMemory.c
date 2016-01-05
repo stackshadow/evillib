@@ -31,14 +31,14 @@
 
 
 // Vars
-etMemoryBlock        *etMemoryBlockActual = NULL;
+void                *etMemoryBlockActual = NULL;
 char                *etMemoryBlockActualData = NULL;
-etMemoryBlock        *etMemoryBlock5 = NULL;
-etMemoryBlock        *etMemoryBlock8 = NULL;
-etMemoryBlock        *etMemoryBlock10 = NULL;
-etMemoryBlock        *etMemoryBlock20 = NULL;
-etMemoryBlock        *etMemoryBlock30 = NULL;
-etMemoryBlock        *etMemoryBlock40 = NULL;
+void                *memoryData05 = NULL;
+void                *memoryData08 = NULL;
+void                *memoryData10 = NULL;
+void                *memoryData20 = NULL;
+void                *memoryData30 = NULL;
+void                *memoryData40 = NULL;
 
 
 etID_STATE            etMemoryTestNULL(){
@@ -53,9 +53,7 @@ etID_STATE            etMemoryTestNULL(){
     __etMemoryRelease( NULL );
     __etMemorySet( NULL, NULL, 10 );
     __etMemorySetOffset( NULL, NULL, 10, 10 );
-    etMemoryOptFreeUnused();
-    etMemoryOptResort();
-    etMemoryDump( NULL, NULL );
+    etMemoryBlockGet( NULL, NULL );
 
     etApicheckTimer( "OK" );
     return etID_YES;
@@ -64,34 +62,37 @@ etID_STATE            etMemoryTestNULL(){
 etID_STATE            etMemoryTestAlloc(){
     etApicheckTimer( "etMemory: Test alloc" );
 
+
 // Prealloc Blocks
-    etMemoryAlloc( etMemoryBlock5, 5 );
-    etMemoryRequest( etMemoryBlock8, 8 );
-    etMemoryRequest( etMemoryBlock10, 10 );
-    etMemoryRequest( etMemoryBlock20, 20 );
-    etMemoryRequest( etMemoryBlock30, 30 );
-    etMemoryRequest( etMemoryBlock40, 40 );
+    etMemoryAlloc( memoryData05, 5 );
+    etMemoryRequest( memoryData08, 8 );
+    etMemoryRequest( memoryData10, 10 );
+    etMemoryRequest( memoryData20, 20 );
 
 // Dump
     etMemoryDump( NULL, NULL );
 
 // Release two Blocks
-    etMemoryBlockActual = etMemoryBlock10;
-    etMemoryRelease( etMemoryBlock10 );
-    etMemoryRelease( etMemoryBlock20 );
+    etMemoryBlockActual = memoryData10;
+    etMemoryRelease( memoryData10 );
+    etMemoryRelease( memoryData20 );
     etMemoryDump( NULL, NULL );
 
 
-// now etMemoryBlock10 is enough to get 9 bytes but etMemoryBlock8 is to less
-    etMemoryRequest( etMemoryBlock10, 9 );
-    if( etMemoryBlockActual != etMemoryBlock10 ){
+// now memoryData10 is enough to get 9 bytes but etMemoryBlock8 is to less
+    etMemoryRequest( memoryData10, 9 );
+    if( etMemoryBlockActual != memoryData10 ){
         snprintf( etDebugTempMessage, etDebugTempMessageLen, "We dont get the correct Block, etMemory dont work as expected !" );
         etDebugMessage( etID_LEVEL_CRITICAL, etDebugTempMessage );
     }
 
     etMemoryDump( NULL, NULL );
 
-
+// cleanup
+    etMemoryRelease( memoryData05 );
+    etMemoryRelease( memoryData08 );
+    etMemoryRelease( memoryData10 );
+    etMemoryRelease( memoryData20 );
 
     etApicheckTimer( "OK" );
     return etID_YES;
@@ -100,40 +101,44 @@ etID_STATE            etMemoryTestAlloc(){
 etID_STATE            etMemoryTestData(){
     etApicheckTimer( "etMemory: Test Data" );
 
+    etMemoryRequest( memoryData05, 5 );
+    etMemoryRequest( memoryData08, 8 );
+    etMemoryRequest( memoryData10, 10 );
+    etMemoryRequest( memoryData20, 20 );
+    
+    const char *testString = memoryData10;
 
 // We write a string to the block
-    etMemorySet( etMemoryBlock10, (void*)"test1\0", 6 );
-    etMemoryBlockDataGet( etMemoryBlock10, etMemoryBlockActualData );
+    etMemorySet( memoryData10, (void*)"test1\0", 6 );
+    testString = memoryData10;
     
-    if( strncmp( etMemoryBlockActualData, "test1", 5 ) == 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds the String: '%s' this is good", etMemoryBlock10, (char*)etMemoryBlockActualData );
+    if( strncmp( memoryData10, "test1", 5 ) == 0 ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds the String: '%s' this is good", memoryData10, (char*)memoryData10 );
         etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
     } else {
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds not the correct String, memory curruption !", etMemoryBlock10 );
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds not the correct String, memory curruption !", memoryData10 );
         etDebugMessage( etID_LEVEL_CRITICAL, etDebugTempMessage );
     }
 
 // Append some data
-    etMemorySetOffset( etMemoryBlock10, (void*)"ing\0", 4, 4 );
-    etMemoryBlockDataGet( etMemoryBlock10, etMemoryBlockActualData );
+    etMemorySetOffset( memoryData10, (void*)"ing\0", 4, 4 );
     
-    if( strncmp( etMemoryBlockActualData, "testing", 7 ) == 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds the String: '%s' this is good", etMemoryBlock10, (char*)etMemoryBlockActualData );
+    if( strncmp( memoryData10, "testing", 7 ) == 0 ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds the String: '%s' this is good", memoryData10, (char*)etMemoryBlockActualData );
         etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
     } else {
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds not the correct String, memory curruption !", etMemoryBlock10 );
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds not the correct String, memory curruption !", memoryData10 );
         etDebugMessage( etID_LEVEL_CRITICAL, etDebugTempMessage );
     }
 
 // append some more data
-    etMemorySetOffset( etMemoryBlock10, (void*)" a new string\0", 7, 13 );
-    etMemoryBlockDataGet( etMemoryBlock10, etMemoryBlockActualData );
+    etMemorySetOffset( memoryData10, (void*)" a new string\0", 7, 13 );
 
-    if( strncmp( etMemoryBlockActualData, "testing a new string", 20 ) == 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds the String: '%s' this is good", etMemoryBlock10, (char*)etMemoryBlockActualData );
+    if( strncmp( memoryData10, "testing a new string", 20 ) == 0 ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds the String: '%s' this is good", memoryData10, (char*)etMemoryBlockActualData );
         etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
     } else {
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds not the correct String, memory curruption !", etMemoryBlock10 );
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds not the correct String, memory curruption !", memoryData10 );
         etDebugMessage( etID_LEVEL_CRITICAL, etDebugTempMessage );
     }
 
@@ -142,11 +147,14 @@ etID_STATE            etMemoryTestData(){
 }
 
 
-etID_STATE            etMemoryCheck(){
+etID_STATE            etMemoryApiCheck(){
     //etApicheckTimerInit();
 
-    etMemoryTestNULL();
-    etMemoryTestAlloc();
+    etInit( 0, NULL );
+    etDebugLevelSet( etID_LEVEL_ALL );
+
+    //etMemoryTestNULL();
+    //etMemoryTestAlloc();
     etMemoryTestData();
 
     return etID_YES;

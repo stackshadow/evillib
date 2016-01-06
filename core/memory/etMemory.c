@@ -148,7 +148,7 @@ void                        etMemoryExit(){
 /** @ingroup grMemory
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
-@fn etID_STATE etMemoryAlloc( etMemoryBlock *etMemoryBlockActual, size_t size )
+@fn etID_STATE etMemoryAlloc( void *data, size_t size )
 @~english
 @brief Allocate a new etMemoryBlock
 
@@ -156,12 +156,11 @@ This allocate a new memory block. Only use this function if you really need to a
 This function will not look for unused, released blocks.
 If you would like to use released, unused Blocks, use the function etMemoryRequest()
 
-@param[out] etMemoryBlockActual The new block ( pointer address will be changed ! )
-@param size Size of the requested Block in Bytes
+@param[out] data Returns the pointer of the new allocated memory
+@param[in] size Size of the requested Block in Bytes
 @return If the etMemory object was correctly allocated \n
 *- @ref etID_YES
-*- @ref etID_LEVEL_CRITICAL ( If the memory system was not init before )
-*- @ref etID_STATE_NOMEMORY
+*- @ref etID_STATE_ERR_PARAMETER
 */
 etID_STATE                  __etMemoryAlloc( void **p_data, size_t size ){
 // Check
@@ -181,7 +180,7 @@ etID_STATE                  __etMemoryAlloc( void **p_data, size_t size ){
 /** @ingroup grMemory
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
-@fn etID_STATE etMemoryRequest( etMemoryBlock *etMemoryBlockActual, size_t size )
+@fn etID_STATE etMemoryRequest( void *data, size_t size )
 @~english
 @brief Request a new Block
 
@@ -191,7 +190,7 @@ If no spare is present, a new Block will be allocated. \n
 
 @todo Don't save the position of the next block inside the block ( to avoid manipulation ) \n Do this in the etMemoryList !
 
-@param[out] etMemoryBlockActual ( pointer address will be changed ! )
+@param[out] data Returns the pointer of the new allocated memory
 @param size Size of the requested Block in Bytes
 @return \n
 *- @ref etID_YES
@@ -235,15 +234,14 @@ etID_STATE                  __etMemoryRequest( void **p_data, size_t size ){
 /** @ingroup grMemory
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
-@fn void etMemoryRelease( etMemoryBlock *etMemoryBlockActual )
+@fn void etMemoryRelease( void *data )
 @~english
 @brief Release a etMemoryBlock for future use
 
 If you release an etMemoryBlock it will be ready for future use and can be returned by etMemoryRequest(). \n
-This reduce the amount of allocs. \n
-This function trigger also an free or an resorting of the memory for optimisation. ( if its enabled )
-
-@param[out] etMemoryBlockActual The pointer to an etMemoryBlock object ( pointer will be set to NULL ! )
+This reduce the amount of allocs.
+ * 
+@param[out] data Pointer to memory which was allocated with etMemoryRequest() or etMemoryAlloc()
 @return If the etMemoryBlock object was released \n
 *- @ref etID_YES - etMemoryBlock object was released
 *- or an @ref etID_STATE
@@ -287,16 +285,17 @@ etID_STATE                  etMemoryClean( void *data ){
 
 /** @ingroup grMemory
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@fn etID_STATE etMemorySet( void *dest, void *source, size_t size )
 
-
-@fn etID_STATE etMemorySet( etMemoryBlock *etMemoryBlockActual, void *dataSource, size_t size )
 @~english
 @brief Set the data inside an etMemoryBlock from an void pointer
 
-This function checks if the etMemoryBlock can hold your requested size and allocate a new block if needed
+This function copy the memory block from source to dest with an amount of size. \n
+If the dest memory can not hold the amount of size ( in bytes ) a new memory block will be alloced. \n
+So the dest-pointer can be different after call of this function
 
-@param[in,out] etMemoryBlockActual The pointer to an etMemoryBlock object ( pointer can change ! )
-@param[in] dataSource The data which will be copyed to the etMemoryBlock
+@param[in,out] dest Pointer to an memory which was allocated with etMemoryAlloc() or etMemoryRequest()
+@param[in] source The data which will be copyed to the etMemoryBlock
 @param[in] size The size ( in Bytes ) of the data you will copy
 @return If the data was copyed from the void-pointer to the etMemoryBlock \n
 *- @ref etID_YES
@@ -345,15 +344,14 @@ etID_STATE                  __etMemorySet( void **p_dest, void *source, size_t s
 
 /** @ingroup grMemory
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
-
-
 @fn etID_STATE etMemorySetOffset( void *data, void *dataSource, size_t offset, size_t size )
+
 @~english
 @brief Set the data inside an etMemoryBlock from an void pointer with an offset
 
 This function checks if the etMemoryBlock can hold your requested size + offset and allocate a new block if needed
 
-@param[in,out] data The pointer to memory which was allocated with etMemory ( pointer can change ! )
+@param[in,out] data Pointer to an memory which was allocated with etMemoryAlloc() or etMemoryRequest()
 @param[in] dataSource The data which will be copyed to data
 @param[in] offset The offset ( in Bytes ) inside the data of the etMemoryBlock where to start with the copy
 @param[in] size The size ( in Bytes ) of the data you will copy

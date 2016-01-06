@@ -28,6 +28,12 @@
 
 
 
+
+
+
+
+
+
 // Basics
 
 DLL_PUBLIC etID_STATE       etMemoryInit();

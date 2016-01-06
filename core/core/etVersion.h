@@ -21,6 +21,9 @@
 #define _H_evillib_etVersion
 
 
+#include "core/etIDState.h"
+
+
 extern char *versionString;
 
 

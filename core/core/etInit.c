@@ -66,9 +66,7 @@ etID_STATE        etInit( int argc, const char* argv[] ){
     if( etMemoryInit() != etID_YES ) return etID_NO;
 
 // Alloc for version string
-    etMemoryBlock *etMemoryBlockActual = NULL;
-    etMemoryAlloc( etMemoryBlockActual, strlen(ET_VERSIONSTRING) + 1 );
-    etMemoryBlockDataGet( etMemoryBlockActual, versionString );
+    etMemoryAlloc( versionString, strlen(ET_VERSIONSTRING) + 1 );
     memcpy( versionString, ET_VERSIONSTRING, strlen(ET_VERSIONSTRING) );
 
 

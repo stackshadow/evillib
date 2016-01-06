@@ -17,7 +17,6 @@
 */
 
 #include "evillib_depends.h"
-#include "evillib_defines.h"
 #include "evillib_version.h"
 
 #include "core/etVersion.h"

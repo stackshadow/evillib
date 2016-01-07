@@ -47,19 +47,19 @@ void                        etMemoryExit();
 #define                     etMemoryAlloc( data, size ) __etMemoryAlloc( (void**)&data, size )
 etID_STATE                  __etMemoryAlloc( void **p_data, size_t size );
 
-#define                     etMemoryRequest( data, size ) __etMemoryRequest( &data, size )
+#define                     etMemoryRequest( data, size ) __etMemoryRequest( (void**)&data, size )
 etID_STATE                  __etMemoryRequest( void **p_data, size_t size );
 
-#define                     etMemoryRelease( data ) __etMemoryRelease( &data )
+#define                     etMemoryRelease( data ) __etMemoryRelease( (void**)&data )
 void                        __etMemoryRelease( void **p_data );
 
 
 etID_STATE                  etMemoryClean( void *data );
 
-#define                     etMemorySet( dest, source, size ) __etMemorySet( &dest, source, size )
+#define                     etMemorySet( dest, source, size ) __etMemorySet( (void**)&dest, source, size )
 etID_STATE                  __etMemorySet( void **p_dest, void *source, size_t size );
 
-#define                     etMemorySetOffset( data, dataSource, offset, size ) __etMemorySetOffset( &data, dataSource, offset, size )
+#define                     etMemorySetOffset( data, dataSource, offset, size ) __etMemorySetOffset( (void**)&data, dataSource, offset, size )
 etID_STATE                  __etMemorySetOffset( void **p_data, void *dataSource, size_t offset, size_t size );
 
 
@@ -68,7 +68,7 @@ etID_STATE                  __etMemorySetOffset( void **p_data, void *dataSource
 
 // Special things
 
-etID_STATE                  etMemoryDump( void *Userdata, void (*IteratorFunction)(    int state, size_t size ) );
+etID_STATE                  etMemoryDump( void *Userdata, void (*IteratorFunction)( int state, size_t size ) );
 
 
 

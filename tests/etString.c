@@ -32,7 +32,7 @@
 
 
 etID_STATE            etStringTest(){
-    etDebugMessage( etID_LEVEL_DETAIL, "Start test.." );
+    etApicheckTimer( "etString: check" );
     
 
 // Vars
@@ -53,7 +53,16 @@ etID_STATE            etStringTest(){
 
 
 // End Timer
-    etDebugMessage( etID_LEVEL_DETAIL, "Test finished" );
+    etApicheckTimer( "OK" );
     return etID_YES;
 }
 
+etID_STATE            etStringApiCheck(){
+    //etApicheckTimerInit();
+
+    etInit( 0, NULL );
+    etDebugLevelSet( etID_LEVEL_ALL );
+
+
+    etStringTest();
+}

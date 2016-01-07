@@ -40,10 +40,10 @@ Don't forget the \0 on set or add of an char-array !
 
 /** @ingroup grStringChar
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@fn etID_STATE etStringCharGet( etString *etStringActual, const char *char );
 
 @~english
 
-@fn etStringCharGet( etStringActual, char )
 @brief Get the Char-Array from the etString
 
 This will return the internal char. You dont need to free this char.
@@ -56,14 +56,10 @@ Dont free this char, it will be managed internaly by the etMemory-System \n
 */
 etID_STATE            __etStringCharGet( etString *etStringActual, const char **p_char ){
 //ERROR CHECKING
-    etCheckNull(etStringActual);
-    etCheckNull(p_char);
+    etObjectCheckGetter(etStringActual);
+    etDebugCheckNull(p_char);
 
-    const char* ActualString = NULL;
-    etMemoryBlockDataGet( etStringActual->data, ActualString );
-
-
-    *p_char = ActualString;
+    *p_char = etStringActual->data;
     return etID_YES;
 }
 
@@ -87,8 +83,8 @@ If the source-char is shorter than maxLen, the len of source-char is used
 */
 etID_STATE            etStringCharSet( etString *etStringActual, const char *source, int maxLen ){
 // Check
-    etCheckNull(etStringActual);
-    etCheckNull(source);
+    etObjectCheckSetter(etStringActual);
+    etDebugCheckNull(source);
 
 // Debug
 #ifndef ET_DEBUG_OFF
@@ -107,7 +103,7 @@ etID_STATE            etStringCharSet( etString *etStringActual, const char *sou
 
 // Copy the memory
     size_t SourceSize = sourceLen * sizeof(char);
-    etMemoryBlockClean( etStringActual->data );
+    etMemoryClean( etStringActual->data );
     ReturnValue = etMemorySet( etStringActual->data, (void*)source, SourceSize );
 
 // save length
@@ -133,8 +129,8 @@ etID_STATE            etStringCharSet( etString *etStringActual, const char *sou
 */
 etID_STATE            etStringCharAdd( etString *etStringActual, const char *source ){
 // Parameter check
-    etCheckNull(etStringActual);
-    etCheckNull(source);
+    etDebugCheckNull(etStringActual);
+    etDebugCheckNull(source);
 
 
 // Debug

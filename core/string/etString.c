@@ -46,7 +46,7 @@ The etString uses the etMemory subsystem to allocate/free/copy/set memory \n
 *- @ref etID_STATE_ERR_PARAMETER
 */
 etID_STATE                __etStringAlloc( etString **p_etStringActual ){
-    return __etStringAllocLen( p_etStringActual, 0 );
+    return __etStringAllocLen( p_etStringActual, 32 );
 }
 
 /** @ingroup grString
@@ -67,11 +67,10 @@ If your string change very frequently, us this function to speed up your applica
 */
 etID_STATE                __etStringAllocLen( etString **p_etStringActual, int NewLen ){
 // Object okay ?
-    etCheckNull( p_etStringActual );
+    etDebugCheckNull( p_etStringActual );
 
 // Vars
-    etMemoryBlock     *etMemoryBlockNew = NULL;
-    etString         *etStringActual = NULL;
+    etString            *etStringActual = NULL;
 
 // Debug
 #ifndef ET_DEBUG_OFF
@@ -80,13 +79,11 @@ etID_STATE                __etStringAllocLen( etString **p_etStringActual, int N
 #endif
 
 // Allocate etString
-    etMemoryAlloc( etMemoryBlockNew, sizeof(etString) );
-    if( etMemoryBlockNew == NULL ){
+    etMemoryAlloc( etStringActual, sizeof(etString) );
+    if( etStringActual == NULL ){
             *p_etStringActual = NULL;
-            return etDebugState(etID_STATE_NOMEMORY);
+            return etDebugState(etID_STATE_CRIT_NOMEMORY);
     }
-    etMemoryBlockDataGet( etMemoryBlockNew, etStringActual );
-
 
     if( NewLen > 0 ){
     // String properties
@@ -116,7 +113,7 @@ etID_STATE                __etStringAllocLen( etString **p_etStringActual, int N
 */
 etID_STATE                etStringInit( etString *etStringActual ){
 // Object okay ?
-    etCheckNull( etStringActual );
+    etObjectCheckGetter( etStringActual );
 
 // Debug
 #ifndef ET_DEBUG_OFF
@@ -149,22 +146,20 @@ This is mainly to clear out an etString, if you have passwords or something else
 */
 etID_STATE                etStringClean( etString *etStringActual ){
 // Parameter check
-    etCheckNull( etStringActual );
+    etObjectCheckSetter( etStringActual );
 
 // Debug
-#ifndef ET_DEBUG_OFF
+    #ifndef ET_DEBUG_OFF
     snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p]", etStringActual );
     etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
-#endif
+    #endif
 
 // Clean the data
-    if( etStringActual->data != NULL ){
-        etMemoryBlockClean( etStringActual->data );
+    if( etMemoryClean( etStringActual->data ) != etID_YES ){
+        return etObjectStateSet( etStringActual, etID_STATE_WARN_INTERR );
     }
 
-// String properties
-    etStringActual->lengthActual = 0;
-
+// return
     return etID_YES;
 }
 
@@ -181,19 +176,19 @@ This function release the memory of an etString but not the etString-Object itse
 *- @ref etID_STATE_ERR_PARAMETER
 */
 etID_STATE                etStringDestroy( etString *etStringActual ){
-// Check object
-    etCheckNull( etStringActual );
+// Parameter check
+    etObjectCheckSetter( etStringActual );
 
 
 // Debug
-#ifndef ET_DEBUG_OFF
+    #ifndef ET_DEBUG_OFF
     snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p]", etStringActual );
     etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
-#endif
+    #endif
 
 // Release the data
     if( etStringActual->data != NULL ){
-        etMemoryBlockRelease( etStringActual->data );
+        etMemoryRelease( etStringActual->data );
         etStringActual->data = NULL;
     }
 
@@ -223,30 +218,27 @@ Also the char-array itselfe will be freed !
 */
 etID_STATE                __etStringFree( etString **p_etStringActual ){
 // Parameter check
-    etCheckNull( p_etStringActual );
+    etDebugCheckNull( p_etStringActual );
+    etObjectCheckSetter( *p_etStringActual );
 
 
 // Debug
-#ifndef ET_DEBUG_OFF
+    #ifndef ET_DEBUG_OFF
     snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p] \n", *p_etStringActual );
     etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
-#endif
+    #endif
 
 // Vars
-    etMemoryBlock         *etMemoryBlockNew = NULL;
-    etString             *etStringActual = *p_etStringActual;
+    etString            *etStringActual = *p_etStringActual;
 
 // Release the data
     if( etStringActual->data != NULL ){
-        etMemoryBlockRelease( etStringActual->data );
+        etMemoryBlockRelease( etStringActual->data, etID_TRUE );
         etStringActual->data = NULL;
     }
 
-
-// Get the Block from the data and release the data
-    etMemoryBlockFromData( (void*)etStringActual, etMemoryBlockNew );
-    etMemoryBlockRelease( etMemoryBlockNew );
-
+// Relese the String itselfe
+    etMemoryBlockRelease( etStringActual, etID_TRUE );
 
 // Return
     *p_etStringActual = NULL;

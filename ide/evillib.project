@@ -96,7 +96,6 @@
       <File Name="../core/memory/etMemoryBlockList.c"/>
       <File Name="../core/memory/etMemoryBlockList.h"/>
       <File Name="../core/memory/etMemoryBlockList.dox"/>
-      <File Name="../core/string/etString.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="string">
       <File Name="../core/string/etString.c"/>
@@ -104,6 +103,7 @@
       <File Name="../core/string/etStringChar.h"/>
       <File Name="../core/string/etString.dox"/>
       <File Name="../core/string/etStringChar.dox"/>
+      <File Name="../core/string/etString.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="system">
       <File Name="../core/system/etThread.h"/>
@@ -286,7 +286,7 @@ make -f make/Makefile clean evillib-core-source</BuildCommand>
         <LibraryPath Value="Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/evillib" CommandArguments="--apicheck /tmp/evillib/build/tests etMemoryBlockList.so --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/evillib" CommandArguments="--apicheck /tmp/evillib/build/tests etStringChar.so --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[LD_PRELOAD=/tmp/evillib/build/core/obj/libevillib.00.15-00.so]]>
       </Environment>

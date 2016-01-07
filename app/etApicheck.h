@@ -21,12 +21,16 @@
 #ifndef _H_evillib_etApicheck
 #define _H_evillib_etApicheck
 
+#include "evillib_depends.h"
+
+#include "core/etIDState.h"
+#include "evillib_defines.h"
 
 typedef struct etApicheck_s {
-    etID_BOOL        timeRunning;
+    etID_BOOL       timeRunning;
     clock_t         timerStart;
     clock_t         timerEnd;
-    clock_t            timeTaken;
+    clock_t         timeTaken;
 } etApicheck;
 
 

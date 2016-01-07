@@ -126,7 +126,7 @@ void                        etMemoryBlockRelease( etMemoryBlock *etMemoryBlockAc
 
     // Debug
         #ifndef ET_DEBUG_OFF
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p->state = free", etMemoryBlockActual );
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p->state = release", etMemoryBlockActual );
         etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
         #endif
 

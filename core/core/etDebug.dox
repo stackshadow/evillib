@@ -1,0 +1,2 @@
+etID_STATE etDebugState( etID_STATE state );
+void etDebugMessage( etID_LEVEL messageLevel, const char *message );

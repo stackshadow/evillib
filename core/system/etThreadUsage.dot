@@ -1,0 +1,71 @@
+digraph G { 
+
+node [
+	style="rounded,filled,bold", 
+	shape=box, 
+	width=4, 
+	penwidth = 1,
+	fontname="Arial"
+	fontsize = 12
+
+];
+  edge [
+    color="#142b30",
+    arrowhead="vee",
+    arrowsize=0.75,
+    penwidth = 2,
+    weight=1.0
+  ];
+
+#ranksep = 1.5;
+#nodesep=1.0
+mindist=1.5
+minlen=2.0
+
+bgcolor="white"
+fontcolor="black"
+splines="ortho"
+compound=true
+
+subgraph main {
+	label="Inside the main program"
+	etThreadMain [ shape=plaintext fillcolor=transparent label="Main Program" ]
+	
+	etThreadAlloc 
+	etThreadSetFunction
+	etThreadSetUserdata
+	etThreadRun
+	etThreadWait [ label="etThreadWait (blocking)" ]
+	etThreadFree
+
+	etThreadMain -> etThreadAlloc [ weight=8 color=transparent ]
+	etThreadAlloc -> etThreadSetFunction [ weight=8 ]
+	etThreadSetFunction -> etThreadSetUserdata [ weight=8 ]
+	etThreadSetUserdata -> etThreadRun [ weight=8 ]
+	etThreadRun -> etThreadWait [ weight=8 ]
+	etThreadWait -> etThreadFree [ weight=8 ]
+}
+
+
+
+subgraph threaded {
+	graph[style=invis];
+	label="Inside the threaded function"
+	etThreadThreaded [ shape=plaintext fillcolor=transparent label="Thread" ]
+
+	etThreadGetUserdata
+	doStuff [label="Do Stuff"]
+	etThreadFinish
+
+	etThreadThreaded -> etThreadGetUserdata [ weight=9 color=transparent ]
+	etThreadGetUserdata -> doStuff [ weight=9 ]
+	doStuff -> etThreadFinish [ weight=9 ]
+}
+
+{ rank=same; etThreadMain; etThreadThreaded }
+{ rank=same; etThreadRun; etThreadGetUserdata }
+
+etThreadRun -> etThreadGetUserdata
+etThreadFinish -> etThreadRun
+
+}

@@ -1,0 +1,6 @@
+libevillib (0.14-1) unstable; urgency=low
+
+  * first debian package for the evillib
+
+ -- stackshadow <stackshadow@evilbrain.de>  Sat, 02 May 2015 12:07:27 +0200
+

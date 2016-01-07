@@ -1,32 +1,28 @@
-/* etString - String handling system
-	Copyright (C) 2015 by Martin Langlotz alias stackshadow
+/*  Copyright (C) 2015 by Martin Langlotz alias stackshadow
 
-	This file is part of evillib.
+    This file is part of evillib.
 
-	evillib is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    evillib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	evillib is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    evillib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef ET_SINGLEMODULE
-	#include "evillib_defines.h"
-	#include "evillib_depends.h"
+#include "evillib_depends.h"
 
-	#include "core/etDebug.h"
-	#include "core/etObject.h"
-	#include "memory/etMemoryBlock.h"
-	#include "memory/etMemory.h"
-	#include "string/etString.h"
-#endif
+#include "core/etDebug.h"
+#include "core/etObject.h"
+#include "memory/etMemory.h"
+#include "string/etString.h"
+
 
 /** @defgroup grString etString - String functions
 @~english
@@ -38,26 +34,26 @@ The etString uses the etMemory subsystem to allocate/free/copy/set memory \n
 
 /** @ingroup grString
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
-@~english
-
 @fn etID_STATE etStringAlloc( etStringActual )
+
+@~english
 @brief Allocate a new etString object
 @see standardFunctions
 
 @param[out] etStringActual The pointer to an etString object pointer
 @return If the etString object was correctly allocated \n
 *- @ref etID_YES
-*- @ref etID_STATE_PARAMETER_MISSUSE
+*- @ref etID_STATE_ERR_PARAMETER
 */
-etID_STATE				__etStringAlloc( etString **p_etStringActual ){
-	return __etStringAllocLen( p_etStringActual, 0 );
+etID_STATE                __etStringAlloc( etString **p_etStringActual ){
+    return __etStringAllocLen( p_etStringActual, 32 );
 }
 
 /** @ingroup grString
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
-@~english
-
 @fn etStringAllocLen( etStringActual, NewLen )
+
+@~english
 @brief Allocate a new etString with preallocated Memory
 
 If your string change very frequently, us this function to speed up your application.
@@ -67,43 +63,40 @@ If your string change very frequently, us this function to speed up your applica
 @return If the etString object was correctly allocated with dedicated len\n
 *- @ref etID_YES
 *- @ref etID_STATE_NOMEMORY
-*- @ref etID_STATE_PARAMETER_MISSUSE
+*- @ref etID_STATE_ERR_PARAMETER
 */
-etID_STATE				__etStringAllocLen( etString **p_etStringActual, int NewLen ){
+etID_STATE                __etStringAllocLen( etString **p_etStringActual, int NewLen ){
 // Object okay ?
-	etCheckNull( p_etStringActual );
+    etDebugCheckNull( p_etStringActual );
 
 // Vars
-	etMemoryBlock 	*etMemoryBlockNew = NULL;
-	etString 		*etStringActual = NULL;
+    etString            *etStringActual = NULL;
 
 // Debug
 #ifndef ET_DEBUG_OFF
-	snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p %i]", *p_etStringActual, NewLen );
-	etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
+    snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p %i]", *p_etStringActual, NewLen );
+    etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
 #endif
 
 // Allocate etString
-	etMemoryAlloc( etMemoryBlockNew, sizeof(etString) );
-	if( etMemoryBlockNew == NULL ){
-			*p_etStringActual = NULL;
-			return etDebugState(etID_STATE_NOMEMORY);
-	}
-	etMemoryBlockDataGet( etMemoryBlockNew, etStringActual );
+    etMemoryAlloc( etStringActual, sizeof(etString) );
+    if( etStringActual == NULL ){
+            *p_etStringActual = NULL;
+            return etDebugState(etID_STATE_CRIT_NOMEMORY);
+    }
 
+    if( NewLen > 0 ){
+    // String properties
+        etStringActual->lengthActual = 0;
+        etStringActual->lengthMax = NewLen;
 
-	if( NewLen > 0 ){
-	// String properties
-		etStringActual->lengthActual = 0;
-		etStringActual->lengthMax = NewLen;
-
-	// Allocate memory for string
-		etMemoryAlloc( etStringActual->data, sizeof(char)*NewLen );
-	}
+    // Allocate memory for string
+        etMemoryAlloc( etStringActual->data, sizeof(char)*NewLen );
+    }
 
 // Return
-	*p_etStringActual = etStringActual;
-	return etID_YES;
+    *p_etStringActual = etStringActual;
+    return etID_YES;
 }
 
 /** @ingroup grString
@@ -116,24 +109,24 @@ etID_STATE				__etStringAllocLen( etString **p_etStringActual, int NewLen ){
 @param[in] etStringActual The pointer to an etString object
 @return If the etString object was correctly init \n
 *- @ref etID_YES
-*- @ref etID_STATE_PARAMETER_MISSUSE
+*- @ref etID_STATE_ERR_PARAMETER
 */
-etID_STATE				etStringInit( etString *etStringActual ){
+etID_STATE                etStringInit( etString *etStringActual ){
 // Object okay ?
-	etCheckNull( etStringActual );
+    etObjectCheckGetter( etStringActual );
 
 // Debug
 #ifndef ET_DEBUG_OFF
-	snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p]", etStringActual );
-	etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
+    snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p]", etStringActual );
+    etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
 #endif
 
 // String properties
-	etStringActual->lengthActual = 0;
-	etStringActual->lengthMax = 0;
-	etStringActual->data = NULL;
+    etStringActual->lengthActual = 0;
+    etStringActual->lengthMax = 0;
+    etStringActual->data = NULL;
 
-	return etID_YES;
+    return etID_YES;
 }
 
 /** @ingroup grString
@@ -149,27 +142,25 @@ This is mainly to clear out an etString, if you have passwords or something else
 @param[in] etStringActual The pointer to an etString object
 @return If the etString object was correctly cleaned \n
 *- @ref etID_YES
-*- @ref etID_STATE_PARAMETER_MISSUSE
+*- @ref etID_STATE_ERR_PARAMETER
 */
-etID_STATE				etStringClean( etString *etStringActual ){
+etID_STATE                etStringClean( etString *etStringActual ){
 // Parameter check
-	etCheckNull( etStringActual );
+    etObjectCheckSetter( etStringActual );
 
 // Debug
-#ifndef ET_DEBUG_OFF
-	snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p]", etStringActual );
-	etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
-#endif
+    #ifndef ET_DEBUG_OFF
+    snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p]", etStringActual );
+    etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
+    #endif
 
 // Clean the data
-	if( etStringActual->data != NULL ){
-		etMemoryBlockClean( etStringActual->data );
-	}
+    if( etMemoryClean( etStringActual->data ) != etID_YES ){
+        return etObjectStateSet( etStringActual, etID_STATE_WARN_INTERR );
+    }
 
-// String properties
-	etStringActual->lengthActual = 0;
-
-	return etID_YES;
+// return
+    return etID_YES;
 }
 
 /** @ingroup grString
@@ -182,38 +173,38 @@ This function release the memory of an etString but not the etString-Object itse
 @param[in] etStringActual The pointer to an etString object
 @return If the etString object was correctly destroyed \n
 *- @ref etID_YES
-*- @ref etID_STATE_PARAMETER_MISSUSE
+*- @ref etID_STATE_ERR_PARAMETER
 */
-etID_STATE				etStringDestroy( etString *etStringActual ){
-// Check object
-	etCheckNull( etStringActual );
+etID_STATE                etStringDestroy( etString *etStringActual ){
+// Parameter check
+    etObjectCheckSetter( etStringActual );
 
 
 // Debug
-#ifndef ET_DEBUG_OFF
-	snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p]", etStringActual );
-	etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
-#endif
+    #ifndef ET_DEBUG_OFF
+    snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p]", etStringActual );
+    etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
+    #endif
 
 // Release the data
-	if( etStringActual->data != NULL ){
-		etMemoryBlockRelease( etStringActual->data );
-		etStringActual->data = NULL;
-	}
+    if( etStringActual->data != NULL ){
+        etMemoryRelease( etStringActual->data );
+        etStringActual->data = NULL;
+    }
 
 // String properties
-	etStringActual->lengthActual = 0;
-	etStringActual->lengthMax = 0;
+    etStringActual->lengthActual = 0;
+    etStringActual->lengthMax = 0;
 
 
-	return etID_YES;
+    return etID_YES;
 }
 
 /** @ingroup grString
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
-@~english
-
 @fn etStringFree( etStringActual )
+
+@~english
 @brief Free an etString
 @see standardFunctions
 
@@ -223,38 +214,35 @@ Also the char-array itselfe will be freed !
 @param[in,out] etStringActual The pointer to an etString object pointer. This will be set to NULL after the function is finished
 @return If the etString object was correctly freed \n
 *- @ref etID_YES
-*- @ref etID_STATE_PARAMETER_MISSUSE
+*- @ref etID_STATE_ERR_PARAMETER
 */
-etID_STATE				__etStringFree( etString **p_etStringActual ){
+etID_STATE                __etStringFree( etString **p_etStringActual ){
 // Parameter check
-	etCheckNull( p_etStringActual );
+    etDebugCheckNull( p_etStringActual );
+    etObjectCheckSetter( *p_etStringActual );
 
 
 // Debug
-#ifndef ET_DEBUG_OFF
-	snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p] \n", *p_etStringActual );
-	etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
-#endif
+    #ifndef ET_DEBUG_OFF
+    snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p] \n", *p_etStringActual );
+    etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
+    #endif
 
 // Vars
-	etMemoryBlock 		*etMemoryBlockNew = NULL;
-	etString 			*etStringActual = *p_etStringActual;
+    etString            *etStringActual = *p_etStringActual;
 
 // Release the data
-	if( etStringActual->data != NULL ){
-		etMemoryBlockRelease( etStringActual->data );
-		etStringActual->data = NULL;
-	}
+    if( etStringActual->data != NULL ){
+        etMemoryBlockRelease( etStringActual->data, etID_TRUE );
+        etStringActual->data = NULL;
+    }
 
-
-// Get the Block from the data and release the data
-	etMemoryBlockFromData( (void*)etStringActual, etMemoryBlockNew );
-	etMemoryBlockRelease( etMemoryBlockNew );
-
+// Relese the String itselfe
+    etMemoryBlockRelease( etStringActual, etID_TRUE );
 
 // Return
-	*p_etStringActual = NULL;
-	return etID_YES;
+    *p_etStringActual = NULL;
+    return etID_YES;
 }
 
 

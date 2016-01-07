@@ -1,0 +1,8 @@
+/** @defgroup compileOptions Compile options
+@ingroup compile
+
+##### ET_DEBUG_OFF
+@copydoc ET_DEBUG_OFF
+
+
+*/

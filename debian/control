@@ -1,0 +1,42 @@
+Source: libevillib
+Section: unknown
+Priority: optional
+Maintainer: stackshadow <stackshadow@evilbrain.de>
+Build-Depends: debhelper (>= 9), rsync, libblkid-dev
+Standards-Version: 3.9.5
+Homepage: www.evilbrain.de
+Vcs-Git: https://github.com/stackshadow/evillib.git
+Vcs-Browser: https://github.com/stackshadow/evillib.git
+
+
+
+Package: libevillib-core
+Architecture: all
+Depends: ${misc:Depends}
+Description: The evillib is an C library which is written to make the programmers live easy
+ Its designed according to the K.I.S.S. principle
+ This package holds the core library with:
+ * memory managemend
+ * networking functions
+ * string handling
+ * multithreading
+
+Package: libevillib-core-dev
+Architecture: all
+Depends: ${misc:Depends}
+Description: The evillib is an C library which is written to make the programmers live easy
+ This package holds the development header of the core library
+ 
+Package: libevillib-extra
+Architecture: all
+Depends: ${misc:Depends}, libevillib-core
+Description: The core component for plugapp
+ This package provides pyload for plugapp
+ Pyload is licenced under GPL v3
+
+Package: libevillib-extra-dev
+Architecture: all
+Depends: ${misc:Depends}, libevillib-core
+Description: The core component for plugapp
+ This package provides pyload for plugapp
+ Pyload is licenced under GPL v3

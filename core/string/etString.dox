@@ -1,0 +1,3 @@
+etID_STATE etStringAlloc( etString *etStringActual );
+etID_STATE etStringAllocLen( etString *etStringActual, int NewLen );
+etID_STATE etStringFree( etString *etStringActual );

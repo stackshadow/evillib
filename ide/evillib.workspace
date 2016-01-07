@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeLite_Workspace Name="evillib" Database="">
+  <Project Name="evillib" Path="evillib.project" Active="Yes"/>
+  <Environment>
+    <![CDATA[]]>
+  </Environment>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Documentation" Selected="no">
+      <Project Name="evillib" ConfigName="docu"/>
+      <Project Name="raspdispd" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Development Header" Selected="no">
+      <Project Name="evillib" ConfigName="develop"/>
+      <Project Name="raspdispd" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="app - debug" Selected="yes">
+      <Project Name="evillib" ConfigName="app - debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="share library" Selected="no">
+      <Project Name="evillib" ConfigName="shared library - debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="evillib-core-source" Selected="no">
+      <Project Name="evillib" ConfigName="evillib-core-source"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="SingleFileCompilation" Selected="no">
+      <Project Name="evillib" ConfigName="SingleFileCompilation"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>

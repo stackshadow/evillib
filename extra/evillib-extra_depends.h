@@ -20,7 +20,6 @@
 #ifndef _H_evillibExtra_depends
 #define _H_evillibExtra_depends
 
-    #include "evillib.h"
-    #include "jansson.h"
+
 
 #endif

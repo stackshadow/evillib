@@ -1,8 +1,17 @@
 
+ifneq ($(VARS),1)
+	include make/vars.make
+endif
+
 include make/evillib-version.make
 
+sourcePath=$(sourceBasePath)/core
+buildPath=$(buildBasePath)/core
 
 headerVersion=$(buildPath)/evillib_version.h
+
+sources = $(shell cd $(sourcePath) && find . -name "*.c" ! -wholename "*specialheaders/*" ! -wholename "*develop/*" ! -wholename "*tests/*" -printf "%p " )
+sourcesFull=$(addprefix $(sourcePath)/,$(sources))
 
 headers=$(sources:.c=.h)
 headersFull=$(addprefix $(sourcePath)/,$(headers))
@@ -23,6 +32,7 @@ clean:
 install: evillib-core-dev-install
 
 #################################### Development / Headers ####################################
+evillib-core: $(buildPath)/evillib.$(Version).h
 evillib-core-dev: $(buildPath)/evillib.$(Version).h
 evillib-core-dev-install: $(includeDir)/evillib.h
 evillib-core-dev-uninstall:
@@ -62,12 +72,13 @@ $(headerVersion):
 $(buildPath)/evillib.$(Version).h: $(headerVersion)
 	@echo "${CCommand}make $@ ${CNormal}"
 	$(MKDIR) $(buildPath)
-	cat $(sourcePath)/evillib_start.h > $@
+	cat $(sourcePath)/specialheaders/evillib_start.h > $@
 	cat $(sourcePath)/evillib_depends.h >> $@
 	cat $(headerVersion) >> $@
+	cat $(sourcePath)/core/etIDState.h >> $@
 	cat $(sourcePath)/evillib_defines.h >> $@
 	cat $(headersFull) >> $@
-	cat $(sourcePath)/evillib_end.h >> $@
+	cat $(sourcePath)/specialheaders/evillib_end.h >> $@
 
 
 # Output directory

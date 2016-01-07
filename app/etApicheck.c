@@ -1,5 +1,4 @@
-/* Apicheck Functions
-    Copyright (C) 2014 by Martin Langlotz
+/*  Copyright (C) 2014-2016 by Martin Langlotz alias stackshadow
 
     This file is part of evillib.
 

@@ -233,12 +233,12 @@ etID_STATE                __etStringFree( etString **p_etStringActual ){
 
 // Release the data
     if( etStringActual->data != NULL ){
-        etMemoryBlockRelease( etStringActual->data, etID_TRUE );
+        etMemoryRelease( etStringActual->data );
         etStringActual->data = NULL;
     }
 
 // Relese the String itselfe
-    etMemoryBlockRelease( etStringActual, etID_TRUE );
+    etMemoryRelease( etStringActual );
 
 // Return
     *p_etStringActual = NULL;

@@ -38,6 +38,7 @@ sharedObjectsFull=$(addprefix $(buildPath)/,$(sharedObjects))
 #CFLAGS=
 #CLIBS=
 
+CFLAGS+=-I $(buildPath)/core
 CFLAGS+=-I ./core
 CFLAGS+=-I ./extra
 CFLAGS+=-g

@@ -1,10 +1,18 @@
 
+ifneq ($(VARS),1)
+	include make/vars.make
+endif
+
 include evillib-version.make
-include evillib-extra-sources.make
+
+sourcePath=$(sourceBasePath)/extra
+buildPath=$(buildBasePath)/extra
+
+sources = $(shell cd $(sourcePath) && find . -name "*.c" ! -wholename "*specialheaders/*" ! -wholename "*develop/*" ! -wholename "*tests/*" -printf "%p " )
+sourcesFull=$(addprefix $(sourcePath)/,$(sources))
 
 headers=$(sources:.c=.h)
 headersFull=$(addprefix $(sourcePath)/,$(headers))
-
 
 .DEFAULT:
 	@sleep 0

@@ -1,5 +1,4 @@
-/* The evillib header file
-    Copyright (C) 2015 by Martin Langlotz alias stackshadow
+/*  Copyright (C) 2014-2016 by Martin Langlotz alias stackshadow
 
     This file is part of evillib.
 
@@ -17,11 +16,30 @@
     along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef _H_etDBObject
+#define _H_etDBObject
 
-#ifdef __cplusplus
-extern "C" {
+
+
+typedef struct etDBObject { 
+    json_t*     jsonTables;     // this is an json_array inside jsonTable
+    json_t*     jsonTable;
+
+
+    json_t*     jsonColumns;
+    json_t*     jsonColumn;
+    void*       jsonColumnIterator;
+} etDBObject;
+
+
+
+
+#define             etDBObjectAlloc( dbObject ) __etDBObjectAlloc( &dbObject )
+etID_STATE          __etDBObjectAlloc( etDBObject **p_dbObject );
+
+#define             etDBObjectFree( dbObject ) __etDBObjectFree( &dbObject )
+etID_STATE          __etDBObjectFree( etDBObject **p_dbObject );
+
+
+
 #endif
-
-
-#ifndef _H_evillibExtra
-#define _H_evillibExtra

@@ -22,6 +22,8 @@ ifneq ($(VARS),1)
 	include make/vars.make
 endif
 
+include make/evillib-version.make
+
 
 sourcePath=$(sourceBasePath)
 buildPath=$(buildBasePath)
@@ -41,14 +43,16 @@ sharedObjectsFull=$(addprefix $(buildPath)/,$(sharedObjects))
 CFLAGS+=-I $(buildPath)/core
 CFLAGS+=-I ./core
 CFLAGS+=-I ./extra
+CFLAGS+=-I ./extra/db
 CFLAGS+=-g
 
 CLIBS+=-lpthread
 CLIBS+=-ldl
 CLIBS+=-ljansson
 CLIBS+=-lsqlite3
-
-
+CLIBS+=-L$(buildPath)/obj 
+CLIBS+=-levillib.$(Version)
+CLIBS+=-levillib-extra.$(Version)
 
 .EXPORT_ALL_VARIABLES:
 
@@ -96,14 +100,14 @@ $(binDir)/evillib: $(buildPath)/evillib $(sharedObjectsFull)
 $(buildPath)/evillib: app/evillib.c
 	@echo "${CCommand}make $@ ${CNormal}"
 	$(CC) -I. -Wall $(CFLAGS) -c app/evillib.c -o $@.o
-	$(CC) -I. -Wall $(CFLAGS) $(CLIBS) -L$(buildPath)/core/obj -levillib.$(Version) $@.o -o $@
+	$(CC) -I. -Wall $(CFLAGS) $(CLIBS) $@.o -o $@
 
 
 $(buildPath)/%.so: $(buildPath)/%.o
 	@mkdir -v -p $$(dirname $@)
 	@echo ""
 	$(CC) -shared \
-	-L$(buildPath)/core/obj -levillib.$(Version) \
+	-L$(buildPath)/obj -levillib.$(Version) \
 	$(CFLAGS) \
 	$< \
 	-o $@

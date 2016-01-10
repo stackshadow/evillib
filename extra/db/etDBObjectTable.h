@@ -16,10 +16,32 @@
     along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H_evillibExtra_depends
-#define _H_evillibExtra_depends
+#ifndef _H_etDBObjectTable
+#define _H_etDBObjectTable
 
-#include <jansson.h>
+
+
+
+
+etID_STATE      etDBObjectTableAdd( etDBObject *dbobject, const char *tableName );
+
+
+etID_STATE      etDBObjectTableForNextReset( etDBObject *dbobject );
+
+
+etID_STATE      etDBObjectTableForNext( etDBObject *dbobject );
+
+
+etID_STATE      etDBObjectTablePick( etDBObject *dbobject, const char *tableName );
+
+
+
+
+
+
+
+
+
 
 
 

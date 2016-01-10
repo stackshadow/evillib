@@ -16,11 +16,14 @@
     along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H_evillibExtra_depends
-#define _H_evillibExtra_depends
+#include "evillib_depends.h"
 
-#include <jansson.h>
+#include "core/etDebug.h"
+#include "core/etObject.h"
+#include "memory/etMemory.h"
+#include "db/etDBObject.h"
+#include "db/etDBObjectTable.h"
 
 
 
-#endif
+

@@ -16,11 +16,30 @@
     along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H_evillibExtra_depends
-#define _H_evillibExtra_depends
 
-#include <jansson.h>
+#include "evillib_defines.h"
+#include "evillib_depends.h"
+#include "evillib-extra_depends.h"
+
+#include "core/etObject.h"
+#include "core/etDebug.h"
+#include "memory/etMemoryBlock.h"
+#include "memory/etMemory.h"
+
+#include "app/etApicheck.h"
+#include "app/etApicheck.c"
+
+#include "etDBObject.h"
 
 
 
-#endif
+etID_STATE            etDBObjectApiCheck(){
+    etApicheckTimer( "etString: check" );
+
+
+
+
+
+    etApicheckTimer( "OK" );
+    return etID_YES;
+}

@@ -1,4 +1,5 @@
-/*  Copyright (C) 2014-2016 by Martin Langlotz alias stackshadow
+/* The evillib source file
+    Copyright (C) 2015 by Martin Langlotz alias stackshadow
 
     This file is part of evillib.
 
@@ -16,11 +17,11 @@
     along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H_evillibExtra_depends
-#define _H_evillibExtra_depends
 
-#include <jansson.h>
-
-
-
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+
+
+

@@ -132,34 +132,22 @@
     <File Name="../documentation/compileOptions.dox"/>
   </VirtualDirectory>
   <VirtualDirectory Name="extra">
-    <File Name="../extra/Makefile"/>
     <VirtualDirectory Name="db">
       <File Name="../extra/db/etDB.c"/>
       <File Name="../extra/db/etDB.h"/>
-      <File Name="../extra/db/etDBColumn.c"/>
-      <File Name="../extra/db/etDBColumn.h"/>
-      <File Name="../extra/db/etDBFilter.c"/>
-      <File Name="../extra/db/etDBFilter.h"/>
-      <File Name="../extra/db/etDBQuery.c"/>
-      <File Name="../extra/db/etDBQuery.h"/>
-      <File Name="../extra/db/etDBRelations.c"/>
-      <File Name="../extra/db/etDBRelations.h"/>
-      <File Name="../extra/db/etDBValue.c"/>
-      <File Name="../extra/db/etDBValue.h"/>
-      <File Name="../extra/db/etDBValue.dox"/>
-      <File Name="../extra/db/etDB.dox"/>
       <File Name="../extra/db/etDBObject.c"/>
       <File Name="../extra/db/etDBObject.h"/>
-      <File Name="../extra/db/etDBColumn.dox"/>
+      <File Name="../extra/db/etDBObjectTable.c"/>
+      <File Name="../extra/db/etDBObjectTable.h"/>
     </VirtualDirectory>
-    <VirtualDirectory Name="dbdriver">
-      <File Name="../extra/dbdriver/etDBSQLite.c"/>
-      <File Name="../extra/dbdriver/etDBSQLite.h"/>
+    <VirtualDirectory Name="dbdriver"/>
+    <VirtualDirectory Name="specialheaders">
+      <File Name="../extra/specialheaders/evillib_start.h"/>
+      <File Name="../extra/specialheaders/evillib_end.h"/>
+      <File Name="../extra/specialheaders/evillib_end.c"/>
+      <File Name="../extra/specialheaders/evillib_start.c"/>
     </VirtualDirectory>
-    <File Name="../extra/etjsonDB"/>
     <File Name="../extra/evillib-extra_depends.h"/>
-    <File Name="../extra/evillib-extra_end.h"/>
-    <File Name="../extra/evillib-extra_start.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="debian">
     <File Name="../debian/changelog"/>
@@ -223,6 +211,7 @@
     <File Name="../tests/etStringChar.c"/>
     <File Name="../tests/etThread.c"/>
     <File Name="../tests/etMemoryBlockList.c"/>
+    <File Name="../tests/etDBObject.c"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -286,9 +275,9 @@ make -f make/Makefile clean evillib-core-source</BuildCommand>
         <LibraryPath Value="Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/evillib" CommandArguments="--apicheck /tmp/evillib/build/tests etStringChar.so --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/evillib" CommandArguments="--apicheck /tmp/evillib/build/tests etDBObject.so --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
-        <![CDATA[LD_PRELOAD=/tmp/evillib/build/core/obj/libevillib.00.15-00.so]]>
+        <![CDATA[LD_LIBRARY_PATH=/tmp/evillib/build/obj/]]>
       </Environment>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
         <DebuggerSearchPaths/>
@@ -301,7 +290,7 @@ make -f make/Makefile clean evillib-core-source</BuildCommand>
         <RebuildCommand/>
         <CleanCommand>make -f make/Makefile clean</CleanCommand>
         <BuildCommand>export CFLAGS="-g" &amp;&amp;
-make -f make/Makefile evillib-core-objects evillib-app</BuildCommand>
+make -f make/Makefile evillib-app</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>

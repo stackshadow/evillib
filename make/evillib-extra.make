@@ -17,19 +17,35 @@
 #	You should have received a copy of the GNU Lesser General Public License
 #	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 
-include evillib-version.make
-include evillib-extra-sources.make
+ifneq ($(VARS),1)
+	include make/vars.make
+endif
+
+include make/evillib-version.make
+
+
+
+sourcePath=$(sourceBasePath)/extra
+buildPath=$(buildBasePath)/extra
+
+sources = $(shell cd $(sourcePath) && find . -name "*.c" ! -wholename "*specialheaders/*" ! -wholename "*develop/*" ! -wholename "*tests/*" -printf "%p " )
+sourcesFull=$(addprefix $(sourcePath)/,$(sources))
+
+headers=$(sources:.c=.h)
+headersFull=$(addprefix $(sourcePath)/,$(headers))
+
 
 
 CFLAGS+=-g
+CFLAGS+=-rdynamic
+CFLAGS+=-I $(sourcePath)
+CFLAGS+=-I $(buildPath)
+CFLAGS+=-I $(sourceBasePath)/core
 
 CLIBS+=-ldl
 CLIBS+=-ljansson
 CLIBS+=-lsqlite3
 
-
-objects+=$(sources:.c=.o)
-objectsFull+=$(addprefix $(buildPath)/,$(objects))
 
 
 ExtraLibraryShared=libevillib-extra.$(Version).so
@@ -54,27 +70,67 @@ install: evillib-extra-install
 evillib-extra: $(libDir) $(buildPath)/$(ExtraLibraryShared)
 evillib-extra-install: $(libDir)/libevillib-extra.so
 
-$(buildPath):
-	@$(MKDIR) $@
-$(buildPath)/libevillib-extra.$(Version).c: $(buildPath)
+
+
+
+$(buildPath)/$(ExtraLibraryShared): $(buildPath)/libevillib-extra.o
 	@echo "${CCommand}make $@ ${CNormal}"
-	#cat $(buildPath)/$(CoreHeader) > $@
-	#cat evillib_start.c >> $@
-	cat $(buildPath)/libevillib-extra.$(Version).h > $@
-	cat $(sourcesFull) >> $@
-	#cat $(sourcePath)/evillib_end.c >> $@
-
-$(buildPath)/$(ExtraLibraryShared): $(buildPath)/libevillib-extra.$(Version).c
-	$(CC) -fPIC -c -Wall \
-	$(CFLAGS) \
+	$(CC) -shared -Wl,-soname,libevillib-extra.so \
+	$< \
 	$(CLIBS) \
-	$< -o $@
+	-o $@
+
+$(buildPath)/libevillib-extra.o: $(buildPath)/evillib-extra.$(Version).c
+	@echo "${CCommand}make $@ ${CNormal}"
+	$(CC) -fPIC -c -Wall \
+	$(CFLAGS) $< -o $@
+
+$(buildPath)/evillib-extra.$(Version).c: $(buildPath)/evillib-extra.$(Version).prep.c
+	@echo "${CCommand}make $@ ${CNormal}"
+	@cat $(sourcePath)/evillib_depends.h > $@
+	@cat $< >> $@
+
+$(buildPath)/evillib-extra.$(Version).prep.c: $(buildPath)/evillib-extra.$(Version).concat.c
+	@echo "${CCommand}make $@ ${CNormal}"
+	@$(CC) -E \
+	-D_H_etDepends \
+	$(CFLAGS) \
+	$< > $@
+
+$(buildPath)/evillib-extra.$(Version).concat.c:
+	@echo "${CCommand}make $@ ${CNormal}"
+	@$(MKDIR) $(buildPath)
+	@cat $(sourcePath)/specialheaders/evillib_start.c >> $@
+	@cat $(sourcesFull) >> $@
+	@cat $(sourcePath)/specialheaders/evillib_end.c >> $@
 
 
-$(libDir)/libevillib-extra.so: $(buildPath)/$(ExtraLibraryShared)
-	@$(MKDIR) $(libDir)/evillib
-	@$(CP) $< $(libDir)/evillib/
-	@$(LN) evillib/libevillib-extra.$(Version).so $@
+
+
+
+objects=$(sources:.c=.o)
+objectsFull=$(addprefix $(buildPath)/,$(objects))
+
+evillib-app: $(buildBasePath)/obj/$(ExtraLibraryShared)
+evillib-app-clean:
+	@$(RM) $(objectsFull)
+
+$(buildBasePath)/obj/$(ExtraLibraryShared): $(objectsFull)
+	@echo "${CCommand}make $@ ${CNormal}"
+	@mkdir -v -p $$(dirname $@)
+	$(CC) -shared -Wl,-soname,libevillib.so \
+	$(CFLAGS) -g \
+	$(CLIBS) \
+	$(objectsFull) \
+	-o $@
+	ln -fs $(buildBasePath)/obj/$(ExtraLibraryShared) $(buildBasePath)/obj/libevillib-extra.so
+
+
+$(buildPath)/%.o: $(sourcePath)/%.c
+	@mkdir -v -p $$(dirname $@)
+	$(CC) -fPIC -I. -Wall -DET_SINGLEMODULE -g -c $(CFLAGS) $< -o $@
+
+
 
 
 # Main Parts

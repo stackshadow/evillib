@@ -109,7 +109,7 @@ etID_STATE              __etThreadFree( etThread **p_etThreadActual ){
     etDebugCheckNull( p_etThreadActual );
     
 // Vars
-    etMemoryBlock     *etMemoryBlockActual = NULL;
+//    etMemoryBlock     *etMemoryBlockActual = NULL;
 
 // Kill Thread before free
     etThreadKill( *p_etThreadActual );

@@ -137,6 +137,7 @@ void                        etMemoryExit(){
 
 
     etMemoryBlockListDump( etMemoryList );
+    etMemoryBlockListFree( etMemoryList );
 
 
     etDebugMessage( etID_LEVEL_INFO, "Memory System deinitialised." );

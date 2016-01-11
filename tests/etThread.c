@@ -20,14 +20,29 @@
 #include "evillib_defines.h"
 #include "evillib_depends.h"
 
+#include "core/etObject.h"
 
 #include "core/etDebug.h"
+#include "core/etDebug.c"
+
 #include "memory/etMemoryBlock.h"
+#include "memory/etMemoryBlock.c"
+#include "memory/etMemoryBlockList.h"
+#include "memory/etMemoryBlockList.c"
 #include "memory/etMemory.h"
-#include "system/etThread.h"
+#include "memory/etMemory.c"
+
+#include "core/etVersion.h"
+#include "core/etVersion.c"
+#include "core/etInit.h"
+#include "core/etInit.c"
 
 #include "app/etApicheck.h"
 #include "app/etApicheck.c"
+
+#include "system/etThread.h"
+#include "system/etThread.c"
+
 
 
 //! [etThread function]
@@ -40,7 +55,7 @@ void    ThreadFunction( void *etThreadVoid ){
 }
 //! [etThread function]
 
-etID_STATE            etThreadTest(){
+etID_STATE              etThreadTest(){
     etDebugMessage( etID_LEVEL_DETAIL, "\nStart test.." );
     etDebugLevelSet( etID_LEVEL_DETAIL_THREAD );
 
@@ -70,4 +85,11 @@ etID_STATE            etThreadTest(){
     etDebugMessage( etID_LEVEL_DETAIL, "Test finished" );
     etDebugLevelSet( etID_LEVEL_ALL );
     return etID_YES;
+}
+
+int                     main( int argc, const char* argv[] ){
+    etInit( argc, argv );
+    etDebugLevelSet( etID_LEVEL_ALL );
+
+    return etThreadTest();
 }

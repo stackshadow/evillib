@@ -19,21 +19,28 @@
 
 #include "evillib_defines.h"
 #include "evillib_depends.h"
-#include "evillib-extra_depends.h"
 
-#include "core/etObject.h"
+
 #include "core/etDebug.h"
+#include "core/etDebug.c"
+
 #include "memory/etMemoryBlock.h"
+#include "memory/etMemoryBlock.c"
+#include "memory/etMemoryBlockList.h"
+#include "memory/etMemoryBlockList.c"
 #include "memory/etMemory.h"
+#include "memory/etMemory.c"
+
+#include "core/etVersion.h"
+#include "core/etVersion.c"
+#include "core/etInit.h"
+#include "core/etInit.c"
 
 #include "app/etApicheck.h"
 #include "app/etApicheck.c"
 
-#include "etDBObject.h"
 
-
-
-etID_STATE            etDBObjectApiCheck(){
+etID_STATE              etDBObjectApiCheck(){
     etApicheckTimer( "etString: check" );
 
 
@@ -42,4 +49,11 @@ etID_STATE            etDBObjectApiCheck(){
 
     etApicheckTimer( "OK" );
     return etID_YES;
+}
+
+int                     main( int argc, const char* argv[] ){
+    etInit( argc, argv );
+    etDebugLevelSet( etID_LEVEL_ALL );
+
+    return etDBObjectApiCheck();
 }

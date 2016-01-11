@@ -40,6 +40,7 @@ evillib-core-dev-uninstall:
 	@$(RM) $(includeDir)/evillib/evillib.$(Version).h
 	@$(RM) $(includeDir)/evillib.h
 evillib-core-source: $(headerVersion)
+evillib-app: $(headerVersion)
 
 $(headerVersion): 
 	@echo "${CCommand}make $@ ${CNormal}"

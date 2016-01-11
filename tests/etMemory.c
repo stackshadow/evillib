@@ -21,9 +21,21 @@
 #include "evillib_depends.h"
 
 #include "core/etObject.h"
+
 #include "core/etDebug.h"
+#include "core/etDebug.c"
+
 #include "memory/etMemoryBlock.h"
+#include "memory/etMemoryBlock.c"
+#include "memory/etMemoryBlockList.h"
+#include "memory/etMemoryBlockList.c"
 #include "memory/etMemory.h"
+#include "memory/etMemory.c"
+
+#include "core/etVersion.h"
+#include "core/etVersion.c"
+#include "core/etInit.h"
+#include "core/etInit.c"
 
 #include "app/etApicheck.h"
 #include "app/etApicheck.c"
@@ -40,7 +52,7 @@ void                *memoryData30 = NULL;
 void                *memoryData40 = NULL;
 
 
-etID_STATE            etMemoryTestNULL(){
+etID_STATE              etMemoryTestNULL(){
     etApicheckTimer( "etMemory: Test NULL" );
 
 // Run all functions with NULL-Pointer
@@ -58,7 +70,7 @@ etID_STATE            etMemoryTestNULL(){
     return etID_YES;
 }
 
-etID_STATE            etMemoryTestAlloc(){
+etID_STATE              etMemoryTestAlloc(){
     etApicheckTimer( "etMemory: Test alloc" );
 
 
@@ -97,7 +109,7 @@ etID_STATE            etMemoryTestAlloc(){
     return etID_YES;
 }
 
-etID_STATE            etMemoryTestData(){
+etID_STATE              etMemoryTestData(){
     etApicheckTimer( "etMemory: Test Data" );
 
     etMemoryRequest( memoryData05, 5 );
@@ -146,23 +158,17 @@ etID_STATE            etMemoryTestData(){
 }
 
 
-etID_STATE            etMemoryApiCheck(){
-    //etApicheckTimerInit();
 
-    etInit( 0, NULL );
+int                     main( int argc, const char* argv[] ){
+    etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
 
     //etMemoryTestNULL();
     //etMemoryTestAlloc();
     etMemoryTestData();
-
-    return etID_YES;
+    
+    return 0;
 }
-
-
-
-
-
 
 
 

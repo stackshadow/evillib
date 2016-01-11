@@ -22,8 +22,19 @@
 
 
 #include "core/etDebug.h"
+#include "core/etDebug.c"
+
 #include "memory/etMemoryBlock.h"
+#include "memory/etMemoryBlock.c"
+#include "memory/etMemoryBlockList.h"
+#include "memory/etMemoryBlockList.c"
 #include "memory/etMemory.h"
+#include "memory/etMemory.c"
+
+#include "core/etVersion.h"
+#include "core/etVersion.c"
+#include "core/etInit.h"
+#include "core/etInit.c"
 
 #include "app/etApicheck.h"
 #include "app/etApicheck.c"
@@ -105,10 +116,15 @@ etID_STATE              etApichecketMemoryBlock(){
 
 
     etApicheckTimer( "OK" );
-    return etID_YES;
+    return 0;
 }
 
 
-etID_STATE              etMemoryBlockApiCheck(){
+
+
+int                     main( int argc, const char* argv[] ){
+    etInit( argc, argv );
+    etDebugLevelSet( etID_LEVEL_ALL );
+
     return etApichecketMemoryBlock();
 }

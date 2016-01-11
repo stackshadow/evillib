@@ -20,7 +20,6 @@
 #include "evillib_defines.h"
 #include "evillib_depends.h"
 
-#include "core/etObject.h"
 
 #include "core/etDebug.h"
 #include "core/etDebug.c"
@@ -40,50 +39,15 @@
 #include "app/etApicheck.h"
 #include "app/etApicheck.c"
 
-#include "system/etThread.h"
-#include "system/etThread.c"
+
+etID_STATE              etDBObjectApiCheck(){
+    etApicheckTimer( "etString: check" );
 
 
 
-//! [etThread function]
-void    ThreadFunction( void *etThreadVoid ){
-    etThread *etThreadActual = (etThread*)etThreadVoid;
 
 
-    sleep(5);
-    etThreadFinish( etThreadActual );
-}
-//! [etThread function]
-
-etID_STATE              etThreadTest(){
-    etDebugMessage( etID_LEVEL_DETAIL, "\nStart test.." );
-    etDebugLevelSet( etID_LEVEL_DETAIL_THREAD );
-
-//! [etThread]
-    etThread *etThreadActual = NULL;
-
-    etThreadAlloc( etThreadActual );
-    etThreadSetFunction( etThreadActual, ThreadFunction );
-    etThreadRun( etThreadActual );
-    etThreadWait( etThreadActual );
-    etThreadFree( etThreadActual );
-//! [etThread]
-
-// Run again and kill
-    etThreadAlloc( etThreadActual );
-    etThreadSetFunction( etThreadActual, ThreadFunction );
-    etThreadRun( etThreadActual );
-    etThreadKill( etThreadActual );
-    etThreadWait( etThreadActual );
-    etThreadFree( etThreadActual );
-    
-// Error testing
-    etThreadActual = NULL;
-    etThreadFinish( NULL );
-    etThreadRun( NULL );
-    
-    etDebugMessage( etID_LEVEL_DETAIL, "Test finished" );
-    etDebugLevelSet( etID_LEVEL_ALL );
+    etApicheckTimer( "OK" );
     return etID_YES;
 }
 
@@ -91,5 +55,5 @@ int                     main( int argc, const char* argv[] ){
     etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
 
-    return etThreadTest();
+    return etDBObjectApiCheck();
 }

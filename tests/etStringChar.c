@@ -20,17 +20,32 @@
 #include "evillib_defines.h"
 #include "evillib_depends.h"
 
+#include "core/etObject.h"
 
 #include "core/etDebug.h"
+#include "core/etDebug.c"
+
 #include "memory/etMemoryBlock.h"
+#include "memory/etMemoryBlock.c"
+#include "memory/etMemoryBlockList.h"
+#include "memory/etMemoryBlockList.c"
 #include "memory/etMemory.h"
-#include "string/etString.h"
-#include "string/etStringChar.h"
+#include "memory/etMemory.c"
+
+#include "core/etVersion.h"
+#include "core/etVersion.c"
+#include "core/etInit.h"
+#include "core/etInit.c"
 
 #include "app/etApicheck.h"
 #include "app/etApicheck.c"
 
-etID_STATE            etStringCharTest(){
+#include "string/etString.h"
+#include "string/etString.c"
+#include "string/etStringChar.h"
+#include "string/etStringChar.c"
+
+etID_STATE              etStringCharTest(){
     etApicheckTimer( "etStringChar: Start test.." );
 
 
@@ -88,12 +103,11 @@ etID_STATE            etStringCharTest(){
     return etID_YES;
 }
 
-etID_STATE            etStringCharApiCheck(){
-    //etApicheckTimerInit();
 
-    etInit( 0, NULL );
+int                     main( int argc, const char* argv[] ){
+    etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
 
-
-    etStringCharTest();
+    return etStringCharTest();
 }
+

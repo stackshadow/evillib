@@ -132,14 +132,7 @@
     <File Name="../documentation/compileOptions.dox"/>
   </VirtualDirectory>
   <VirtualDirectory Name="extra">
-    <VirtualDirectory Name="db">
-      <File Name="../extra/db/etDB.c"/>
-      <File Name="../extra/db/etDB.h"/>
-      <File Name="../extra/db/etDBObject.c"/>
-      <File Name="../extra/db/etDBObject.h"/>
-      <File Name="../extra/db/etDBObjectTable.c"/>
-      <File Name="../extra/db/etDBObjectTable.h"/>
-    </VirtualDirectory>
+    <VirtualDirectory Name="db"/>
     <VirtualDirectory Name="dbdriver"/>
     <VirtualDirectory Name="specialheaders">
       <File Name="../extra/specialheaders/evillib_start.h"/>
@@ -210,8 +203,6 @@
     <File Name="../tests/etString.c"/>
     <File Name="../tests/etStringChar.c"/>
     <File Name="../tests/etThread.c"/>
-    <File Name="../tests/etDBObject.c"/>
-    <File Name="../tests/etDBObject.c"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>

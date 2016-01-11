@@ -17,6 +17,7 @@
 */
 
 #include "evillib_depends.h"
+#include "evillib-extra_depends.h"
 
 #include "core/etDebug.h"
 #include "core/etObject.h"

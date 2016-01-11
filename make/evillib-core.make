@@ -29,7 +29,8 @@ buildPath=$(buildBasePath)/core
 
 sources = $(shell cd $(sourcePath) && find . -name "*.c" ! -wholename "*specialheaders/*" ! -wholename "*develop/*" ! -wholename "*tests/*" -printf "%p " )
 sourcesFull=$(addprefix $(sourcePath)/,$(sources))
-
+objects=$(sources:.c=.o)
+objectsFull=$(addprefix $(buildPath)/,$(objects))
 
 
 
@@ -63,14 +64,17 @@ help:
 	@echo "$(MAKE) -f make/Makefile evillib-core-clean: Clean the build directory of core"
 	@echo "$(MAKE) -f make/Makefile evillib-core-install: copy the created evillib to $(libDir)/libevillib.so"
 	@echo "$(MAKE) -f make/Makefile evillib-core-uninstall: remove the evillib"
+	@echo "FullSources: $(sourcesFull)"
+	@echo "FullObjects: $(objectsFull)"
 	@echo -n "$(CNormal)"
 
-clean: evillib-core-dev-clean evillib-core-clean evillib-app-clean evillib-app-clean
+clean: evillib-core-dev-clean evillib-core-clean evillib-app-clean
 	@$(RM) $(buildPath)/evillib.$(Version).c
 	@$(RM) $(buildPath)/evillib.$(Version).concat.c
 	@$(RM) $(buildPath)/evillib.$(Version).prep.c
 	@$(RM) $(buildPath)/libevillib.o
 	@$(RM) $(buildPath)/$(CoreLibraryShared)
+	@$(RM) $(objectsFull)
 	@$(RM) $(buildPath)/obj/$(CoreLibraryShared)
 
 install: evillib-core-install
@@ -100,7 +104,7 @@ $(buildPath)/libevillib.o: $(buildPath)/evillib.$(Version).c
 
 $(buildPath)/evillib.$(Version).c: $(buildPath)/evillib.$(Version).prep.c
 	@echo "${CCommand}make $@ ${CNormal}"
-	@cat $(sourcePath)/evillib_depends.h > $@
+	@cat core/evillib_depends.h > $@
 	@cat $< >> $@
 
 $(buildPath)/evillib.$(Version).prep.c: $(buildPath)/evillib.$(Version).concat.c
@@ -116,6 +120,25 @@ $(buildPath)/evillib.$(Version).concat.c:
 	@cat $(sourcePath)/specialheaders/evillib_start.c >> $@
 	@cat $(sourcesFull) >> $@
 	@cat $(sourcePath)/specialheaders/evillib_end.c >> $@
+
+
+
+evillib-core-objects: $(buildPath)/obj/$(CoreLibraryShared)
+
+$(buildPath)/obj/$(CoreLibraryShared): $(objectsFull)
+	@echo "${CCommand}make $@ ${CNormal}"
+	@mkdir -v -p $$(dirname $@)
+	$(CC) -shared -Wl,-soname,libevillib.so \
+	$(CFLAGS) -g \
+	$(CLIBS) \
+	$(objectsFull) \
+	-o $@
+
+$(buildPath)/%.o: $(sourcePath)/%.c
+	@mkdir -v -p $$(dirname $@)
+	$(CC) -fPIC -I. -Wall -DET_SINGLEMODULE -g -c $(CFLAGS) $< -o $@
+
+
 
 
 evillib-core-install: $(libDir)/libevillib.so $(shareDir)/pkgconfig/evillib.pc
@@ -139,29 +162,30 @@ $(shareDir)/pkgconfig/evillib.pc:
 
 
 
-
-objects=$(sources:.c=.o)
-objectsFull=$(addprefix $(buildPath)/,$(objects))
-
-evillib-app: $(buildBasePath)/obj/$(CoreLibraryShared)
-evillib-app-clean:
-	@$(RM) $(objectsFull)
-
-$(buildBasePath)/obj/$(CoreLibraryShared): $(objectsFull)
-	@echo "${CCommand}make $@ ${CNormal}"
-	@mkdir -v -p $$(dirname $@)
-	$(CC) -shared -Wl,-soname,libevillib.so \
-	$(CFLAGS) -g \
-	$(CLIBS) \
-	$(objectsFull) \
-	-o $@
-	ln -fs $(buildBasePath)/obj/$(CoreLibraryShared) $(buildBasePath)/obj/libevillib.so
-
-$(buildPath)/%.o: $(sourcePath)/%.c
-	@mkdir -v -p $$(dirname $@)
-	$(CC) -fPIC -I. -Wall -DET_SINGLEMODULE -g -c $(CFLAGS) $< -o $@
+#################################### docu target ####################################
+docu: $(buildPath)/$(CoreHeader)
 
 
+
+
+# this holds apicheckObjects
+#include $(sourceCoreDir)/app/apichecks/Makefile
+
+#apicheckObjects += $(buildPath)/app/evillib.o
+
+#evillib-app: $(buildDir)/evillib 
+#$(buildDir)/evillib: $(sourceCoreDir)/evillib_version.h $(apicheckObjects) $(CoreDeployDir)
+#	gcc -L $(buildPath) $(apicheckObjects) -levillib.00.14-04 -o $(buildDir)/evillib
+
+#evillib-app-single: $(buildDir)/evillib-single
+#$(buildDir)/evillib-single: $(SingleObjects)
+#	gcc $(apicheckObjects) $(SingleObjects) -o $(buildDir)/evillib
+
+
+
+output:
+	@echo $(objects)
+	@echo $(CoreAppObjectsFull)
 
 
 

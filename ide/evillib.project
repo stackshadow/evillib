@@ -109,6 +109,8 @@
       <File Name="../core/system/etThread.h"/>
       <File Name="../core/system/etThread.c"/>
       <File Name="../core/system/etThreadUsage.dot"/>
+      <File Name="../core/system/etFile.c"/>
+      <File Name="../core/system/etFile.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="specialheaders">
       <File Name="../core/specialheaders/evillib_end.c"/>
@@ -203,6 +205,7 @@
     <File Name="../tests/etString.c"/>
     <File Name="../tests/etStringChar.c"/>
     <File Name="../tests/etThread.c"/>
+    <File Name="../tests/etFile.c"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -266,7 +269,7 @@ make -f make/Makefile clean evillib-core-source</BuildCommand>
         <LibraryPath Value="Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/tests/etMemory" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/tests/etFile" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[LD_LIBRARY_PATH=/tmp/evillib/build/obj/]]>
       </Environment>

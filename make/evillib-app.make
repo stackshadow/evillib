@@ -59,8 +59,8 @@ CLIBS+=-ldl
 CLIBS+=-ljansson
 CLIBS+=-lsqlite3
 CLIBS+=-L$(buildPath)/obj 
-CLIBS+=-levillib.$(Version)
-CLIBS+=-levillib-extra.$(Version)
+#CLIBS+=-levillib.$(Version)
+#CLIBS+=-levillib-extra.$(Version)
 
 .EXPORT_ALL_VARIABLES:
 

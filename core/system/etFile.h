@@ -21,25 +21,34 @@
 #define _H_etFile
 
 
+typedef enum etFileChecksumType {
+    etFileChecksum_NONE = 0,
+    etFileChecksum_SHA1
+} etFileChecksumType;
 
 typedef struct etFile {
+// paths
+    etString                **pathArray;
+    int                     pathArraySize;
 
-    
-    etString        **pathArray;
-    int             pathArraySize;
-    
+// file infos
+    unsigned long int       sizeInBytes;
+
+// checksumming stuff
+    etFileChecksumType      checksumType;
+    etString                *checksum;
+
 } etFile;
-
 
 
 #define             etFileAlloc( file ) __etFileAlloc( &file )
 etID_STATE          __etFileAlloc( etFile **p_etFileActual );
 
-
-etID_STATE          etFileAppend( etFile *file, etString *path );
-
 #define             etFileFree( file ) __etFileFree( &file )
 etID_STATE          __etFileFree( etFile **p_etFileActual );
+
+
+etID_STATE          etFileAppend( etFile *file, etString *path );
 
 
 

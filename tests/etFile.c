@@ -60,12 +60,17 @@ int                     main( int argc, const char* argv[] ){
     
     etStringAlloc( actualString );
     etStringCharSet( actualString, "/etc/fstab", 10 );
-    
+
+// allocate the minimum size
+    for( int index = 0; index < etFileArraySize; index++ ){
+        etFileAppend( actualFile, actualString );
+    }
+
+
+
+// allocate a new one, so force etFileAppend to realloc
     etFileAppend( actualFile, actualString );
-    etFileAppend( actualFile, actualString );
-    etFileAppend( actualFile, actualString );
-    etFileAppend( actualFile, actualString );
-    etFileAppend( actualFile, actualString );
+
 
     etStringFree( actualString );
     etFileFree( actualFile );

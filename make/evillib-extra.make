@@ -45,6 +45,8 @@ CFLAGS+=-I $(sourceBasePath)/core
 CLIBS+=-ldl
 CLIBS+=-ljansson
 CLIBS+=-lsqlite3
+CLIBS+=-lssl
+CLIBS+=-lcrypto 
 
 
 

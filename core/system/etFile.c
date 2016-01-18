@@ -17,6 +17,7 @@
 */
 
 #include "evillib_depends.h"
+#include "evillib-extra_depends.h"
 
 #include "core/etDebug.h"
 #include "core/etObject.h"
@@ -27,58 +28,29 @@
 int etFileArraySize = 10;
 
 
+
+
 etID_STATE          __etFileAlloc( etFile **p_etFileActual ){
     etDebugCheckNull( p_etFileActual );
 
 // vars
-    etFile      *etFileNew = NULL;
+    etFile          *etFileNew = NULL;
 
-// allocate
+
+// allocate a one pointer array
     etMemoryRequest( etFileNew, sizeof(etFile) );
 
-// init
-    etFileNew->pathArraySize = etFileArraySize;
-    etMemoryRequest( etFileNew->pathArray, etFileNew->pathArraySize * sizeof(void*) );
+// alloc array
+    etMemoryRequest( etFileNew->pathArray, sizeof(etString*) );
+    etStringAlloc( etFileNew->checksum );
+
+
+// setup etFile
+    etFileNew->pathArraySize = 1;
+
 
 // return
     *p_etFileActual = etFileNew;
-    return etID_YES;
-}
-
-
-etID_STATE          etFileAppend( etFile *file, etString *path ){
-// check
-    etDebugCheckNull( file );
-    etDebugCheckNull( path );
-
-// vars
-    etString        *actualPath = NULL;
-    etString        **newPathArray = NULL;
-
-// try to set
-    for( int index = 0; index < file->pathArraySize; index++ ){
-
-        actualPath = file->pathArray[index];
-        
-        if( actualPath == NULL ){
-            file->pathArray[index] = path;
-            return etID_YES;
-        }
-
-    }
-
-// oh now more memory, create bigger one
-    etMemoryRequest( newPathArray, (file->pathArraySize+etFileArraySize) * sizeof(void*) );
-    memcpy( newPathArray, file->pathArray, file->pathArraySize * sizeof(void*) );
-    etMemoryRelease( file->pathArray );
-    file->pathArray = newPathArray;
-    
-    file->pathArray[file->pathArraySize] = path;
-    
-    file->pathArraySize = file->pathArraySize + etFileArraySize;
-
-
-
     return etID_YES;
 }
 
@@ -97,7 +69,62 @@ etID_STATE          __etFileFree( etFile **p_etFileActual ){
 }
 
 
+etID_STATE          etFileAppend( etFile *file, etString *path ){
+// check
+    etDebugCheckNull( file );
+    etDebugCheckNull( path );
 
+// vars
+    int                 etFileArrayMemSize = file->pathArraySize * sizeof(etString*);
+
+// try to set
+    for( int index = 0; index < file->pathArraySize; index++ ){
+
+        if( file->pathArray[index] == NULL ){
+            file->pathArray[index] = path;
+            return etID_YES;
+        }
+
+    }
+
+// oh no more memory, create bigger one
+    etString    **pathArray = NULL;
+    etMemoryRequest( pathArray, etFileArrayMemSize * 2 );
+    memcpy( pathArray, file->pathArray, etFileArrayMemSize );
+    etMemoryRelease( file->pathArray );
+    file->pathArray = pathArray;
+    
+    
+    file->pathArray[file->pathArraySize] = path;
+    file->pathArraySize = etFileArrayMemSize * 2;
+    
+
+
+
+    return etID_YES;
+}
+
+
+etID_STATE          etFileValidateChecksum( etFile *file ){
+    
+// vars
+    MD5_CTX     ctx;
+    size_t      bytes;
+    char        fileData[1024];
+    
+
+    MD5_Init( &ctx );
+
+    fopen(  )
+
+    while( (bytes = fread( fileData, 1, 1024, inFile )) != 0 ){
+        MD5_Update( &ctx, fileData, bytes );
+    }
+
+
+
+
+}
 
 
 

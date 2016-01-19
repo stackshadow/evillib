@@ -24,17 +24,20 @@
 
 
 
-#define                etStringCharGet( etStringActual, char ) __etStringCharGet( etStringActual, &char )
-etID_STATE            __etStringCharGet( etString *etStringActual, const char **p_char );
+#define                 etStringCharGet( etStringActual, char ) __etStringCharGet( etStringActual, &char )
+etID_STATE              __etStringCharGet( etString *etStringActual, const char **p_char );
+
+#define                 etStringCharCopy( etStringActual, dest, maxLen ) __etStringCharCopy( etStringActual, (char*)(&dest), maxLen )
+etID_STATE              __etStringCharCopy( etString *etStringActual, char *target, int maxLen );
 
 
-etID_STATE            etStringCharSet( etString *etStringActual, const char *source, int maxLen );
+etID_STATE              etStringCharSet( etString *etStringActual, const char *source, int maxLen );
 
 
-etID_STATE            etStringCharAdd( etString *etStringActual, const char *source );
+etID_STATE              etStringCharAdd( etString *etStringActual, const char *source );
 
 
-int                    etStringCharFind( etString *etStringActual, const char *compareString, int offset );
+int                     etStringCharFind( etString *etStringActual, const char *compareString, int offset );
 
 
 

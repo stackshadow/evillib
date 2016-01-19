@@ -269,7 +269,7 @@ make -f make/Makefile clean evillib-core-source</BuildCommand>
         <LibraryPath Value="Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/tests/etFile" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/tests/etStringChar" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[LD_LIBRARY_PATH=/tmp/evillib/build/obj/]]>
       </Environment>
@@ -367,13 +367,13 @@ make evillib-core-dev</BuildCommand>
       <PostBuild/>
       <CustomBuild Enabled="yes">
         <RebuildCommand/>
-        <CleanCommand>make doc-clean</CleanCommand>
-        <BuildCommand>make evillib-doc</BuildCommand>
+        <CleanCommand>make -f documentation/Makefile doc-clean</CleanCommand>
+        <BuildCommand>make -f documentation/Makefile evillib-doc</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
         <ThirdPartyToolName/>
-        <WorkingDirectory>/usr/src/evillib/make</WorkingDirectory>
+        <WorkingDirectory>../</WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
         <CustomPostBuild/>

@@ -21,14 +21,18 @@
 
 
 
-typedef struct etDBObject { 
-    json_t*     jsonTables;     // this is an json_array inside jsonTable
-    json_t*     jsonTable;
+typedef struct etDBObject {
+   
+    json_t*         jsonTables;     // this is an json_array inside jsonTable
 
+// table stuff
+    json_t*         jsonTable;
+    int             jsonTableIndex;
 
-    json_t*     jsonColumns;
-    json_t*     jsonColumn;
-    void*       jsonColumnIterator;
+// column stuff
+    json_t*         jsonColumns;
+    json_t*         jsonColumn;
+    int             jsonColumnIndex;
 } etDBObject;
 
 
@@ -40,6 +44,8 @@ etID_STATE          __etDBObjectAlloc( etDBObject **p_dbObject );
 #define             etDBObjectFree( dbObject ) __etDBObjectFree( &dbObject )
 etID_STATE          __etDBObjectFree( etDBObject **p_dbObject );
 
+
+etID_STATE          etDBObjectDump( etDBObject *dbObject );
 
 
 #endif

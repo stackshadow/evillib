@@ -23,17 +23,27 @@
 
 
 
+
+
+
+
+
 etID_STATE      etDBObjectTableAdd( etDBObject *dbobject, const char *tableName );
 
 
-etID_STATE      etDBObjectTableForNextReset( etDBObject *dbobject );
+etID_STATE      etDBObjectTableReset( etDBObject *dbobject );
 
 
-etID_STATE      etDBObjectTableForNext( etDBObject *dbobject );
+etID_STATE      etDBObjectTableNextReset( etDBObject *dbobject );
+
+
+etID_STATE      etDBObjectTableNext( etDBObject *dbobject );
 
 
 etID_STATE      etDBObjectTablePick( etDBObject *dbobject, const char *tableName );
 
+#define         etDBObjectTableNameGet( dbobject, tableName ) __etDBObjectTableNameGet( dbobject, &tableName )
+etID_STATE      __etDBObjectTableNameGet( etDBObject *dbobject, const char **p_tableName );
 
 
 

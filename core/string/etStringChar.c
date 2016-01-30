@@ -54,12 +54,45 @@ Dont free this char, it will be managed internaly by the etMemory-System \n
 *- NULL if no string is aviable or etStringActual is NULL
 @warning Don't free the resulting char, your application will crash !
 */
-etID_STATE            __etStringCharGet( etString *etStringActual, const char **p_char ){
+etID_STATE              __etStringCharGet( etString *etStringActual, const char **p_char ){
 //ERROR CHECKING
     etObjectCheckGetter(etStringActual);
     etDebugCheckNull(p_char);
 
     *p_char = etStringActual->data;
+    return etID_YES;
+}
+
+/** @ingroup grStringChar
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@fn etID_STATE etStringCharCopy( etString *etStringActual, char target, int maxLen )
+
+@~english
+
+@brief Copy the the etString to an char array
+
+@snippet etStringChar.c etStringCharCopy
+
+
+@param[in] etStringActual The pointer to an etString object
+@param[out] target The pointer to an char array
+@param[in] maxLen The maximum lenght of chars of the provided array
+*/
+etID_STATE              __etStringCharCopy( etString *etStringActual, char *target, int maxLen ){
+//ERROR CHECKING
+    etObjectCheckGetter(etStringActual);
+    etDebugCheckNull(target);
+    
+    unsigned int lengthToCopy = etStringActual->lengthActual;
+    
+    if( lengthToCopy > maxLen ){
+        lengthToCopy = maxLen;
+    }
+    
+// copy memory
+    memcpy( target, etStringActual->data, lengthToCopy * sizeof(char) );
+    
+    
     return etID_YES;
 }
 
@@ -81,7 +114,7 @@ If the source-char is shorter than maxLen, the len of source-char is used
 *- @ref etID_STATE_ERR_PARAMETER
 *- @ref etID_YES
 */
-etID_STATE            etStringCharSet( etString *etStringActual, const char *source, int maxLen ){
+etID_STATE              etStringCharSet( etString *etStringActual, const char *source, int maxLen ){
 // Check
     etObjectCheckSetter(etStringActual);
     etDebugCheckNull(source);
@@ -127,7 +160,7 @@ etID_STATE            etStringCharSet( etString *etStringActual, const char *sou
 *- @ref etID_STATE_ERR_PARAMETER
 *- @ref etID_YES
 */
-etID_STATE            etStringCharAdd( etString *etStringActual, const char *source ){
+etID_STATE              etStringCharAdd( etString *etStringActual, const char *source ){
 // Parameter check
     etDebugCheckNull(etStringActual);
     etDebugCheckNull(source);
@@ -179,7 +212,7 @@ The search start from "Offset"
 *- >0 Start-Position where the Char-Array is located. 0 is the first char !
 *- -1 An error occure, or CompareString is not included inside the etString
 */
-int                    etStringCharFind( etString *etStringActual, const char *compareString, int offset ){
+int                     etStringCharFind( etString *etStringActual, const char *compareString, int offset ){
 //ERROR CHECKING
     if( etStringActual == NULL ){
         etDebugState(etID_STATE_ERR_PARAMETER);

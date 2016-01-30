@@ -82,6 +82,7 @@ etID_STATE              etStringCharTest(){
 
 
 
+
 // Add something to the string
     etStringCharAdd( etStringActual, " for an longer String" );
     etStringCharGet( etStringActual, etStringChar );
@@ -91,6 +92,25 @@ etID_STATE              etStringCharTest(){
     } else {
         etDebugMessage( etID_LEVEL_CRITICAL, "String is incorrect" );
     }
+
+
+
+// copy to an char array
+//! [etStringCharCopy]
+    // define an tempArray
+    char tempArray[100];
+
+    // copy from etString to tempArray
+    etStringCharCopy( etStringActual, tempArray, 100 );
+
+    // compare if this is correct
+    if( strncmp( tempArray, "An test for an longer String", 28 ) == 0 ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds the String: '%s' this is good", etStringActual, (char*)tempArray );
+        etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
+    } else {
+        etDebugMessage( etID_LEVEL_CRITICAL, "String is incorrect" );
+    }
+//! [etStringCharCopy]
 
 // Find something inside the string
     int foundPosition = etStringCharFind( etStringActual, "longer", 0 );

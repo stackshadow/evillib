@@ -58,9 +58,11 @@ CLIBS+=-lpthread
 CLIBS+=-ldl
 CLIBS+=-ljansson
 CLIBS+=-lsqlite3
+CLIBS+=-lssl
+CLIBS+=-lcrypto 
 CLIBS+=-L$(buildPath)/obj 
-CLIBS+=-levillib.$(Version)
-CLIBS+=-levillib-extra.$(Version)
+#CLIBS+=-levillib.$(Version)
+#CLIBS+=-levillib-extra.$(Version)
 
 .EXPORT_ALL_VARIABLES:
 

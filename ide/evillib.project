@@ -109,6 +109,8 @@
       <File Name="../core/system/etThread.h"/>
       <File Name="../core/system/etThread.c"/>
       <File Name="../core/system/etThreadUsage.dot"/>
+      <File Name="../core/system/etFile.c"/>
+      <File Name="../core/system/etFile.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="specialheaders">
       <File Name="../core/specialheaders/evillib_end.c"/>

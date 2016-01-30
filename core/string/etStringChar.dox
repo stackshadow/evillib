@@ -1,1 +1,2 @@
-etID_STATE            etStringCharGet( etString *etStringActual, const char *char );
+etID_STATE              etStringCharGet( etString *etStringActual, const char *char );
+etID_STATE              etStringCharCopy( etString *etStringActual, char target, int maxLen );

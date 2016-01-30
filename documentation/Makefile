@@ -18,7 +18,9 @@
 #	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 
 
-include ../core/MakefileBase.make
+ifneq ($(VARS),1)
+	include make/vars.make
+endif
 
 .DEFAULT:
 	@echo "$@: This target dont exist in docu Makefile"
@@ -39,7 +41,7 @@ $(docDir):
 	@$(MKDIR) $(docDir)
 
 doc: $(docDir)
-	mkdir -p ./output
+	cd documentation && \
 	SOURCEDIR=../ \
 	SECTION="DEV" \
 	OUTPUTDIR=$(docDir) \

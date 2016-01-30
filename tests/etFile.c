@@ -20,6 +20,7 @@
 #include "evillib_defines.h"
 #include "evillib_depends.h"
 
+#include "core/etObject.h"
 
 #include "core/etDebug.h"
 #include "core/etDebug.c"
@@ -36,24 +37,45 @@
 #include "core/etInit.h"
 #include "core/etInit.c"
 
-#include "app/etApicheck.h"
-#include "app/etApicheck.c"
+#include "string/etString.h"
+#include "string/etString.c"
+#include "string/etStringChar.h"
+#include "string/etStringChar.c"
 
+#include "system/etFile.h"
+#include "system/etFile.c"
 
-etID_STATE              etDBObjectApiCheck(){
-    etApicheckTimer( "etString: check" );
-
-
-
-
-
-    etApicheckTimer( "OK" );
-    return etID_YES;
-}
 
 int                     main( int argc, const char* argv[] ){
     etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
+    etMemoryDump( NULL, NULL );
 
-    return etDBObjectApiCheck();
+// vars
+    etFile      *actualFile = NULL;
+    etString    *actualString = NULL;
+    
+    
+    etFileAlloc( actualFile );
+    
+    etStringAlloc( actualString );
+    etStringCharSet( actualString, "/etc/fstab", 10 );
+
+// allocate the minimum size
+    for( int index = 0; index < etFileArraySize; index++ ){
+        etFileAppend( actualFile, actualString );
+    }
+
+
+
+// allocate a new one, so force etFileAppend to realloc
+    etFileAppend( actualFile, actualString );
+
+
+    etStringFree( actualString );
+    etFileFree( actualFile );
+    
+
+    etMemoryDump( NULL, NULL );
+    return 0;
 }

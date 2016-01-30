@@ -20,7 +20,8 @@
 #define _H_evillibExtra_depends
 
 #include <jansson.h>
-
+#include <openssl/sha.h>
+#include <openssl/md5.h>
 
 
 #endif

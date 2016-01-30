@@ -16,12 +16,20 @@
     along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _H_etDBObjectTable
-#define _H_etDBObjectTable
+
+#ifndef _H_etFile
+#define _H_etFile
 
 
+typedef enum etFileChecksumType {
+    etFileChecksum_NONE = 0,
+    etFileChecksum_SHA1
+} etFileChecksumType;
 
-
+typedef struct etFile {
+// paths
+    etString                **pathArray;
+    int                     pathArraySize;
 
 
 
@@ -30,6 +38,9 @@
 
 etID_STATE      etDBObjectTableAdd( etDBObject *dbobject, const char *tableName );
 
+// checksumming stuff
+    etFileChecksumType      checksumType;
+    etString                *checksum;
 
 etID_STATE      etDBObjectTableReset( etDBObject *dbobject );
 

@@ -61,7 +61,18 @@ etID_STATE          __etDBObjectFree( etDBObject **p_dbObject ){
 }
 
 
+etID_STATE          etDBObjectDump( etDBObject *dbObject ){
+// vars
+    etDebugCheckNull( dbObject );
 
+    
+    char *jsonDump = json_dumps( dbObject->jsonTables, JSON_INDENT(4) );
+    
+    snprintf( etDebugTempMessage, etDebugTempMessageLen, "%s", jsonDump );
+    etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+
+    return etID_YES;
+}
 
 
 

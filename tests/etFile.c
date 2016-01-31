@@ -51,30 +51,7 @@ int                     main( int argc, const char* argv[] ){
     etDebugLevelSet( etID_LEVEL_ALL );
     etMemoryDump( NULL, NULL );
 
-// vars
-    etFile      *actualFile = NULL;
-    etString    *actualString = NULL;
-    
-    
-    etFileAlloc( actualFile );
-    
-    etStringAlloc( actualString );
-    etStringCharSet( actualString, "/etc/fstab", 10 );
 
-// allocate the minimum size
-    for( int index = 0; index < etFileArraySize; index++ ){
-        etFileAppend( actualFile, actualString );
-    }
-
-
-
-// allocate a new one, so force etFileAppend to realloc
-    etFileAppend( actualFile, actualString );
-
-
-    etStringFree( actualString );
-    etFileFree( actualFile );
-    
 
     etMemoryDump( NULL, NULL );
     return 0;

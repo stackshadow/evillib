@@ -138,7 +138,6 @@
       <File Name="../extra/db/etDBObject.c"/>
       <File Name="../extra/db/etDBObject.h"/>
       <File Name="../extra/db/etDBObjectTable.c"/>
-      <File Name="../extra/db/etDBObjectTable.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="dbdriver"/>
     <VirtualDirectory Name="specialheaders">

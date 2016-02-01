@@ -17,7 +17,10 @@
 #	You should have received a copy of the GNU Lesser General Public License
 #	along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 
-include vars.make
+ifneq ($(VARS),1)
+	include make/vars.make
+endif
+
 include evillib-version.make
 
 .DEFAULT:
@@ -37,6 +40,6 @@ evillib-doc: $(docDir)/evillib/$(Version)
 
 $(docDir)/evillib/$(Version):
 	mkdir -p $(docDir)/evillib/$(Version)
-	cd ../documentation && SOURCEDIR=.. OUTPUTDIR="$(docDir)/evillib/$(Version)" doxygen 
+	cd documentation && SOURCEDIR=.. OUTPUTDIR="$(docDir)/evillib/$(Version)" doxygen 
 
 .PHONY: $(docDir)/evillib/$(Version)

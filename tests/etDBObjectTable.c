@@ -56,8 +56,7 @@ int                     main( int argc, const char* argv[] ){
 
 // this should not ! work
     const char *testTableName = NULL;
-    etDBObjectTableNameGet( table, testTableName );
-    if( testTableName != NULL ){
+    if( etDBObjectTableNameGet( table, testTableName ) == etID_YES ){
         return -1;
     }
 
@@ -98,5 +97,34 @@ int                     main( int argc, const char* argv[] ){
         return -1;
     }
 
+
+// set display name
+    etDBObjectTableDisplayNameSet( table, NULL, "Default Display Name" );
+    etDBObjectTableDisplayNameSet( table, "de", "Not the correct de tablename" );
+    etDBObjectTableDisplayNameSet( table, "de255", "German Table 3" );
+    etDBObjectTableDisplayNameSet( table, "en", "Stupid" );
+    etDBObjectTableDisplayNameSet( table, "en255", "English Table 3" );
+
+// check display name
+    const char *displayName = NULL;
+    etDBObjectTableDisplayNameGet( table, NULL, displayName );
+    if( strncmp(displayName,"Default Display Name",20) != 0 ){
+        etDebugMessage( etID_LEVEL_DETAIL_DB, "Display Name incorrect" );
+        return -1;
+    }
+    etDBObjectTableDisplayNameGet( table, "de", displayName );
+    if( strncmp(displayName,"German Table 3",14) != 0 ){
+        etDebugMessage( etID_LEVEL_DETAIL_DB, "Display Name incorrect" );
+        return -1;
+    }
+    etDBObjectTableDisplayNameGet( table, "en", displayName );
+    if( strncmp(displayName,"English Table 3",14) != 0 ){
+        etDebugMessage( etID_LEVEL_DETAIL_DB, "Display Name incorrect" );
+        return -1;
+    }
+
+
+
+    etDBObjectDump( table );
     return 0;
 }

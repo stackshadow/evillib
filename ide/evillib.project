@@ -138,6 +138,8 @@
       <File Name="../extra/db/etDBObject.c"/>
       <File Name="../extra/db/etDBObject.h"/>
       <File Name="../extra/db/etDBObjectTable.c"/>
+      <File Name="../extra/db/etDBObjectTable.h"/>
+      <File Name="../extra/db/etDBObjectTable.dox"/>
     </VirtualDirectory>
     <VirtualDirectory Name="dbdriver"/>
     <VirtualDirectory Name="specialheaders">
@@ -374,12 +376,12 @@ make evillib-core-dev</BuildCommand>
       <CustomBuild Enabled="yes">
         <RebuildCommand/>
         <CleanCommand>make doc-clean</CleanCommand>
-        <BuildCommand>make evillib-doc</BuildCommand>
+        <BuildCommand>make -f make/Makefile evillib-doc</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
         <ThirdPartyToolName/>
-        <WorkingDirectory>/usr/src/evillib/make</WorkingDirectory>
+        <WorkingDirectory>../</WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
         <CustomPostBuild/>

@@ -6,7 +6,7 @@
   </Environment>
   <Project Name="multisync" Path="../../multisync/ide/multisync.project"/>
   <BuildMatrix>
-    <WorkspaceConfiguration Name="Documentation" Selected="no">
+    <WorkspaceConfiguration Name="Documentation" Selected="yes">
       <Project Name="evillib" ConfigName="docu"/>
       <Project Name="raspdispd" ConfigName="Debug"/>
       <Project Name="multisync" ConfigName="Debug"/>
@@ -16,7 +16,7 @@
       <Project Name="raspdispd" ConfigName="Debug"/>
       <Project Name="multisync" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="app - debug" Selected="yes">
+    <WorkspaceConfiguration Name="app - debug" Selected="no">
       <Project Name="evillib" ConfigName="app - debug"/>
       <Project Name="multisync" ConfigName="Debug"/>
     </WorkspaceConfiguration>

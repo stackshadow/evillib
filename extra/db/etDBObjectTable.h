@@ -28,28 +28,33 @@
 
 
 
-etID_STATE      etDBObjectTableAdd( etDBObject *dbobject, const char *tableName );
+etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName );
 
 
-etID_STATE      etDBObjectTableReset( etDBObject *dbobject );
+etID_STATE      etDBObjectTableReset( etDBObject *dbObject );
 
 
-etID_STATE      etDBObjectTableNextReset( etDBObject *dbobject );
+etID_STATE      etDBObjectTableNextReset( etDBObject *dbObject );
 
 
-etID_STATE      etDBObjectTableNext( etDBObject *dbobject );
+etID_STATE      etDBObjectTableNext( etDBObject *dbObject );
 
 
-etID_STATE      etDBObjectTablePick( etDBObject *dbobject, const char *tableName );
-
-#define         etDBObjectTableNameGet( dbobject, tableName ) __etDBObjectTableNameGet( dbobject, &tableName )
-etID_STATE      __etDBObjectTableNameGet( etDBObject *dbobject, const char **p_tableName );
+etID_STATE      etDBObjectTablePick( etDBObject *dbObject, const char *tableName );
 
 
 
 
+etID_STATE      etDBObjectTableNameSet( etDBObject *dbObject, const char *tableName );
+
+#define         etDBObjectTableNameGet( dbObject, tableName ) __etDBObjectTableNameGet( dbObject, &tableName )
+etID_STATE      __etDBObjectTableNameGet( etDBObject *dbObject, const char **p_tableName );
 
 
+etID_STATE      etDBObjectTableDisplayNameSet( etDBObject *dbObject, const char *langCode, const char *displayName );
+
+#define         etDBObjectTableDisplayNameGet( dbObject, langCode, displayName ) __etDBObjectTableDisplayNameGet( dbObject, langCode, &displayName )
+etID_STATE      __etDBObjectTableDisplayNameGet( etDBObject *dbObject, const char *langCode, const char **p_displayName );
 
 
 

@@ -1,0 +1,2 @@
+etID_STATE etDBObjectTableNameGet( etDBObject *dbObject, const char *tableName );
+etID_STATE etDBObjectTableDisplayNameGet( etDBObject *dbObject, const char *langCode, const char *displayName );

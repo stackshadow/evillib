@@ -26,103 +26,209 @@
 #include "db/etDBObject.h"
 #include "db/etDBObjectTable.h"
 
+/** @defgroup gretDBObjectTable etDBObjectTable - Table handling for etDBObject
+@short The etDBObject contains Tables, this functions handle this tables
 
 
-etID_STATE      etDBObjectTableAdd( etDBObject *dbobject, const char *tableName ){
+
+
+*/
+
+
+/** @ingroup gretDBObjectTable
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+
+@~english
+@short Add an table to an etDBObject
+
+If tableName is NULL, nothing will be done. \n
+
+@param[in] dbObject The pointer to an etDBObject
+@param[in] tableName The name of the new table
+@return If the table was added correctly \n
+*- @ref etID_STATE_ERR_PARAMETER
+*- @ref etID_STATE_ERR
+*- @ref etID_YES
+*/
+etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName ){
 // check
-    etDebugCheckNull( dbobject );
+    etDebugCheckNull( dbObject );
     etDebugCheckNull( tableName );
 
-// vars
-    json_t      *jsonTable = json_object();
+// create the table
+    dbObject->jsonTable = json_object();
+    if( dbObject->jsonTable == NULL ){
+        return etID_STATE_ERR;
+    }
 
 // add the table name
-    json_object_set( jsonTable, "name", json_string(tableName) );
+    if( json_object_set_new( dbObject->jsonTable, "name", json_string(tableName) ) != 0 ){
+        return etID_STATE_ERR;
+    }
+//    json_object_set_new( jsonTable, "inDB", json_integer(0) );
 
 // add the "new" table to the array
-    json_array_append( dbobject->jsonTables, jsonTable );
+    if( json_array_append( dbObject->jsonTables, dbObject->jsonTable ) != 0 ){
+        return etID_STATE_ERR;
+    }
 
 // reset the rest
-    etDBObjectTableReset( dbobject );
+    etDBObjectTableReset( dbObject );
 
     return etID_YES;
 }
 
+/** @ingroup gretDBObjectTable
+@internal
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
-etID_STATE      etDBObjectTableReset( etDBObject *dbobject ){
+@~english
+@short Reset The table
+
+Reset the table
+
+@param[in] dbObject The pointer to an etDBObject
+@return If the table was added correctly \n
+*- @ref etID_STATE_ERR_PARAMETER
+*- @ref etID_YES
+*/
+etID_STATE      etDBObjectTableReset( etDBObject *dbObject ){
 // check
-    etDebugCheckNull( dbobject );
-
-// reset the actual table stuff    
-    dbobject->jsonTable = NULL;
+    etDebugCheckNull( dbObject );
 
 // reset the column stuff
-    dbobject->jsonColumns = NULL;
-    dbobject->jsonColumn = NULL;
-    dbobject->jsonColumnIndex = 0;
+    dbObject->jsonColumns = NULL;
+    dbObject->jsonColumn = NULL;
+    dbObject->jsonColumnIndex = 0;
 
 // return
     return etID_YES;
 }
 
+/** @ingroup gretDBObjectTable
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
-etID_STATE      etDBObjectTableNextReset( etDBObject *dbobject ){
+@~english
+@short Reset the iteration of all tables
+
+This reset the iteration of an table to beginning for later use of etDBObjectTableNext()
+
+@param[in] dbObject The pointer to an etDBObject
+@return  \n
+*- @ref etID_STATE_ERR_PARAMETER
+*- @ref etID_YES
+*/
+etID_STATE      etDBObjectTableNextReset( etDBObject *dbObject ){
 // check
-    etDebugCheckNull( dbobject );
+    etDebugCheckNull( dbObject );
 
-    dbobject->jsonTableIndex = 0;
+    dbObject->jsonTableIndex = 0;
 
     return etID_YES;
 }
 
+/** @ingroup gretDBObjectTable
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
-etID_STATE      etDBObjectTableNext( etDBObject *dbobject ){
+@~english
+@short Go to the next table
+
+@param[in] dbObject The pointer to an etDBObject
+@return \n
+*- @ref etID_STATE_ERR_PARAMETER
+*- @ref etID_YES
+*/
+etID_STATE      etDBObjectTableNext( etDBObject *dbObject ){
 // check
-    etDebugCheckNull( dbobject );
+    etDebugCheckNull( dbObject );
 
 // vars
     int     jsonArraySize;
     
 // get size
-    jsonArraySize = json_array_size( dbobject->jsonTables );
+    jsonArraySize = json_array_size( dbObject->jsonTables );
     
 // check size
-    if( dbobject->jsonTableIndex >= jsonArraySize ){
+    if( dbObject->jsonTableIndex >= jsonArraySize ){
         return etID_STATE_NODATA;
     }
 
 // reset
-    etDBObjectTableReset( dbobject );
+    etDBObjectTableReset( dbObject );
 
 // get
-    dbobject->jsonTable = json_array_get( dbobject->jsonTables, dbobject->jsonTableIndex );
+    dbObject->jsonTable = json_array_get( dbObject->jsonTables, dbObject->jsonTableIndex );
     
 // increment
-    dbobject->jsonTableIndex = dbobject->jsonTableIndex + 1;
+    dbObject->jsonTableIndex = dbObject->jsonTableIndex + 1;
 
 
 // return
-    if( dbobject->jsonTable != NULL ){
+    if( dbObject->jsonTable != NULL ){
         return etID_YES;
     }
     return etID_STATE_NODATA;
 }
 
 
-etID_STATE      etDBObjectTablePick( etDBObject *dbobject, const char *tableName ){
+etID_STATE      etDBObjectTablePick( etDBObject *dbObject, const char *tableName ){
     
 }
 
 
-etID_STATE      __etDBObjectTableNameGet( etDBObject *dbobject, const char **p_tableName ){
+
+/** @ingroup gretDBObjectTable
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+
+@~english
+@short Set the name of the current table
+
+You can set the current table with etDBObjectTableNext() or etDBObjectTablePick()
+
+@param[in] dbObject The pointer to an etDBObject
+@param[in] tableName The new name of the current table
+@return \n
+*- @ref etID_STATE_ERR_PARAMETER
+*- @ref etID_YES
+*/
+etID_STATE      etDBObjectTableNameSet( etDBObject *dbObject, const char *tableName ){
 // check
-    etDebugCheckNull( dbobject );
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( tableName );
+
+    json_object_set_new( dbObject->jsonTable, "name", json_string(tableName) );
+    
+    return etID_YES;
+}
+
+/** @ingroup gretDBObjectTable
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@fn etID_STATE etDBObjectTableNameGet( etDBObject *dbObject, const char *tableName );
+@~english
+@short Get the name of the current table
+
+You can set the current table with etDBObjectTableNext() or etDBObjectTablePick() \n
+If no table is selected the tableName is set to "". \n
+
+
+@param[in] dbObject The pointer to an etDBObject
+@param[in] tableName The name of the current table
+@return \n
+*- @ref etID_STATE_ERR_PARAMETER
+*- @ref etID_STATE_WARN_SEQERR
+*- @ref etID_STATE_NODATA
+*- @ref etID_YES
+*/
+etID_STATE      __etDBObjectTableNameGet( etDBObject *dbObject, const char **p_tableName ){
+// check
+    etDebugCheckNull( dbObject );
     etDebugCheckNull( p_tableName );
 
 
 // check if we pick a table
-    if( dbobject->jsonTable == NULL ){
-        *p_tableName = NULL;
+    if( dbObject->jsonTable == NULL ){
+        etDebugMessage( etID_STATE_WARN, "You did not select a table, so you don't get a name" );
+        *p_tableName = "";
         return etID_STATE_WARN_SEQERR;
     }
 
@@ -130,9 +236,9 @@ etID_STATE      __etDBObjectTableNameGet( etDBObject *dbobject, const char **p_t
     json_t      *jsonTableName = NULL;
 
 // try to get the table name
-    jsonTableName = json_object_get( dbobject->jsonTable, "name" );
+    jsonTableName = json_object_get( dbObject->jsonTable, "name" );
     if( jsonTableName == NULL ){
-        *p_tableName = NULL;
+        *p_tableName = "";
         return etID_STATE_NODATA;
     }
 
@@ -142,5 +248,112 @@ etID_STATE      __etDBObjectTableNameGet( etDBObject *dbobject, const char **p_t
 
     return etID_YES;
 }
+
+/** @ingroup gretDBObjectTable
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+
+@~english
+@short Set the display name of the current table
+
+You can set the current table with etDBObjectTableNext() or etDBObjectTablePick() \n
+If no table is selected the tableName is set to "". \n
+You need two chars as language code. Like "de" or "en". If you provide more chars, only the first two letters are used
+
+@param[in] dbObject The pointer to an etDBObject
+@param[in] langCode The language code
+@param[in] displayName The name of the current table
+@return \n
+*- @ref etID_STATE_ERR_PARAMETER
+*- @ref etID_STATE_WARN_SEQERR
+*- @ref etID_STATE_NODATA
+*- @ref etID_YES
+*/
+etID_STATE      etDBObjectTableDisplayNameSet( etDBObject *dbObject, const char *langCode, const char *displayName ){
+// check
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( displayName );
+
+
+// check if we pick a table
+    if( dbObject->jsonTable == NULL ){
+        etDebugMessage( etID_STATE_WARN, "You did not select a table, so you don't can set a name" );
+        return etID_STATE_WARN_SEQERR;
+    }
+
+// vars
+    char        fullLangCode[15] = "displayName";
+
+
+// if the langCode is not null
+    if( langCode != NULL ){
+    // displayName + _de
+        strncpy( fullLangCode, "displayName_", 12 );
+        strncpy( &fullLangCode[12], langCode, 2 );
+        fullLangCode[14] = 0;        
+    }
+
+// set string inside the object
+    json_object_set_new( dbObject->jsonTable, fullLangCode, json_string(displayName) );
+    
+    return etID_YES;
+}
+
+/** @ingroup gretDBObjectTable
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@fn etID_STATE etDBObjectTableDisplayNameGet( etDBObject *dbObject, const char *langCode, const char *displayName );
+@~english
+@short Get the display name of the current table
+
+You can set the current table with etDBObjectTableNext() or etDBObjectTablePick() \n
+If no table is selected the tableName is set to "". \n
+You need two chars as language code. Like "de" or "en". If you provide more chars, only the first two letters are used
+
+@param[in] dbObject The pointer to an etDBObject
+@param[in] langCode The language code
+@param[in] tableName The name of the current table
+@return \n
+*- @ref etID_STATE_ERR_PARAMETER
+*- @ref etID_STATE_WARN_SEQERR
+*- @ref etID_STATE_NODATA
+*- @ref etID_YES
+*/
+etID_STATE      __etDBObjectTableDisplayNameGet( etDBObject *dbObject, const char *langCode, const char **p_displayName ){
+// check
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( p_displayName );
+
+
+// check if we pick a table
+    if( dbObject->jsonTable == NULL ){
+        etDebugMessage( etID_STATE_WARN, "You did not select a table, so you don't can get a name" );
+        *p_displayName = "";
+        return etID_STATE_WARN_SEQERR;
+    }
+
+// vars
+    char        fullLangCode[11+4] = "displayName";
+    json_t      *jsonString = NULL;
+
+// if no langCode was provided, use the default
+    if( langCode != NULL ){
+    // set displayname
+        strncpy( fullLangCode, "displayName_", 12 );
+        strncpy( &fullLangCode[12], langCode, 2 );
+        fullLangCode[14] = 0;
+    }
+
+// check if we get the string
+    jsonString = json_object_get( dbObject->jsonTable, fullLangCode );
+    if( jsonString == NULL ){
+        *p_displayName = "";
+        return etID_STATE_NODATA;
+    }
+
+// return the display name
+    *p_displayName = json_string_value( jsonString );
+    return etID_YES;
+}
+
+
 
 

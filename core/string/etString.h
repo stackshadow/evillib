@@ -29,6 +29,10 @@
 #include "core/etDebug.h"
 #include "core/etObject.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct etString {
     etObject;
     
@@ -74,7 +78,9 @@ etID_STATE                  __etStringFree( etString **p_etStringActual );
 
 
 
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

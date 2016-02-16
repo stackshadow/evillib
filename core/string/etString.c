@@ -23,6 +23,9 @@
 #include "memory/etMemory.h"
 #include "string/etString.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** @defgroup grString etString - String functions
 @~english
@@ -251,7 +254,9 @@ etID_STATE                __etStringFree( etString **p_etStringActual ){
 
 
 
-
+#ifdef __cplusplus
+}
+#endif
 
 
 

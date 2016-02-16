@@ -24,7 +24,9 @@
 #include "memory/etMemory.h"
 
 
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 typedef struct etObject_s {
@@ -87,7 +89,9 @@ typedef struct etObject_s {
                 } \
                 return (objectVariable)->object.state;
 
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

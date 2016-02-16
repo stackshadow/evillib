@@ -22,7 +22,9 @@
 #include "core/etVersion.h"
 
 
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 char *versionString;
 
@@ -62,6 +64,8 @@ etID_STATE      etVersionCheck( int Main, int Minor, int Patch ){
 
 
 
-
+#ifdef __cplusplus
+}
+#endif
 
 

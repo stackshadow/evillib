@@ -23,14 +23,12 @@
 
 #include "core/etIDState.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 extern char *versionString;
-
-
-
-
-
-
 
 
 
@@ -41,5 +39,11 @@ const char*        etLibVersion();
 etID_STATE        etVersionCheck( int Main, int Minor, int Patch );
 
 
+
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

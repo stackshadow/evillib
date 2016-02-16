@@ -23,6 +23,11 @@
 
 #include "core/etIDState.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 
 
 etID_STATE      etInit( int argc, const char* argv[] );
@@ -32,5 +37,11 @@ etID_STATE      etInit( int argc, const char* argv[] );
     dlopen( "/usr/lib/evillib.so", RTLD_GLOBAL );
 
 
+
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

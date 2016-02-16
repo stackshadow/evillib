@@ -27,6 +27,9 @@
 #include "memory/etMemoryBlock.h"
 #include "memory/etMemory.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** @defgroup grCoreCommandLine Default Command line options
 
@@ -153,3 +156,6 @@ etID_STATE        etInit( int argc, const char* argv[] ){
 }
 
 
+#ifdef __cplusplus
+}
+#endif

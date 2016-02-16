@@ -25,6 +25,9 @@
 
 #include "core/etIDState.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct etDebug_s etDebug;
 struct etDebug_s {
@@ -131,6 +134,10 @@ etID_STATE              etDebugLevelSet( etID_LEVEL debugLevels );
 
 #endif
 
+
+#ifdef __cplusplus
+}
+#endif
 
 /**
 @endcond 

@@ -24,6 +24,9 @@
 #include "memory/etMemory.h"
 #include "string/etStringChar.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** @ingroup grString
 @~english
@@ -271,3 +274,6 @@ int                     etStringCharFind( etString *etStringActual, const char *
     return -1;
 }
 
+#ifdef __cplusplus
+}
+#endif

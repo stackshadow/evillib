@@ -36,7 +36,9 @@ This disable the debugging function during compile time, which results in a smal
 
 #include "core/etDebug.h"
 
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 void                    etDebugPrintMessageDefault();
@@ -337,4 +339,7 @@ etID_STATE              etDebugLevelSet( etID_LEVEL debugLevels ){
 
 
 
+#ifdef __cplusplus
+}
+#endif
 

@@ -19,6 +19,10 @@
 #ifndef _H_etIDState
 #define _H_etIDState
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 // States
 /**
@@ -118,7 +122,9 @@ typedef enum etID_STATE {
 etID_STATE;
 
 
-
+#ifdef __cplusplus
+}
+#endif
 
 
 

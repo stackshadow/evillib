@@ -4,31 +4,36 @@
   <Environment>
     <![CDATA[]]>
   </Environment>
-  <Project Name="multisync" Path="../../multisync/ide/multisync.project"/>
   <BuildMatrix>
-    <WorkspaceConfiguration Name="Documentation" Selected="yes">
+    <WorkspaceConfiguration Name="Documentation" Selected="no">
+      <Environment/>
       <Project Name="evillib" ConfigName="docu"/>
       <Project Name="raspdispd" ConfigName="Debug"/>
       <Project Name="multisync" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Development Header" Selected="no">
+      <Environment/>
       <Project Name="evillib" ConfigName="develop"/>
       <Project Name="raspdispd" ConfigName="Debug"/>
       <Project Name="multisync" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="app - debug" Selected="no">
+    <WorkspaceConfiguration Name="app - debug" Selected="yes">
+      <Environment/>
       <Project Name="evillib" ConfigName="app - debug"/>
       <Project Name="multisync" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="share library" Selected="yes">
+    <WorkspaceConfiguration Name="share library" Selected="no">
+      <Environment/>
       <Project Name="evillib" ConfigName="shared library - debug"/>
       <Project Name="multisync" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="evillib-core-source" Selected="yes">
+      <Environment/>
       <Project Name="evillib" ConfigName="evillib-core-source"/>
       <Project Name="multisync" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="SingleFileCompilation" Selected="yes">
+      <Environment/>
       <Project Name="evillib" ConfigName="SingleFileCompilation"/>
       <Project Name="multisync" ConfigName="Debug"/>
     </WorkspaceConfiguration>

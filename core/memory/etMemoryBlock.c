@@ -31,7 +31,9 @@ The etMemoryBlock represents a single Block with allocated memory. \n
 Use this function to set, copy or get data from/to the etMemoryBlock
 */
 
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 
@@ -474,7 +476,9 @@ etID_STATE                  etMemoryBlockCopy( etMemoryBlock *etMemoryBlockDest,
 
 
 
-
+#ifdef __cplusplus
+}
+#endif
 
 
 

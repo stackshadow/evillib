@@ -22,6 +22,9 @@
 #include "evillib_defines.h"
 #include "memory/etMemoryBlock.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // Type
 #define etID_MEM_TYPE_BYTE                char
@@ -94,7 +97,9 @@ etID_STATE                  etMemoryDump( void *Userdata, void (*IteratorFunctio
 
 
 
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

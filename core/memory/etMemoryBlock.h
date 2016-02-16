@@ -21,6 +21,9 @@
 
 #include "core/etIDState.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** @ingroup grMemoryBlock
 @~english
@@ -108,7 +111,9 @@ etID_STATE                  etMemoryBlockDataSet( etMemoryBlock *etMemoryBlockAc
 
 
 
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

@@ -23,6 +23,12 @@
 #include "core/etObject.h"
 #include "memory/etMemoryBlockList.h"
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 /** @internal
 @ingroup grMemory
 @{
@@ -310,4 +316,6 @@ etID_STATE                  etMemoryBlockListDump( etMemoryBlockList *list ){
 
 
 
-
+#ifdef __cplusplus
+}
+#endif

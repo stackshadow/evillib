@@ -22,6 +22,9 @@
 #include "evillib_defines.h"
 #include "string/etString.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 #define                 etStringCharGet( etStringActual, char ) __etStringCharGet( etStringActual, &char )
@@ -40,5 +43,8 @@ etID_STATE              etStringCharAdd( etString *etStringActual, const char *s
 int                     etStringCharFind( etString *etStringActual, const char *compareString, int offset );
 
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

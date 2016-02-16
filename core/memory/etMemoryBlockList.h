@@ -22,6 +22,9 @@
 #include "core/etIDState.h"
 #include "memory/etMemoryBlock.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** @ingroup grMemoryList
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
@@ -62,6 +65,8 @@ etID_STATE                  etMemoryBlockListDump( etMemoryBlockList *list );
 
 
 
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif

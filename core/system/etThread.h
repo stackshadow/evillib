@@ -28,6 +28,9 @@
 
 #include "evillib_defines.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct         etThread {
     pthread_t            thread;                            /*!< The pthread-instance */
@@ -77,6 +80,8 @@ void                    etThreadWait( etThread *etThreadActual );
 
 
 
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif

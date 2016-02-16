@@ -27,6 +27,10 @@
 #include "memory/etMemoryBlockList.h"
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @defgroup grMemory etMemory - Memory management inside the evillib
 @brief The memory subsystem of the evillib
 
@@ -454,7 +458,9 @@ etID_STATE                  etMemoryDump( void *Userdata, void (*IteratorFunctio
 
 
 
-
+#ifdef __cplusplus
+}
+#endif
 
 
 

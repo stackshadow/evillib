@@ -27,6 +27,9 @@
 
 #include "system/etThread.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** @cond DEV */
 /** @defgroup grThread etThread - Threading functions
@@ -332,6 +335,8 @@ void                    etThreadWait( etThread *etThreadActual ){
 
 }
 
-
+#ifdef __cplusplus
+}
+#endif
 
 /** @endcond */

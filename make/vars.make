@@ -39,8 +39,8 @@ export MKDIR               		= mkdir -p -v
 export RMDIR					= rmdir -v
 
 # Directorys
-export buildBasePath	       	?= /tmp/evillib/build
-export sourceBasePath           ?= $(PWD)
+export buildPath                ?= /tmp/evillib/build
+export sourcePath               ?= $(PWD)
 export tempPath					?= /tmp/evillib/tmp
 export prefix	            	?= /tmp/evillib/target
 

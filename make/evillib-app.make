@@ -25,8 +25,6 @@ endif
 include make/evillib-version.make
 
 
-sourcePath=$(sourceBasePath)
-buildPath=$(buildBasePath)
 
 sources = $(shell find ./tests -name "*.c" -printf "%p " )
 sourcesFull=$(sources)

@@ -19,6 +19,8 @@
 #ifndef _H_evillibExtra_depends
 #define _H_evillibExtra_depends
 
+#include <string.h>     // for strncmp
+
 #include <jansson.h>
 #include <openssl/sha.h>
 #include <openssl/md5.h>

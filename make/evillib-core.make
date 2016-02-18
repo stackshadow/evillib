@@ -67,15 +67,8 @@ help:
 	@echo "FullObjects: $(objects)"
 	@echo -n "$(CNormal)"
 
-clean:
-	@$(RM) $(sourcePathCore)/evillib_version.h
-	@$(RM) $(buildPathCore)/evillib.$(Version).c
-	@$(RM) $(buildPathCore)/evillib.$(Version).concat.c
-	@$(RM) $(buildPathCore)/evillib.$(Version).prep.c
-	@$(RM) $(buildPathCore)/libevillib.o
-	@$(RM) $(buildPathCore)/$(CoreLibraryShared)
-	@$(RM) $(objects)
-	@$(RM) $(buildPathCore)/obj/$(CoreLibraryShared)
+
+
 
 install: evillib-core-install
 
@@ -90,7 +83,6 @@ headersTarget = $(addprefix $(includeDir)/evillib-$(Version)/,$(headersRel))
 evillib-core-dev-install: $(includeDir)/evillib/evillib_version.h $(headersTarget)
 	@echo "${CCommand}make $@ ${CNormal}"
 	@mkdir -p $(includeDir)/evillib-$(Version)
-	@cd $(includeDir) && ln -vfs evillib-$(Version) evillib
 	@$(CP) $(sourcePathCore)/evillib_depends.h $(includeDir)/evillib-$(Version)/
 	@$(CP) $(sourcePathCore)/evillib_version.h $(includeDir)/evillib-$(Version)/
 	@$(CP) $(sourcePathCore)/evillib_defines.h $(includeDir)/evillib-$(Version)/
@@ -126,9 +118,16 @@ $(sourcePathCore)/evillib_version.h:
 	
 	@echo "" >> $@
 
+# this copy all source headers to target
 $(includeDir)/evillib-$(Version)/%.h: $(sourcePathCore)/%.h
-	$(MKDIR) $(shell dirname $@)
-	$(CP) $< $@
+	@$(MKDIR) $(shell dirname $@)
+	@$(CP) $< $@
+
+evillib-core-dev-clean:
+	@$(RM) $(includeDir)/evillib/evillib_version.h
+	@$(RM) $(sourcePathCore)/evillib_version.h
+	@$(RM) $(headersTarget)
+
 
 #################################### Library ####################################
 evillib-core: $(buildPathCore)/$(CoreLibraryShared)
@@ -171,6 +170,12 @@ $(buildPathCore)/evillib.$(Version).concat.c: $(sourcePathCore)/evillib_version.
 	@echo "" > $@
 	cat $(sources) >> $@
 
+evillib-core-clean:
+	@$(RM) $(buildPathCore)/evillib.$(Version).concat.c
+	@$(RM) $(buildPathCore)/evillib.$(Version).prep.c
+	@$(RM) $(buildPathCore)/evillib.$(Version).c
+	@$(RM) $(buildPathCore)/libevillib.o
+	@$(RM) $(buildPathCore)/$(CoreLibraryShared)
 
 evillib-core-install: $(libDir)/libevillib.so $(shareDir)/pkgconfig/evillib.pc
 
@@ -189,34 +194,8 @@ $(shareDir)/pkgconfig/evillib.pc:
 	@echo "Description: evillib" >> $@
 	@echo "Requires:" >> $@
 	@echo "Libs: -L/usr/lib/evillib -levillib" >> $@
-	@echo "Cflags: -I/usr/include/evillib/" >> $@
+	@echo "Cflags: -I$(includeDir)/evillib" >> $@
 
 
 
-#################################### docu target ####################################
-docu: $(buildPathCore)/$(CoreHeader)
-
-
-
-
-# this holds apicheckObjects
-#include $(sourceCoreDir)/app/apichecks/Makefile
-
-#apicheckObjects += $(buildPath)/app/evillib.o
-
-#evillib-app: $(buildDir)/evillib 
-#$(buildDir)/evillib: $(sourceCoreDir)/evillib_version.h $(apicheckObjects) $(CoreDeployDir)
-#	gcc -L $(buildPath) $(apicheckObjects) -levillib.00.14-04 -o $(buildDir)/evillib
-
-#evillib-app-single: $(buildDir)/evillib-single
-#$(buildDir)/evillib-single: $(SingleObjects)
-#	gcc $(apicheckObjects) $(SingleObjects) -o $(buildDir)/evillib
-
-
-
-output:
-	@echo $(objects)
-	@echo $(CoreAppObjectsFull)
-
-
-
+clean: evillib-core-clean evillib-core-dev-clean

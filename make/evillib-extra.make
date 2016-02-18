@@ -47,9 +47,6 @@ headers = $(sources:.c=.h)
 
 
 
-ExtraLibraryShared=libevillib-extra.$(Version).so
-ExtraLibraryStatic=libevillib-extra.$(Version).a
-
 .DEFAULT:
 	@sleep 0
 
@@ -59,36 +56,11 @@ help:
 	@echo "$(MAKE) evillib-extra: Build evillib-extra library ( in $(buildPathExtra)/libevillib-extra.so )"
 	@echo -n "$(CNormal)"
 
-clean:
-	@$(RM) $(buildPathExtra)/$(ExtraLibraryShared)
-	@$(RM) $(buildPathExtra)/libevillib-extra.o
-	@$(RM) $(buildPathExtra)/evillib-extra.$(Version).c
-	@$(RM) $(buildPathExtra)/evillib-extra.$(Version).prep.c
-	@$(RM) $(buildPathExtra)/evillib-extra.$(Version).concat.c
-	@$(RM) $(buildPathExtra)/libevillib-extra.$(Version).c
-
-install: evillib-extra-install
-
-evillib-extra-dev: $(includeDir) $(buildPath)/libevillib-extra.$(Version).h
-$(buildPath)/libevillib-extra.$(Version).h: 
-	@echo "${CCommand}make $@ ${CNormal}"
-	$(MKDIR) $(buildPath)
-	cat $(sourcePath)/evillib-extra_start.h > $@
-	cat $(sourcePath)/evillib-extra_depends.h >> $@
-	cat $(headersFull) >> $@
-	cat $(sourcePath)/evillib-extra_end.h >> $@
-
-# Output directory
-evillib-extra-dev-install: $(includeDir)/evillib-extra.h
-
-$(includeDir)/evillib-extra.h: $(buildPath)/libevillib-extra.$(Version).h
-	@mkdir -p $(includeDir)/evillib/
-	@$(CP) $< $(includeDir)/evillib/libevillib-extra.$(Version).h
-	@$(LN) evillib/libevillib-extra.$(Version).h $@
-
 
 
 #################################### Library ####################################
+ExtraLibraryShared=libevillib-extra.$(Version).so
+
 evillib-extra: $(buildPathExtra)/$(ExtraLibraryShared)
 
 $(buildPathExtra)/$(ExtraLibraryShared): $(buildPathExtra)/libevillib-extra.o
@@ -105,13 +77,14 @@ $(buildPathExtra)/libevillib-extra.o: $(buildPathExtra)/evillib-extra.$(Version)
 
 $(buildPathExtra)/evillib-extra.$(Version).c: $(buildPathExtra)/evillib-extra.$(Version).prep.c
 	@echo "${CCommand}make $@ ${CNormal}"
-	#@cat $(sourcePathExtra)/evillib-extra_depends.h > $@
+	@cat $(sourcePathExtra)/evillib-extra_depends.h > $@
 	@cat $< >> $@
 
 $(buildPathExtra)/evillib-extra.$(Version).prep.c: $(buildPathExtra)/evillib-extra.$(Version).concat.c
 	@echo "${CCommand}make $@ ${CNormal}"
 	@$(CC) -E \
 	-D_H_etDepends \
+	-D_H_evillibExtra_depends \
 	$(CFLAGS) \
 	$< > $@
 
@@ -129,9 +102,32 @@ $(libDir)/libevillib-extra.so: $(buildPathExtra)/$(ExtraLibraryShared)
 	@$(LN) evillib/$(ExtraLibraryShared) $(libDir)/libevillib-extra.$(VerMajor).$(VerMinor).so
 	@$(LN) evillib/$(ExtraLibraryShared) $(libDir)/libevillib-extra.so
 
+#################################### Headers ####################################
+
+headersRel = $(subst $(sourcePathExtra)/,,$(headers))
+headersTarget = $(addprefix $(includeDir)/evillib-$(Version)/,$(headersRel))
+
+evillib-extra-dev: $(includeDir)/evillib-$(Version)/evillib-extra_depends.h $(headersTarget)
 
 
+# depends
+$(includeDir)/evillib-$(Version)/evillib-extra_depends.h:
+	@echo "${CCommand}make $@ ${CNormal}"
+	@$(MKDIR) $(shell dirname $@)
+	@$(CP) $(sourcePathExtra)/evillib-extra_depends.h $@
 
+# this copy all source headers to target
+$(includeDir)/evillib-$(Version)/%.h: $(sourcePathExtra)/%.h
+	@$(MKDIR) $(shell dirname $@)
+	@$(CP) $< $@
 
-
-# Main Parts
+clean:
+	@$(RM) $(buildPathExtra)/$(ExtraLibraryShared)
+	@$(RM) $(buildPathExtra)/libevillib-extra.o
+	@$(RM) $(buildPathExtra)/evillib-extra.$(Version).c
+	@$(RM) $(buildPathExtra)/evillib-extra.$(Version).prep.c
+	@$(RM) $(buildPathExtra)/evillib-extra.$(Version).concat.c
+	@$(RM) $(buildPathExtra)/libevillib-extra.$(Version).c
+	@$(RM) $(includeDir)/evillib-$(Version)/evillib-extra_depends.h
+	@$(RM) $(includeDir)/evillib-$(Version)/%.h
+	@$(RM) $(headersTarget)

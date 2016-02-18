@@ -2,7 +2,7 @@
 <CodeLite_Project Name="evillib" InternalType="">
   <Plugins>
     <Plugin Name="qmake">
-      <![CDATA[00040001N0011app - debug0000000000000001N0007develop0000000000000001N0004docu0000000000000001N0022shared library - debug000000000000]]>
+      <![CDATA[00050001N0011app - debug0000000000000001N0007develop0000000000000001N0004docu0000000000000001N0013evillib-extra0000000000000001N0022shared library - debug000000000000]]>
     </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
@@ -43,6 +43,15 @@
   "parentProject": ""
  }, {
   "name": "docu",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "evillib-extra",
   "enabled": false,
   "buildDirectory": "build",
   "sourceDirectory": "$(ProjectPath)",
@@ -232,49 +241,6 @@
       </Linker>
       <ResourceCompiler Options=""/>
     </GlobalSettings>
-    <Configuration Name="SingleFileCompilation" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g -Wall -fvisibility=hidden -fPIC " C_Options="-g -Wall -fvisibility=hidden -fPIC " Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
-        <IncludePath Value="."/>
-        <IncludePath Value="$(ProjectPath)/../core/"/>
-      </Compiler>
-      <Linker Options="-O0" Required="no">
-        <LibraryPath Value="."/>
-        <LibraryPath Value="Debug"/>
-      </Linker>
-      <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="/tmp/evillib/build" Command="/tmp/.build/evillib" CommandArguments="--apicheck --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
-      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
-        <![CDATA[]]>
-      </Environment>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
-        <DebuggerSearchPaths/>
-        <PostConnectCommands/>
-        <StartupCommands/>
-      </Debugger>
-      <PreBuild/>
-      <PostBuild/>
-      <CustomBuild Enabled="no">
-        <RebuildCommand/>
-        <CleanCommand>make -f make/Makefile clean</CleanCommand>
-        <BuildCommand>export CFLAGS="-g" &amp;&amp;
-make -f make/Makefile clean evillib-core-source</BuildCommand>
-        <PreprocessFileCommand/>
-        <SingleFileCommand/>
-        <MakefileGenerationCommand/>
-        <ThirdPartyToolName/>
-        <WorkingDirectory>../</WorkingDirectory>
-      </CustomBuild>
-      <AdditionalRules>
-        <CustomPostBuild/>
-        <CustomPreBuild/>
-      </AdditionalRules>
-      <Completion EnableCpp11="no" EnableCpp14="no">
-        <ClangCmpFlagsC/>
-        <ClangCmpFlags/>
-        <ClangPP/>
-        <SearchPaths/>
-      </Completion>
-    </Configuration>
     <Configuration Name="app - debug" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g -Wall" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
@@ -318,47 +284,6 @@ make -f make/Makefile clean evillib-core-source</BuildCommand>
 ../extra/dbdriver</SearchPaths>
       </Completion>
     </Configuration>
-    <Configuration Name="develop" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g -Wall" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
-        <IncludePath Value="."/>
-      </Compiler>
-      <Linker Options="-O0" Required="yes">
-        <LibraryPath Value="."/>
-        <LibraryPath Value="Debug"/>
-      </Linker>
-      <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/.build/evillib" CommandArguments="--apicheck" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
-      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
-        <![CDATA[]]>
-      </Environment>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
-        <DebuggerSearchPaths/>
-        <PostConnectCommands/>
-        <StartupCommands/>
-      </Debugger>
-      <PreBuild/>
-      <PostBuild/>
-      <CustomBuild Enabled="yes">
-        <RebuildCommand/>
-        <CleanCommand>make -f make/Makefile clean</CleanCommand>
-        <BuildCommand>make -f make/Makefile evillib-core-dev</BuildCommand>
-        <PreprocessFileCommand/>
-        <SingleFileCommand/>
-        <MakefileGenerationCommand/>
-        <ThirdPartyToolName/>
-        <WorkingDirectory>$(ProjectPath)../</WorkingDirectory>
-      </CustomBuild>
-      <AdditionalRules>
-        <CustomPostBuild/>
-        <CustomPreBuild/>
-      </AdditionalRules>
-      <Completion EnableCpp11="no" EnableCpp14="no">
-        <ClangCmpFlagsC/>
-        <ClangCmpFlags/>
-        <ClangPP/>
-        <SearchPaths/>
-      </Completion>
-    </Configuration>
     <Configuration Name="docu" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g -Wall" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
@@ -400,7 +325,7 @@ make -f make/Makefile clean evillib-core-source</BuildCommand>
         <SearchPaths/>
       </Completion>
     </Configuration>
-    <Configuration Name="evillib-core-source" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+    <Configuration Name="evillib-extra" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
       <Compiler Options="-g -Wall" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="."/>
       </Compiler>
@@ -409,12 +334,12 @@ make -f make/Makefile clean evillib-core-source</BuildCommand>
         <LibraryPath Value="Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/.build/evillib" CommandArguments="--apicheck --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/tests/etDBObjectTable" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
-        <![CDATA[]]>
+        <![CDATA[LD_LIBRARY_PATH=/tmp/evillib/build/obj/]]>
       </Environment>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
-        <DebuggerSearchPaths/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="/usr/bin/gdb" IsExtended="no">
+        <DebuggerSearchPaths>/tmp/evillib/build/obj</DebuggerSearchPaths>
         <PostConnectCommands/>
         <StartupCommands/>
       </Debugger>
@@ -423,8 +348,7 @@ make -f make/Makefile clean evillib-core-source</BuildCommand>
       <CustomBuild Enabled="yes">
         <RebuildCommand/>
         <CleanCommand>make -f make/Makefile clean</CleanCommand>
-        <BuildCommand>export CFLAGS="-g" &amp;&amp;
-make -f make/Makefile clean evillib-core-source</BuildCommand>
+        <BuildCommand>make -f make/Makefile evillib-extra</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
@@ -439,49 +363,9 @@ make -f make/Makefile clean evillib-core-source</BuildCommand>
         <ClangCmpFlagsC/>
         <ClangCmpFlags/>
         <ClangPP/>
-        <SearchPaths/>
-      </Completion>
-    </Configuration>
-    <Configuration Name="shared library - debug" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g -Wall" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
-        <IncludePath Value="."/>
-      </Compiler>
-      <Linker Options="-O0" Required="yes">
-        <LibraryPath Value="."/>
-        <LibraryPath Value="Debug"/>
-      </Linker>
-      <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/.build/evillib" CommandArguments="--apicheck --debug" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
-      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
-        <![CDATA[]]>
-      </Environment>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="" IsExtended="no">
-        <DebuggerSearchPaths/>
-        <PostConnectCommands/>
-        <StartupCommands/>
-      </Debugger>
-      <PreBuild/>
-      <PostBuild/>
-      <CustomBuild Enabled="yes">
-        <RebuildCommand/>
-        <CleanCommand>make -f make/Makefile clean</CleanCommand>
-        <BuildCommand>export CFLAGS="-g" &amp;&amp;
-make -f make/Makefile evillib-core evillib-extra</BuildCommand>
-        <PreprocessFileCommand/>
-        <SingleFileCommand/>
-        <MakefileGenerationCommand/>
-        <ThirdPartyToolName/>
-        <WorkingDirectory>../</WorkingDirectory>
-      </CustomBuild>
-      <AdditionalRules>
-        <CustomPostBuild/>
-        <CustomPreBuild/>
-      </AdditionalRules>
-      <Completion EnableCpp11="no" EnableCpp14="no">
-        <ClangCmpFlagsC/>
-        <ClangCmpFlags/>
-        <ClangPP/>
-        <SearchPaths/>
+        <SearchPaths>../extra/
+../extra/db
+../extra/dbdriver</SearchPaths>
       </Completion>
     </Configuration>
   </Settings>

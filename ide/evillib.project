@@ -186,9 +186,6 @@
     <File Name="../make/vars.make"/>
     <File Name="../make/evillib-core.make"/>
     <File Name="../make/evillib-extra.make"/>
-    <File Name="../make/evillib-extra-sources.make"/>
-    <File Name="../make/evillib-extra-dev.make"/>
-    <File Name="../make/evillib-version.make"/>
     <File Name="../make/evillib-doc.make"/>
     <File Name="../make/evillib-app.make"/>
   </VirtualDirectory>

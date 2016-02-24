@@ -21,7 +21,6 @@ ifneq ($(VARS),1)
 	include make/vars.make
 endif
 
-include make/evillib-version.make
 
 
 sourcePathCore=$(sourcePath)/core
@@ -41,14 +40,14 @@ CLIBS+=-lblkid
 CLIBS+=-ldl
 
 
-sources = $(shell find $(sourcePathCore) -name "*.c" ! -wholename "*specialheaders/*" ! -wholename "*develop/*" ! -wholename "*tests/*" -printf "%p " )
-headers = $(sources:.c=.h)
-objects = $(sources:.c=.o)
+sources  = $(shell find $(sourcePathCore) -name "*.c" ! -wholename "*specialheaders/*" ! -wholename "*develop/*" ! -wholename "*tests/*" -printf "%p " )
+headers  = $(sources:.c=.h)
+headers += evillib_depends.h
+headers += evillib_version.h
+headers += evillib_defines.h
+objects  = $(sources:.c=.o)
 
 
-#CoreSourceFiles+=
-CoreLibraryShared=libevillib.$(Version).so
-CoreLibraryStatic=libevillib.$(Version).a
 
 .EXPORT_ALL_VARIABLES:
 
@@ -79,66 +78,34 @@ headersRel = $(subst $(sourcePathCore)/,,$(headers))
 headersTarget = $(addprefix $(includeDir)/evillib-$(Version)/,$(headersRel))
 
 
-# Output directory
-evillib-core-dev-install: $(includeDir)/evillib/evillib_version.h $(headersTarget)
-	@echo "${CCommand}make $@ ${CNormal}"
-	@mkdir -p $(includeDir)/evillib-$(Version)
-	@$(CP) $(sourcePathCore)/evillib_depends.h $(includeDir)/evillib-$(Version)/
-	@$(CP) $(sourcePathCore)/evillib_version.h $(includeDir)/evillib-$(Version)/
-	@$(CP) $(sourcePathCore)/evillib_defines.h $(includeDir)/evillib-$(Version)/
-
-$(includeDir)/evillib/evillib_version.h: $(sourcePathCore)/evillib_version.h
-
 $(sourcePathCore)/evillib_version.h:
 	@echo "${CCommand}make $@ ${CNormal}"
 	$(MKDIR) $(buildPath)
 	@echo "// Evillib - Version" > $@
-	@echo "/**	@defgroup grCoreDefineVersion Versions" >> $@
-	@echo "@ingroup grCoreDefines" >> $@
-	@echo "*/" >> $@
-
-	@echo "/** @ingroup grCoreDefineVersion" >> $@
-	@echo "The major version of the evillib */" >> $@
 	@echo "#define ET_VERSION_MAJOR $(VerMajor)" >> $@
-	@echo "" >> $@
-
-	@echo "/** @ingroup grCoreDefineVersion" >> $@
-	@echo "If this is changed, a recompilation is needed */" >> $@
 	@echo "#define ET_VERSION_MINOR $(VerMinor)" >> $@
-	@echo "" >> $@
-
-	@echo "/** @ingroup grCoreDefineVersion" >> $@
-	@echo "If this is changed, no recompile needed */" >> $@
 	@echo "#define ET_VERSION_PATCH $(VerPatch)" >> $@
-	
-	@echo "" >> $@
-	@echo "/** @ingroup grCoreDefineVersion" >> $@
-	@echo "The versionsstring */" >> $@
 	@echo "#define ET_VERSIONSTRING \"$(VerMajor).$(VerMinor)-$(VerPatch)\"" >> $@
-	
-	@echo "" >> $@
+
+# Output directory
+dev-install: $(sourcePathCore)/evillib_version.h $(headersTarget) $(includeDir)/evillib
+$(includeDir)/evillib:
+	@$(LN) -f -s -v $(includeDir)/evillib-$(Version) $(includeDir)/evillib
 
 # this copy all source headers to target
 $(includeDir)/evillib-$(Version)/%.h: $(sourcePathCore)/%.h
 	@$(MKDIR) $(shell dirname $@)
 	@$(CP) $< $@
 
-evillib-core-dev-clean:
-	@$(RM) $(includeDir)/evillib/evillib_version.h
+dev-clean:
 	@$(RM) $(sourcePathCore)/evillib_version.h
-	@$(RM) $(headersTarget)
 
 
 #################################### Library ####################################
-evillib-core: $(buildPathCore)/$(CoreLibraryShared)
-evillib-core-uninstall: 
-	@$(RM) $(libDir)/evillib/$(CoreLibraryShared)
-	@$(RM) $(libDir)/libevillib.$(VerMajor).$(VerMinor).so
-	@$(RM) $(libDir)/libevillib.so
-	@$(RM) $(shareDir)/pkgconfig/evillib.pc
-evillib-core-static: $(libDir)/libevillib.a
-evillib-core-source: $(buildPathCore)/evillib.$(Version).c
+#CoreSourceFiles+=
+CoreLibraryShared=libevillib.$(Version).so
 
+library: $(buildPathCore)/$(CoreLibraryShared)
 
 $(buildPathCore)/$(CoreLibraryShared): $(buildPathCore)/libevillib.o
 	@echo "${CCommand}make $@ ${CNormal}"
@@ -170,14 +137,15 @@ $(buildPathCore)/evillib.$(Version).concat.c: $(sourcePathCore)/evillib_version.
 	@echo "" > $@
 	cat $(sources) >> $@
 
-evillib-core-clean:
+
+library-install: $(libDir)/libevillib.so $(shareDir)/pkgconfig/evillib.pc
+
+library-clean:
 	@$(RM) $(buildPathCore)/evillib.$(Version).concat.c
 	@$(RM) $(buildPathCore)/evillib.$(Version).prep.c
 	@$(RM) $(buildPathCore)/evillib.$(Version).c
 	@$(RM) $(buildPathCore)/libevillib.o
 	@$(RM) $(buildPathCore)/$(CoreLibraryShared)
-
-evillib-core-install: $(libDir)/libevillib.so $(shareDir)/pkgconfig/evillib.pc
 
 # Output directory
 $(libDir)/libevillib.so: $(buildPathCore)/$(CoreLibraryShared)
@@ -198,4 +166,4 @@ $(shareDir)/pkgconfig/evillib.pc:
 
 
 
-clean: evillib-core-clean evillib-core-dev-clean
+clean: dev-clean library-clean

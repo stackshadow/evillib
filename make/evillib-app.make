@@ -22,7 +22,6 @@ ifneq ($(VARS),1)
 	include make/vars.make
 endif
 
-include make/evillib-version.make
 
 
 

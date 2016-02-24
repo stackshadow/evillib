@@ -19,6 +19,10 @@
 #ifndef _H_etDBObject
 #define _H_etDBObject
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 
 typedef struct etDBObject {
@@ -47,5 +51,9 @@ etID_STATE          __etDBObjectFree( etDBObject **p_dbObject );
 
 etID_STATE          etDBObjectDump( etDBObject *dbObject );
 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

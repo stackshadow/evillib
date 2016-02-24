@@ -24,6 +24,9 @@
 #include "memory/etMemory.h"
 #include "db/etDBObject.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 
@@ -76,5 +79,9 @@ etID_STATE          etDBObjectDump( etDBObject *dbObject ){
 
 
 
+
+#ifdef __cplusplus
+}
+#endif
 
 

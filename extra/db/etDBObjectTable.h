@@ -20,6 +20,9 @@
 #ifndef _H_etFile
 #define _H_etFile
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 
@@ -59,5 +62,8 @@ etID_STATE      __etDBObjectTableDisplayNameGet( etDBObject *dbObject, const cha
 
 
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif

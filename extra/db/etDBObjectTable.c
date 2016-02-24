@@ -26,6 +26,10 @@
 #include "db/etDBObject.h"
 #include "db/etDBObjectTable.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** @defgroup gretDBObjectTable etDBObjectTable - Table handling for etDBObject
 @short The etDBObject contains Tables, this functions handle this tables
 
@@ -85,7 +89,8 @@ etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName 
 @~english
 @short Reset The table
 
-Reset the table
+This function \n
+ - reset the actual selected column-index
 
 @param[in] dbObject The pointer to an etDBObject
 @return If the table was added correctly \n
@@ -133,6 +138,8 @@ etID_STATE      etDBObjectTableNextReset( etDBObject *dbObject ){
 @~english
 @short Go to the next table
 
+This function does also an etDBObjectTableReset()
+
 @param[in] dbObject The pointer to an etDBObject
 @return \n
 *- @ref etID_STATE_ERR_PARAMETER
@@ -170,9 +177,51 @@ etID_STATE      etDBObjectTableNext( etDBObject *dbObject ){
     return etID_STATE_NODATA;
 }
 
+/** @ingroup gretDBObjectTable
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
+@~english
+@short Pick a table from the table list
+
+This function \n
+ - set the actual table
+ - do a etDBObjectTableReset()
+
+@param[in] dbObject The pointer to an etDBObject
+@param[in] tableName The table to pick
+@return \n
+*- @ref etID_STATE_ERR_PARAMETER
+*- @ref etID_YES
+*/
 etID_STATE      etDBObjectTablePick( etDBObject *dbObject, const char *tableName ){
-    
+// check
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( tableName );
+
+// vars
+    etID_STATE      state = etID_YES;
+    const char      *tableNameActual = NULL;
+
+// reset
+    state = etDBObjectTableNextReset( dbObject );
+    if( state != etID_YES ) return state;
+
+// go to every element
+    while( etDBObjectTableNext( dbObject ) == etID_YES ){
+
+        if( etDBObjectTableNameGet( dbObject, tableNameActual ) == etID_YES ){
+            
+            if( strncmp(tableNameActual,tableName,strlen(tableNameActual)) == 0 ){
+                
+                return etID_YES;
+                
+            }
+            
+        }
+
+    }
+
+    return etID_STATE_NODATA;
 }
 
 
@@ -356,4 +405,8 @@ etID_STATE      __etDBObjectTableDisplayNameGet( etDBObject *dbObject, const cha
 
 
 
+
+#ifdef __cplusplus
+}
+#endif
 

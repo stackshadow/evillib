@@ -24,11 +24,12 @@
 #include "memory/etMemory.h"
 #include "db/etDBObject.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
+
+/** @defgroup gretDBObject
+@short 
+*/
 
 etID_STATE          __etDBObjectAlloc( etDBObject **p_dbObject ){
     etDebugCheckNull( p_dbObject );
@@ -40,7 +41,7 @@ etID_STATE          __etDBObjectAlloc( etDBObject **p_dbObject ){
     etMemoryAlloc( tempDBObject, sizeof(etDBObject) );
 
 // set
-    tempDBObject->jsonTables = json_array();
+    tempDBObject->jsonRootObject = json_object();
     
 // return
     *p_dbObject = tempDBObject;
@@ -55,7 +56,7 @@ etID_STATE          __etDBObjectFree( etDBObject **p_dbObject ){
     etDBObject *tempDBObject = *p_dbObject;
 
 // release json stuff
-    json_decref( tempDBObject->jsonTables );
+    json_decref( tempDBObject->jsonRootObject );
     etMemoryRelease( tempDBObject );
     
 // return
@@ -69,19 +70,77 @@ etID_STATE          etDBObjectDump( etDBObject *dbObject ){
     etDebugCheckNull( dbObject );
 
     
-    char *jsonDump = json_dumps( dbObject->jsonTables, JSON_INDENT(4) );
+    char *jsonDump = json_dumps( dbObject->jsonRootObject, JSON_INDENT(4) );
     
     snprintf( etDebugTempMessage, etDebugTempMessageLen, "%s", jsonDump );
     etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+    
+    free(jsonDump);
 
     return etID_YES;
 }
 
 
 
+etID_STATE          etDBObjectSelectionReset( etDBObject *dbObject ){
+// check
+    etDebugCheckNull( dbObject );
 
-#ifdef __cplusplus
+// reset all indexess
+    dbObject->jsonIndex = 0;
+    dbObject->jsonIterator = NULL;
+    dbObject->jsonObject = NULL;
+
+// return
+    return etID_YES;
 }
-#endif
+
+
+etID_STATE          etDBObjectTypeSet( json_t *jsonObject, const char *type ){
+// check
+    etDebugCheckNull( jsonObject );
+    etDebugCheckNull( type );
+
+// set object text
+    int returnCode = json_object_set_new( jsonObject, "type", json_string(type) );
+    if( returnCode == 0 ) return etID_YES;
+
+
+    return etID_STATE_ERR_INTERR;
+}
+
+/** @ingroup gretDBObject
+@short Check if an jsonObject is from type
+@param[in] jsonObject The json-object
+@param[in] type The type-name to check
+@return
+  * etID_YES
+  * etID_NO
+**/
+etID_STATE          etDBObjectTypeCheck( json_t *jsonObject, const char *type ){
+// check
+    etDebugCheckNull( jsonObject );
+    etDebugCheckNull( type );
+
+// vars
+    json_t      *jsonType = NULL;
+    const char  *typeName = NULL;
+
+// get type
+    jsonType = json_object_get( jsonObject, "type" );
+    if( jsonType == NULL ) return etID_NO;
+    typeName = json_string_value( jsonType );
+
+// compare
+    if( strncmp( typeName, type, strlen(type) ) == 0 ){
+        return etID_YES;
+    }
+
+// return
+    return etID_NO;
+}
+
+
+
 
 

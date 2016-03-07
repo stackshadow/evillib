@@ -27,16 +27,16 @@ extern "C" {
 
 typedef struct etDBObject {
    
-    json_t*         jsonTables;     // this is an json_array inside jsonTable
+// root element
+    json_t          *jsonRootObject;        // this is an json_array inside jsonTable
 
-// table stuff
-    json_t*         jsonTable;
-    int             jsonTableIndex;
+// temporary values
+    int             jsonIndex;
+    void            *jsonIterator;
+    json_t          *jsonObject;
 
-// column stuff
-    json_t*         jsonColumns;
-    json_t*         jsonColumn;
-    int             jsonColumnIndex;
+// driver
+    void            *driverData;
 } etDBObject;
 
 
@@ -50,6 +50,19 @@ etID_STATE          __etDBObjectFree( etDBObject **p_dbObject );
 
 
 etID_STATE          etDBObjectDump( etDBObject *dbObject );
+
+
+etID_STATE          etDBObjectSelectionReset( etDBObject *dbObject );
+
+
+etID_STATE          etDBObjectTypeSet( json_t *jsonObject, const char *type );
+
+
+etID_STATE          etDBObjectTypeCheck( json_t *jsonObject, const char *type );
+
+
+json_t*             etDBObjectLangGet( json_t *jsonObject, const char *langCode, const char *key );
+
 
 
 #ifdef __cplusplus

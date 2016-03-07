@@ -104,8 +104,16 @@ $(buildPathExtra)/evillib-extra.$(Version).prep.c: $(buildPathExtra)/evillib-ext
 $(buildPathExtra)/evillib-extra.$(Version).concat.c:
 	@echo "${CCommand}make $@ ${CNormal}"
 	@$(MKDIR) $(buildPathExtra)
-	@echo "" > $@
+	@echo "#ifdef __cplusplus" > $@
+	@echo "extern \"C\" {" >> $@
+	@echo "#endif" >> $@
+	
 	@cat $(sources) >> $@
+	
+	@echo "#ifdef __cplusplus" >> $@
+	@echo "}" >> $@
+	@echo "#endif" >> $@
+
 
 
 library-install: $(libDir)/libevillib-extra.so

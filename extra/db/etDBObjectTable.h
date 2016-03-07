@@ -17,8 +17,12 @@
 */
 
 
-#ifndef _H_etFile
-#define _H_etFile
+#ifndef _H_etDBObjectTable
+#define _H_etDBObjectTable
+
+
+#define etDBObject_TYPE_TABLE "table"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,7 +38,6 @@ extern "C" {
 etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName );
 
 
-etID_STATE      etDBObjectTableReset( etDBObject *dbObject );
 
 
 etID_STATE      etDBObjectTableNextReset( etDBObject *dbObject );
@@ -54,10 +57,8 @@ etID_STATE      etDBObjectTableNameSet( etDBObject *dbObject, const char *tableN
 etID_STATE      __etDBObjectTableNameGet( etDBObject *dbObject, const char **p_tableName );
 
 
-etID_STATE      etDBObjectTableDisplayNameSet( etDBObject *dbObject, const char *langCode, const char *displayName );
 
-#define         etDBObjectTableDisplayNameGet( dbObject, langCode, displayName ) __etDBObjectTableDisplayNameGet( dbObject, langCode, &displayName )
-etID_STATE      __etDBObjectTableDisplayNameGet( etDBObject *dbObject, const char *langCode, const char **p_displayName );
+
 
 
 

@@ -69,7 +69,7 @@ int                     main( int argc, const char* argv[] ){
     etDBObjectDump( table );
 
 // we go to every table
-    etDBObjectSelectionReset( table );
+    etDBObjectIterationReset( table );
 
 
     etDBObjectTableNext( table );

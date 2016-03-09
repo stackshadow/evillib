@@ -28,12 +28,19 @@ extern "C" {
 typedef struct etDBObject {
    
 // root element
-    json_t          *jsonRootObject;        // this is an json_array inside jsonTable
+    json_t          *jsonRootObject;        // the json root-object
+
+
+// actual positions
+    json_t          *jsonTableActual;
+    json_t          *jsonColumnActual;
+
 
 // temporary values
-    int             jsonIndex;
+// values for iteration
+    int             jsonIteratorIndex;
+    json_t          *jsonObjectToIterate;
     void            *jsonIterator;
-    json_t          *jsonObject;
 
 // driver
     void            *driverData;

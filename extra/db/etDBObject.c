@@ -72,8 +72,7 @@ etID_STATE          etDBObjectDump( etDBObject *dbObject ){
     
     char *jsonDump = json_dumps( dbObject->jsonRootObject, JSON_INDENT(4) );
     
-    snprintf( etDebugTempMessage, etDebugTempMessageLen, "%s", jsonDump );
-    etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+    etDebugMessage( etID_LEVEL_DETAIL_DB, jsonDump );
     
     free(jsonDump);
 
@@ -82,14 +81,14 @@ etID_STATE          etDBObjectDump( etDBObject *dbObject ){
 
 
 
-etID_STATE          etDBObjectSelectionReset( etDBObject *dbObject ){
+etID_STATE          etDBObjectIterationReset( etDBObject *dbObject ){
 // check
     etDebugCheckNull( dbObject );
 
 // reset all indexess
-    dbObject->jsonIndex = 0;
+    dbObject->jsonIteratorIndex = 0;
+    dbObject->jsonObjectToIterate = NULL;
     dbObject->jsonIterator = NULL;
-    dbObject->jsonObject = NULL;
 
 // return
     return etID_YES;

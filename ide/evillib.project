@@ -149,8 +149,12 @@
       <File Name="../extra/db/etDBObjectTable.c"/>
       <File Name="../extra/db/etDBObjectTable.h"/>
       <File Name="../extra/db/etDBObjectTable.dox"/>
+      <File Name="../extra/db/etDBObjectTableColumn.h"/>
+      <File Name="../extra/db/etDBObjectTableColumn.c"/>
     </VirtualDirectory>
-    <VirtualDirectory Name="dbdriver"/>
+    <VirtualDirectory Name="sql">
+      <File Name="../extra/sql/etDBSQL.c"/>
+    </VirtualDirectory>
     <VirtualDirectory Name="specialheaders">
       <File Name="../extra/specialheaders/evillib_start.h"/>
       <File Name="../extra/specialheaders/evillib_end.h"/>
@@ -218,6 +222,7 @@
     <File Name="../tests/etThread.c"/>
     <File Name="../tests/etDBObject.c"/>
     <File Name="../tests/etDBObjectTable.c"/>
+    <File Name="../tests/etDBObjectTableColumn.c"/>
   </VirtualDirectory>
   <VirtualDirectory Name="qt">
     <VirtualDirectory Name="tableEditor">
@@ -247,7 +252,7 @@
         <LibraryPath Value="Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/tests/etDBObjectTable" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/tests/etDBObjectTableColumn" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[LD_LIBRARY_PATH=/tmp/evillib/build/obj/]]>
       </Environment>

@@ -66,13 +66,11 @@ etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName 
         return etID_STATE_ERR;
     }
 // set the type
-    if( etDBObjectTypeSet( dbObject->jsonTableActual, etDBObject_TYPE_TABLE ) != etID_YES ){
-        return etID_STATE_ERR;
-    }
-// set the name
-    if( json_object_set_new( dbObject->jsonTableActual, "name", json_string(tableName) ) != 0 ){
-        return etID_STATE_ERR;
-    }
+    if( etDBObjectTypeSet( dbObject->jsonTableActual, etDBObject_TYPE_TABLE ) != etID_YES ) return etID_STATE_ERR;
+    if( json_object_set_new( dbObject->jsonTableActual, "name", json_string(tableName) ) != 0 ) return etID_STATE_ERR;
+    if( json_object_set_new( dbObject->jsonTableActual, "inDB", json_integer(0) ) != 0 ) return etID_STATE_ERR;
+
+
 // add the "new" table
     if( json_object_set_new( dbObject->jsonRootObject, tableName, dbObject->jsonTableActual ) != 0 ){
         return etID_STATE_ERR;

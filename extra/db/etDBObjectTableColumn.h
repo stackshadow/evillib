@@ -22,35 +22,47 @@
 
 #include "etDBObjectTable.h"
 
-#define etDBObject_TYPE_COLUMN "column"
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
+#define etDBObject_TYPE_COLUMN "column"
+
+typedef enum  {
+// nothing
+    etDBCOLUMN_TYPE_NOTHING = 0,
+
+// basic types
+    etDBCOLUMN_TYPE_INT = 1,
+    etDBCOLUMN_TYPE_FLOAT = 2,
+    etDBCOLUMN_TYPE_STRING = 3
+
+
+} etDBColumnType;
+
+
+etID_STATE      etDBObjectTableColumnAdd( etDBObject *dbObject, const char *columnName, etDBColumnType columnType );
 
 
 
 
 
+etID_STATE      etDBObjectTableColumnNext( etDBObject *dbObject );
+
+
+etID_STATE      etDBObjectTableColumnPick( etDBObject *dbObject, const char *columnName );
 
 
 
 
 
+#define         etDBObjectTableColumnNameGet( dbObject, columnName ) __etDBObjectTableColumnNameGet( dbObject, &columnName )
+etID_STATE      __etDBObjectTableColumnNameGet( etDBObject *dbObject, const char **p_columnName );
 
 
-
-
-
-
-
-
-
-
-
+etID_STATE      etDBObjectTableColumnPrimarySet( etDBObject *dbObject, const char *primaryColumnName );
 
 
 

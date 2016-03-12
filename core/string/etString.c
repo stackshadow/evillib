@@ -162,6 +162,9 @@ etID_STATE                etStringClean( etString *etStringActual ){
         return etObjectStateSet( etStringActual, etID_STATE_WARN_INTERR );
     }
 
+// set length of etString to 0
+    etStringActual->lengthActual = 0;
+
 // return
     return etID_YES;
 }

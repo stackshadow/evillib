@@ -118,6 +118,14 @@ etID_STATE              etStringCharTest(){
         etDebugMessage( etID_LEVEL_CRITICAL, "Found the search string 'longer' not instide the string" );
     }
 
+
+
+    etStringClean( etStringActual );
+    etStringCharAdd( etStringActual, " )" );
+    etStringCharGet( etStringActual, etStringChar );
+
+
+
 // End Timer
     etApicheckTimer( "OK" );
     return etID_YES;

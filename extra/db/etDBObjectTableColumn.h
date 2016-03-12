@@ -30,20 +30,28 @@ extern "C" {
 
 #define etDBObject_TYPE_COLUMN "column"
 
-typedef enum  {
+typedef enum {
 // nothing
     etDBCOLUMN_TYPE_NOTHING = 0,
 
 // basic types
     etDBCOLUMN_TYPE_INT = 1,
     etDBCOLUMN_TYPE_FLOAT = 2,
-    etDBCOLUMN_TYPE_STRING = 3
+    etDBCOLUMN_TYPE_STRING = 3,
+
+// special
+    etDBCOLUMN_TYPE_BLOB = 20
 
 
 } etDBColumnType;
 
+#define etDBCOLUMN_OPTION_NOTHING 0
+#define etDBCOLUMN_OPTION_PRIMARY 1
+#define etDBCOLUMN_OPTION_NOTNULL 2
+#define etDBCOLUMN_OPTION_UNIQUE 4
 
-etID_STATE      etDBObjectTableColumnAdd( etDBObject *dbObject, const char *columnName, etDBColumnType columnType );
+
+etID_STATE      etDBObjectTableColumnAdd( etDBObject *dbObject, const char *columnName, etDBColumnType columnType, char columnOption );
 
 
 
@@ -57,12 +65,23 @@ etID_STATE      etDBObjectTableColumnPick( etDBObject *dbObject, const char *col
 
 
 
-
 #define         etDBObjectTableColumnNameGet( dbObject, columnName ) __etDBObjectTableColumnNameGet( dbObject, &columnName )
 etID_STATE      __etDBObjectTableColumnNameGet( etDBObject *dbObject, const char **p_columnName );
 
+#define         etDBObjectTableColumnTypeGet( dbObject, columnType ) __etDBObjectTableColumnTypeGet( dbObject, &columnType )
+etID_STATE      __etDBObjectTableColumnTypeGet( etDBObject *dbObject, etDBColumnType *p_columnType );
+
+#define         etDBObjectTableColumnOptionGet( dbObject, columnOption ) __etDBObjectTableColumnOptionGet( dbObject, &columnOption )
+etID_STATE      __etDBObjectTableColumnOptionGet( etDBObject *dbObject, int *p_columnOption );
+
+
+
 
 etID_STATE      etDBObjectTableColumnPrimarySet( etDBObject *dbObject, const char *primaryColumnName );
+
+#define         etDBObjectTableColumnPrimaryGet( dbObject, primaryColumnName ) __etDBObjectTableColumnPrimaryGet( dbObject, &primaryColumnName )
+etID_STATE      __etDBObjectTableColumnPrimaryGet( etDBObject *dbObject, const char **p_primaryColumnName );
+
 
 
 

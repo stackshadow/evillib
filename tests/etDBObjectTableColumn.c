@@ -65,10 +65,42 @@ int                     main( int argc, const char* argv[] ){
 
 
 // add some columns
-    etDBObjectTableColumnAdd( dbObject, "column1" );
-    etDBObjectTableColumnAdd( dbObject, "column2" );
-    etDBObjectTableColumnAdd( dbObject, "column3" );
+    etDBObjectTableColumnAdd( dbObject, "column1", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
+    etDBObjectTableColumnAdd( dbObject, "column2", etDBCOLUMN_TYPE_INT, etDBCOLUMN_OPTION_NOTHING );
+    etDBObjectTableColumnAdd( dbObject, "column3", etDBCOLUMN_TYPE_FLOAT, etDBCOLUMN_OPTION_NOTHING );
 
+
+    etDBObjectTablePick( dbObject, "table1" );
+    etDBObjectIterationReset( dbObject );
+    if( etDBObjectTableColumnNext( dbObject ) == etID_YES ){
+        exit(-1);
+    }
+
+    etDBObjectTablePick( dbObject, "table2" );
+    etDBObjectIterationReset( dbObject );
+    if( etDBObjectTableColumnNext( dbObject ) != etID_YES ){
+        exit(-1);
+    }
+
+// now we check the column names
+    const char *columnName = NULL;
+    etDBObjectTableColumnNameGet( dbObject, columnName );
+    if( strncmp(columnName,"column1",7) != 0 ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "columnName %s != column1", columnName );
+        etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+        return -1;
+    }
+
+
+    if( etDBObjectTableColumnNext( dbObject ) != etID_YES ){
+        exit(-1);
+    }
+    etDBObjectTableColumnNameGet( dbObject, columnName );
+    if( strncmp(columnName,"column2",7) != 0 ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "columnName %s != column2", columnName );
+        etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+        return -1;
+    }
 
 
     etDBObjectDump( dbObject );

@@ -151,9 +151,7 @@
       <File Name="../extra/db/etDBObjectTable.dox"/>
       <File Name="../extra/db/etDBObjectTableColumn.h"/>
       <File Name="../extra/db/etDBObjectTableColumn.c"/>
-    </VirtualDirectory>
-    <VirtualDirectory Name="sql">
-      <File Name="../extra/sql/etDBSQL.c"/>
+      <File Name="../extra/db/etDBDriver.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="specialheaders">
       <File Name="../extra/specialheaders/evillib_start.h"/>
@@ -162,6 +160,14 @@
       <File Name="../extra/specialheaders/evillib_start.c"/>
     </VirtualDirectory>
     <File Name="../extra/evillib-extra_depends.h"/>
+    <VirtualDirectory Name="dbdriver">
+      <File Name="../extra/dbdriver/etDBDriver.h"/>
+      <File Name="../extra/dbdriver/etDBSQL.c"/>
+      <File Name="../extra/dbdriver/etDBSQL.h"/>
+      <File Name="../extra/dbdriver/etDBSQLite.c"/>
+      <File Name="../extra/dbdriver/etDBSQLite.h"/>
+      <File Name="../extra/dbdriver/etDBDriver.c"/>
+    </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="debian">
     <File Name="../debian/changelog"/>
@@ -223,6 +229,7 @@
     <File Name="../tests/etDBObject.c"/>
     <File Name="../tests/etDBObjectTable.c"/>
     <File Name="../tests/etDBObjectTableColumn.c"/>
+    <File Name="../tests/etDBSQL.c"/>
   </VirtualDirectory>
   <VirtualDirectory Name="qt">
     <VirtualDirectory Name="tableEditor">
@@ -252,7 +259,7 @@
         <LibraryPath Value="Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/tests/etDBObjectTableColumn" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/tests/etDBSQL" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[LD_LIBRARY_PATH=/tmp/evillib/build/obj/]]>
       </Environment>

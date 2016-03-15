@@ -49,6 +49,7 @@ etID_STATE          etDBObjectValueSet( etDBObject *dbObject, const char *column
 
 // vars
     json_t          *jsonColumnValues = NULL;
+    json_t          *jsonColumnValue = NULL;
 
 // get the object which hold all the values
     jsonColumnValues = json_object_get( dbObject->jsonRootObject, "values" );
@@ -58,8 +59,11 @@ etID_STATE          etDBObjectValueSet( etDBObject *dbObject, const char *column
     }
 
 // save value
-    if( json_object_set_new( jsonColumnValues, columnName, json_string(value) ) != 0 ) return etID_STATE_ERR;
-    if( json_object_set_new( jsonColumnValues, "inDB", json_integer(0) ) != 0 ) return etID_STATE_ERR;
+    jsonColumnValue = json_object();
+    if( json_object_set_new( jsonColumnValue, "inDB", json_integer(0) ) != 0 ) return etID_STATE_ERR;
+    if( json_object_set_new( jsonColumnValue, "value", json_string(value) ) != 0 ) return etID_STATE_ERR;
+    if( json_object_set_new( jsonColumnValues, columnName, jsonColumnValue ) != 0 ) return etID_STATE_ERR;
+
 
 
 
@@ -97,11 +101,15 @@ etID_STATE          __etDBObjectValueNext( etDBObject *dbObject, const char **p_
         dbObject->jsonIterator = json_object_iter_next( dbObject->jsonObjectToIterate, dbObject->jsonIterator );
     }
 
+    json_t          *jsonColumnValue = NULL;
+
+    jsonColumnValue = json_object_iter_value(dbObject->jsonIterator);
+
 // column name
     *p_columnName = json_object_iter_key( dbObject->jsonIterator );
 
 // column value
-    *p_value = json_string_value( json_object_iter_value(dbObject->jsonIterator) );
+    *p_value = json_string_value( json_object_get(jsonColumnValue,"value") );
 
     return etID_YES;
 }

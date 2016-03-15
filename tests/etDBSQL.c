@@ -88,6 +88,13 @@ int                     main( int argc, const char* argv[] ){
     etDBObjectTablePick( dbObject, "city" );
     etDBDriverTableAdd( &dbDriver, dbObject );
 
+// we add some data
+    etDBObjectValueSet( dbObject, "uuid", "000001" );
+    etDBObjectValueSet( dbObject, "displayName", "Senftenberg" );
+    etDBObjectValueSet( dbObject, "postalcode", "01979" );
+
+    etDBObjectDump( dbObject );
+
 // get data
     etDBDriverDataGet( &dbDriver, dbObject );
 

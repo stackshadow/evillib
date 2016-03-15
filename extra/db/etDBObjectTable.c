@@ -58,27 +58,42 @@ etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName 
     etDebugCheckNull( tableName );
 
 // vars
+    json_t      *jsonTables;
     json_t      *jsonTable;
-
-// create the table
-    dbObject->jsonTableActual = json_object();
-    if( dbObject->jsonTableActual == NULL ){
-        return etID_STATE_ERR;
-    }
-// set the type
-    if( etDBObjectTypeSet( dbObject->jsonTableActual, etDBObject_TYPE_TABLE ) != etID_YES ) return etID_STATE_ERR;
-    if( json_object_set_new( dbObject->jsonTableActual, "name", json_string(tableName) ) != 0 ) return etID_STATE_ERR;
-    if( json_object_set_new( dbObject->jsonTableActual, "inDB", json_integer(0) ) != 0 ) return etID_STATE_ERR;
-
-
-// add the "new" table
-    if( json_object_set_new( dbObject->jsonRootObject, tableName, dbObject->jsonTableActual ) != 0 ){
-        return etID_STATE_ERR;
-    }
 
 
 // reset the index stuff
     etDBObjectIterationReset( dbObject );
+
+// get the object which holds all tables
+    jsonTables = json_object_get( dbObject->jsonRootObject, "tables" );
+    if( jsonTables == NULL ){
+    // create a new table
+        jsonTables = json_object();
+        if( json_object_set_new( dbObject->jsonRootObject, "tables", jsonTables ) != 0 ){
+            return etID_STATE_ERR;
+        }
+
+    }
+
+// create the table
+    jsonTable = json_object();
+    if( jsonTable == NULL ){
+        return etID_STATE_ERR;
+    }
+// set the type
+    if( etDBObjectTypeSet( jsonTable, etDBObject_TYPE_TABLE ) != etID_YES ) return etID_STATE_ERR;
+    if( json_object_set_new( jsonTable, "name", json_string(tableName) ) != 0 ) return etID_STATE_ERR;
+    if( json_object_set_new( jsonTable, "inDB", json_integer(0) ) != 0 ) return etID_STATE_ERR;
+
+
+// add the "new" table
+    if( json_object_set_new( jsonTables, tableName, jsonTable ) != 0 ){
+        return etID_STATE_ERR;
+    }
+
+// save the new created table
+    dbObject->jsonTableActual = jsonTable;
 
 // return
     return etID_YES;
@@ -105,10 +120,21 @@ etID_STATE      etDBObjectTableNext( etDBObject *dbObject ){
     etDebugCheckNull( dbObject );
 
 // vars
-    int     jsonArraySize;
+    json_t      *jsonTables;
+
+// get the object which holds all tables
+    jsonTables = json_object_get( dbObject->jsonRootObject, "tables" );
+    if( jsonTables == NULL ){
+    // create a new table
+        jsonTables = json_object();
+        if( json_object_set_new( dbObject->jsonRootObject, "tables", jsonTables ) != 0 ){
+            return etID_STATE_ERR;
+        }
+
+    }
 
     if( dbObject->jsonIterator == NULL ){
-        dbObject->jsonObjectToIterate = dbObject->jsonRootObject;
+        dbObject->jsonObjectToIterate = jsonTables;
         dbObject->jsonIterator = json_object_iter( dbObject->jsonObjectToIterate );
     } else {
     // iterate
@@ -146,8 +172,17 @@ etID_STATE      etDBObjectTablePick( etDBObject *dbObject, const char *tableName
     etDebugCheckNull( dbObject );
     etDebugCheckNull( tableName );
 
+// vars
+    json_t      *jsonTables;
+
+// get the object which holds all tables
+    jsonTables = json_object_get( dbObject->jsonRootObject, "tables" );
+    if( jsonTables == NULL ){
+        return etID_STATE_NODATA;
+    }
+
 // pick table
-    dbObject->jsonTableActual = json_object_get( dbObject->jsonRootObject, tableName );
+    dbObject->jsonTableActual = json_object_get( jsonTables, tableName );
     if( dbObject->jsonTableActual != NULL ) return etID_YES;
 
 

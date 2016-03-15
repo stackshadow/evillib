@@ -149,7 +149,19 @@ etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject ){
     etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
     
     sqliteDriver->sqliteState = sqlite3_step(sqliteDriver->sqliteStatement);
-    
+
+// everything okay
+    if( sqliteDriver->sqliteState == SQLITE_OK || sqliteDriver->sqliteState == SQLITE_DONE ){
+        return etID_YES;
+    }
+
+// there is an error
+    const char *sqliteErrorMessage = sqlite3_errmsg( sqliteDriver->sqliteHandle );
+    snprintf( etDebugTempMessage, etDebugTempMessageLen, "%s", sqliteErrorMessage );
+    etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
+
+
+    return etID_STATE_ERR;
 }
 
 
@@ -160,13 +172,20 @@ etID_STATE          etDBSQLiteTableAdd( etDBDriver *dbDriver, etDBObject *dbObje
     etDebugCheckNull( dbDriver->dbDriverData );
 
 //
-    etDBSQLiteDriver *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+    etDBSQLiteDriver    *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+    etID_STATE          returnState = etID_STATE_NOTHING;
 
 // create the query
     if( etDBSQLTableCreate( dbDriver, dbObject, sqliteDriver->sqlquery ) != etID_YES ) return etID_STATE_ERR_INTERR;
 
 // run the query
-    return etDBSQLiteRun( dbDriver, dbObject );
+    returnState = etDBSQLiteRun( dbDriver, dbObject );
+    if( returnState == etID_YES ){
+        return etID_YES;
+    }
+
+// return
+    return etID_NO;
 }
 
 
@@ -182,17 +201,17 @@ etID_STATE          etDBSQLiteDataAdd( etDBDriver *dbDriver, etDBObject *dbObjec
 
 
 // create the query
-    etDBSQLSelect( dbDriver, dbObject, sqliteDriver->sqlquery );
+    etDBSQLInsertInto( dbDriver, dbObject, sqliteDriver->sqlquery );
 
+// run the query
     returnState = etDBSQLiteRun( dbDriver, dbObject );
-
-    if( sqliteDriver->sqliteState == SQLITE_ROW ){
+    if( returnState == etID_YES ){
         return etID_YES;
     }
 
+// return
     return etID_NO;
 }
-
 
 
 etID_STATE          etDBSQLiteDataGet( etDBDriver *dbDriver, etDBObject *dbObject ){

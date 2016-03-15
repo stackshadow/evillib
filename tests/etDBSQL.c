@@ -54,6 +54,7 @@
 int                     main( int argc, const char* argv[] ){
     etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
+    etDebugLevelSet( etID_LEVEL_DETAIL_DB );
 
 
 // alloc the dbobject
@@ -92,8 +93,11 @@ int                     main( int argc, const char* argv[] ){
     etDBObjectValueSet( dbObject, "uuid", "000001" );
     etDBObjectValueSet( dbObject, "displayName", "Senftenberg" );
     etDBObjectValueSet( dbObject, "postalcode", "01979" );
-
     etDBObjectDump( dbObject );
+
+// add
+    etDBSQLiteDataAdd( &dbDriver, dbObject );
+
 
 // get data
     etDBDriverDataGet( &dbDriver, dbObject );

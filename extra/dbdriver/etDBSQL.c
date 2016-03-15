@@ -91,6 +91,61 @@ etID_STATE          etDBSQLInsertInto( etDBDriver *dbDriver, etDBObject *dbObjec
     etDebugCheckNull( sqlquery );
 
 
+// check if an table is selected
+    if( dbObject->jsonTableActual == NULL ){
+        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
+        return etID_STATE_WARN_SEQERR;
+    }
+
+// vars
+    etID_BOOL           firstColumn = etID_TRUE;
+    const char          *tableName = NULL;
+    const char          *columnName = NULL;
+    const char          *columnValue = NULL;
+    etString            *valueString = NULL;
+
+// we need a value string
+    etStringAllocLen( valueString, 128 );
+
+// clear
+    etStringClean( sqlquery );
+
+// create table
+    etStringCharSet( sqlquery, "INSERT INTO ", 12 );
+
+// add table name
+    etDBObjectTableNameGet( dbObject, tableName );
+    etStringCharAdd( sqlquery, tableName );
+
+// columns
+    etStringCharAdd( sqlquery, "(" );
+    etDBObjectIterationReset(dbObject);
+    while( etDBObjectValueNext(dbObject,columnName,columnValue) == etID_YES ){
+
+    // comma
+        if( firstColumn == etID_FALSE ){
+            etStringCharAdd( sqlquery, "," );
+            etStringCharAdd( valueString, "," );
+        }
+
+    // column name
+        etStringCharAdd( sqlquery, "\"" );
+        etStringCharAdd( sqlquery, columnName );
+        etStringCharAdd( sqlquery, "\"" );
+
+    // column value
+        etStringCharAdd( valueString, "\"" );
+        etStringCharAdd( valueString, columnValue );
+        etStringCharAdd( valueString, "\"" );
+
+        firstColumn = etID_FALSE;
+    }
+
+// values
+    etStringCharAdd( sqlquery, ") VALUES (" );
+    etStringCharGet( valueString, columnValue );
+    etStringCharAdd( sqlquery, columnValue );
+    etStringCharAdd( sqlquery, ")" );
 
 /*
 INSERT INTO table_name (column1,column2,column3,...)

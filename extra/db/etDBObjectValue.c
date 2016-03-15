@@ -26,6 +26,7 @@
 #include "db/etDBObject.h"
 #include "db/etDBObjectTable.h"
 #include "db/etDBObjectTableColumn.h"
+#include "db/etDBObjectValue.h"
 
 
 
@@ -101,16 +102,20 @@ etID_STATE          __etDBObjectValueNext( etDBObject *dbObject, const char **p_
         dbObject->jsonIterator = json_object_iter_next( dbObject->jsonObjectToIterate, dbObject->jsonIterator );
     }
 
-    json_t          *jsonColumnValue = NULL;
+// if there is data
+    if( dbObject->jsonIterator != NULL){
+        json_t          *jsonColumnValue = NULL;
 
-    jsonColumnValue = json_object_iter_value(dbObject->jsonIterator);
+        jsonColumnValue = json_object_iter_value(dbObject->jsonIterator);
 
-// column name
-    *p_columnName = json_object_iter_key( dbObject->jsonIterator );
+    // column name
+        *p_columnName = json_object_iter_key( dbObject->jsonIterator );
 
-// column value
-    *p_value = json_string_value( json_object_get(jsonColumnValue,"value") );
+    // column value
+        *p_value = json_string_value( json_object_get(jsonColumnValue,"value") );
+        return etID_YES;
+    }
 
-    return etID_YES;
+    return etID_STATE_NODATA;
 }
 

@@ -151,7 +151,8 @@
       <File Name="../extra/db/etDBObjectTable.dox"/>
       <File Name="../extra/db/etDBObjectTableColumn.h"/>
       <File Name="../extra/db/etDBObjectTableColumn.c"/>
-      <File Name="../extra/db/etDBDriver.h"/>
+      <File Name="../extra/db/etDBObjectValue.c"/>
+      <File Name="../extra/db/etDBObjectValue.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="specialheaders">
       <File Name="../extra/specialheaders/evillib_start.h"/>

@@ -21,8 +21,6 @@
 #include "db/etDBObjectTable.h"
 #include "db/etDBObjectTableColumn.h"
 
-
-
 etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
 // check
     etDebugCheckNull( dbDriver );
@@ -47,15 +45,16 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
     etStringCharAdd( sqlquery, tableName );
 
 // columns
-    etID_BOOL firstColumn = etID_TRUE;
-    const char *columnName = NULL;
-    etDBColumnType columnType;
-    int columnOption = etDBCOLUMN_OPTION_NOTHING;
+    etID_BOOL           firstColumn = etID_TRUE;
+    const char          *columnName = NULL;
+    etDBColumnType      columnType;
+    int                 columnOption = etDBCOLUMN_OPTION_NOTHING;
     
     etStringCharAdd( sqlquery, "( " );
     etDBObjectIterationReset(dbObject);
     while( etDBObjectTableColumnNext(dbObject) == etID_YES ){
         
+    // comma
         if( firstColumn == etID_FALSE ){
             etStringCharAdd( sqlquery, "," );
         }
@@ -85,26 +84,74 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
 }
 
 
-etID_STATE          etDBSQLSelectAll( etDBObject *dbObject, etString *sqlquery ){
+etID_STATE          etDBSQLInsertInto( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
 // check
+    etDebugCheckNull( dbDriver );
     etDebugCheckNull( dbObject );
     etDebugCheckNull( sqlquery );
+
+
+
+/*
+INSERT INTO table_name (column1,column2,column3,...)
+VALUES (value1,value2,value3,...);
+*/
+
+}
+
+
+etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( sqlquery );
+
+
+// check if an table is selected
+    if( dbObject->jsonTableActual == NULL ){
+        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
+        return etID_STATE_WARN_SEQERR;
+    }
+
+// vars
+    etID_BOOL           firstColumn = etID_TRUE;
+    const char          *tableName = NULL;
+    const char          *columnName = NULL;
 
 // clear
     etStringClean( sqlquery );
 
-/*
-CREATE TABLE Persons
-(
-PersonID int,
-LastName varchar(255),
-FirstName varchar(255),
-Address varchar(255),
-City varchar(255)
-);
-*/
+// create table
+    etStringCharSet( sqlquery, "SELECT ", 7 );
+
+    etDBObjectIterationReset(dbObject);
+    while( etDBObjectTableColumnNext(dbObject) == etID_YES ){
+
+    // comma
+        if( firstColumn == etID_FALSE ){
+            etStringCharAdd( sqlquery, "," );
+        }
+
+    // column name
+        if( etDBObjectTableColumnNameGet( dbObject, columnName ) != etID_YES ) return etID_STATE_ERR;
+        etStringCharAdd( sqlquery, "\"" );
+        etStringCharAdd( sqlquery, columnName );
+        etStringCharAdd( sqlquery, "\"" );
+
+        firstColumn = etID_FALSE;
+    }
+
+// FROM
+    etDBObjectTableNameGet( dbObject, tableName );
+    etStringCharAdd( sqlquery, " FROM " );
+    etStringCharAdd( sqlquery, tableName );
+
+
 
 
 }
+
+
+
 
 

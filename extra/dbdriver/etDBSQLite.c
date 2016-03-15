@@ -19,10 +19,57 @@
 #include "dbdriver/etDBDriver.h"
 #include "dbdriver/etDBSQLite.h"
 #include "db/etDBObjectTableColumn.h"
+#include "db/etDBObjectValue.h"
 
 
 // intarnal function definitions
+etID_STATE          etDBSQLiteColumnTypeAdd( etString *sqlquery, etDBColumnType columnType );
+etID_STATE          etDBSQLiteColumnOptionAdd( etString *sqlquery, int option );
+etID_STATE          etDBSQLiteTableAdd( etDBDriver *dbDriver, etDBObject *dbObject );
+etID_STATE          etDBSQLiteDataGet( etDBDriver *dbDriver, etDBObject *dbObject );
 etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject );
+
+
+// userspace
+etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *filename ){
+// check
+    etDebugCheckNull(dbDriver);
+    etDebugCheckNull(filename);
+
+// clean the driver
+    memset( dbDriver, 0, sizeof(etDBDriver) );
+
+// setup function pointer
+    dbDriver->queryColumnTypeAdd = etDBSQLiteColumnTypeAdd;
+    dbDriver->queryColumnOptionAdd = etDBSQLiteColumnOptionAdd;
+    dbDriver->tableAdd = etDBSQLiteTableAdd;
+    dbDriver->tableRemove = NULL;
+    dbDriver->dataGet = etDBSQLiteDataGet;
+    dbDriver->dataSet = NULL;
+
+// alloc data for driver
+    etMemoryAlloc( dbDriver->dbDriverData, sizeof(etDBSQLiteDriver) );
+    etDBSQLiteDriver *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+
+// alloc query
+    etStringAllocLen( sqliteDriver->sqlquery, 128 );
+
+// try to open the sqlite connection
+    int sqliteResult = sqlite3_open( filename, &sqliteDriver->sqliteHandle );
+    if( sqliteResult == SQLITE_OK ) return etID_YES;
+
+
+// print error
+    const char *sqliteErrorMessage = sqlite3_errmsg( sqliteDriver->sqliteHandle );
+    snprintf( etDebugTempMessage, etDebugTempMessageLen, "%s", sqliteErrorMessage );
+    etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
+
+// close handle
+    sqlite3_close(sqliteDriver->sqliteHandle);
+
+// return
+    return etID_STATE_ERR;
+}
 
 
 
@@ -70,24 +117,6 @@ etID_STATE          etDBSQLiteColumnOptionAdd( etString *sqlquery, int option ){
 }
 
 
-etID_STATE          etDBSQLiteTableAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
-// check
-    etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
-    etDebugCheckNull( dbDriver->dbDriverData );
-
-//
-    etDBSQLiteDriver *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
-
-// create the query
-    if( etDBSQLTableCreate( dbDriver, dbObject, sqliteDriver->sqlquery ) != etID_YES ) return etID_STATE_ERR_INTERR;
-
-// run the query
-    etDBSQLiteRun( dbDriver, dbObject );
-
-}
-
-
 
 // private stuff
 etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject ){
@@ -107,8 +136,8 @@ etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject ){
 // prepare sql
     const char *query;
     etStringCharGet( sqliteDriver->sqlquery, query );
-    int sqliteResult = sqlite3_prepare( sqliteDriver->sqliteHandle, query, -1, &sqliteDriver->sqliteStatement, NULL );
-    if( sqliteResult != SQLITE_OK ){
+    sqliteDriver->sqliteState = sqlite3_prepare( sqliteDriver->sqliteHandle, query, -1, &sqliteDriver->sqliteStatement, NULL );
+    if( sqliteDriver->sqliteState != SQLITE_OK ){
     // print error
         const char *sqliteErrorMessage = sqlite3_errmsg( sqliteDriver->sqliteHandle );
         snprintf( etDebugTempMessage, etDebugTempMessageLen, "%s", sqliteErrorMessage );
@@ -119,49 +148,112 @@ etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject ){
     snprintf( etDebugTempMessage, etDebugTempMessageLen, "Run query: %s", query );
     etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
     
-    sqlite3_step(sqliteDriver->sqliteStatement);
+    sqliteDriver->sqliteState = sqlite3_step(sqliteDriver->sqliteStatement);
     
 }
 
 
-
-// userspace
-etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *filename ){
+etID_STATE          etDBSQLiteTableAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
 // check
-    etDebugCheckNull(dbDriver);
-    etDebugCheckNull(filename);
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbDriver->dbDriverData );
 
-// clean the driver
-    memset( dbDriver, 0, sizeof(etDBDriver) );
-
-// setup function pointer
-    dbDriver->queryColumnTypeAdd = etDBSQLiteColumnTypeAdd;
-    dbDriver->queryColumnOptionAdd = etDBSQLiteColumnOptionAdd;
-    dbDriver->tableAdd = etDBSQLiteTableAdd;
-
-// alloc data for driver
-    etMemoryAlloc( dbDriver->dbDriverData, sizeof(etDBSQLiteDriver) );
+//
     etDBSQLiteDriver *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
 
-// alloc query
-    etStringAllocLen( sqliteDriver->sqlquery, 128 );
+// create the query
+    if( etDBSQLTableCreate( dbDriver, dbObject, sqliteDriver->sqlquery ) != etID_YES ) return etID_STATE_ERR_INTERR;
 
-// try to open the sqlite connection
-    int sqliteResult = sqlite3_open( filename, &sqliteDriver->sqliteHandle );
-    if( sqliteResult == SQLITE_OK ) return etID_YES;
-
-
-// print error
-    const char *sqliteErrorMessage = sqlite3_errmsg( sqliteDriver->sqliteHandle );
-    snprintf( etDebugTempMessage, etDebugTempMessageLen, "%s", sqliteErrorMessage );
-    etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-
-// close handle
-    sqlite3_close(sqliteDriver->sqliteHandle);
-
-// return
-    return etID_STATE_ERR;
+// run the query
+    return etDBSQLiteRun( dbDriver, dbObject );
 }
+
+
+etID_STATE          etDBSQLiteDataAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbDriver->dbDriverData );
+
+//
+    etDBSQLiteDriver    *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+    etID_STATE          returnState = etID_STATE_NOTHING;
+
+
+// create the query
+    etDBSQLSelect( dbDriver, dbObject, sqliteDriver->sqlquery );
+
+    returnState = etDBSQLiteRun( dbDriver, dbObject );
+
+    if( sqliteDriver->sqliteState == SQLITE_ROW ){
+        return etID_YES;
+    }
+
+    return etID_NO;
+}
+
+
+
+etID_STATE          etDBSQLiteDataGet( etDBDriver *dbDriver, etDBObject *dbObject ){
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbDriver->dbDriverData );
+
+//
+    etDBSQLiteDriver    *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+    etID_STATE          returnState = etID_STATE_NOTHING;
+
+
+// create the query
+    etDBSQLSelect( dbDriver, dbObject, sqliteDriver->sqlquery );
+
+    returnState = etDBSQLiteRun( dbDriver, dbObject );
+
+    if( sqliteDriver->sqliteState == SQLITE_ROW ){
+        return etID_YES;
+    }
+
+    return etID_NO;
+}
+
+
+etID_STATE          etDBSQLiteDataNext( etDBDriver *dbDriver, etDBObject *dbObject ){
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbDriver->dbDriverData );
+
+// vars
+    etDBSQLiteDriver    *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+    etID_STATE          returnState = etID_STATE_NOTHING;
+
+// clean calues
+    etDBObjectValueClean( dbObject );
+    
+// iterate
+    if( sqliteDriver->sqliteState == SQLITE_ROW ){
+
+    // iterate result columns
+        int columnCount = sqlite3_data_count( sqliteDriver->sqliteStatement );
+        for( int columnIndex = 0; columnIndex < columnCount; columnIndex++ ){
+            
+            const char* columnName = sqlite3_column_name( sqliteDriver->sqliteStatement, columnIndex );
+            const char* columnValue = sqlite3_column_text( sqliteDriver->sqliteStatement, columnIndex );
+            
+            etDBObjectValueSet( dbObject, columnName, columnValue );
+            
+        }
+
+    // next result
+        sqliteDriver->sqliteState = sqlite3_step(sqliteDriver->sqliteStatement);
+        return etID_YES;
+    }
+
+    return etID_NO;
+}
+
 
 
 

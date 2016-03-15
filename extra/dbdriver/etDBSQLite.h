@@ -28,6 +28,7 @@ extern "C" {
 typedef struct etDBSQLiteDriver_s {
     etString        *sqlquery;
     
+    int             sqliteState;
     sqlite3         *sqliteHandle;
     sqlite3_stmt    *sqliteStatement;
 

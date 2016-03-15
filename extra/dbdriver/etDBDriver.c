@@ -28,6 +28,13 @@ etID_STATE          etDBDriverTableAdd( etDBDriver *dbDriver, etDBObject *dbObje
     return etID_STATE_ERR;
 }
 
+etID_STATE          etDBDriverDataGet( etDBDriver *dbDriver, etDBObject *dbObject ){
+    if( dbDriver->dataGet != NULL ){
+        return dbDriver->dataGet( dbDriver, dbObject );
+    }
+    
+    return etID_STATE_ERR;
+}
 
 
 

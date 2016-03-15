@@ -29,9 +29,13 @@ typedef struct etDBDriver_s {
     etID_STATE      (*queryColumnTypeAdd)( etString *sqlquery, etDBColumnType columnType );
     etID_STATE      (*queryColumnOptionAdd)( etString *sqlquery, int option );
 
-// stuff to handle the db
+// handle table
     etID_STATE      (*tableAdd)( etDBDriver *dbDriver, etDBObject *dbObject );
     etID_STATE      (*tableRemove)( etDBDriver *dbDriver, etDBObject *dbObject );
+// handle table data
+    etID_STATE      (*dataGet)( etDBDriver *dbDriver, etDBObject *dbObject );
+    etID_STATE      (*dataSet)( etDBDriver *dbDriver, etDBObject *dbObject );
+    etID_STATE      (*dataNext)( etDBDriver *dbDriver, etDBObject *dbObject );
 
 
     void            *dbDriverData;

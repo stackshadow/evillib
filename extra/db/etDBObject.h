@@ -59,16 +59,13 @@ etID_STATE          __etDBObjectFree( etDBObject **p_dbObject );
 etID_STATE          etDBObjectDump( etDBObject *dbObject );
 
 
-etID_STATE          etDBObjectSelectionReset( etDBObject *dbObject );
+etID_STATE          etDBObjectIterationReset( etDBObject *dbObject );
 
 
 etID_STATE          etDBObjectTypeSet( json_t *jsonObject, const char *type );
 
 
 etID_STATE          etDBObjectTypeCheck( json_t *jsonObject, const char *type );
-
-
-json_t*             etDBObjectLangGet( json_t *jsonObject, const char *langCode, const char *key );
 
 
 

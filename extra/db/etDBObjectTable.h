@@ -40,8 +40,6 @@ etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName 
 
 
 
-etID_STATE      etDBObjectTableNextReset( etDBObject *dbObject );
-
 
 etID_STATE      etDBObjectTableNext( etDBObject *dbObject );
 

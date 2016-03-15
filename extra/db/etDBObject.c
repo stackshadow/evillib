@@ -80,7 +80,6 @@ etID_STATE          etDBObjectDump( etDBObject *dbObject ){
 }
 
 
-
 etID_STATE          etDBObjectIterationReset( etDBObject *dbObject ){
 // check
     etDebugCheckNull( dbObject );

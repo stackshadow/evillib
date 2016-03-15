@@ -45,6 +45,7 @@
 #include "db/etDBObject.c"
 #include "db/etDBObjectTable.c"
 #include "db/etDBObjectTableColumn.c"
+#include "db/etDBObjectValue.c"
 #include "dbdriver/etDBSQL.c"
 #include "dbdriver/etDBDriver.c"
 #include "dbdriver/etDBSQLite.c"
@@ -86,6 +87,9 @@ int                     main( int argc, const char* argv[] ){
 // we select the table we would like to add
     etDBObjectTablePick( dbObject, "city" );
     etDBDriverTableAdd( &dbDriver, dbObject );
+
+// get data
+    etDBDriverDataGet( &dbDriver, dbObject );
 
 
 

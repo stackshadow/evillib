@@ -90,17 +90,25 @@ int                     main( int argc, const char* argv[] ){
     etDBDriverTableAdd( &dbDriver, dbObject );
 
 // we add some data
+    etDBObjectValueClean( dbObject );
     etDBObjectValueSet( dbObject, "uuid", "000001" );
-    etDBObjectValueSet( dbObject, "displayName", "Senftenberg" );
-    etDBObjectValueSet( dbObject, "postalcode", "01979" );
+    etDBObjectValueSet( dbObject, "displayName", "Berlin" );
+    etDBObjectValueSet( dbObject, "postalcode", "10115" );
     etDBObjectDump( dbObject );
+    etDBDriverDataAdd( &dbDriver, dbObject );
 
-// add
-    etDBSQLiteDataAdd( &dbDriver, dbObject );
+    etDBObjectValueClean( dbObject );
+    etDBObjectValueSet( dbObject, "uuid", "000002" );
+    etDBObjectValueSet( dbObject, "displayName", "Hannover" );
+    etDBObjectValueSet( dbObject, "postalcode", "30159" );
+    etDBObjectDump( dbObject );
+    etDBDriverDataAdd( &dbDriver, dbObject );
 
 
 // get data
     etDBDriverDataGet( &dbDriver, dbObject );
+    etDBSQLiteDataNext( &dbDriver, dbObject );
+
 
 
 

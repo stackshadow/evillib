@@ -25,9 +25,14 @@
 // intarnal function definitions
 etID_STATE          etDBSQLiteColumnTypeAdd( etString *sqlquery, etDBColumnType columnType );
 etID_STATE          etDBSQLiteColumnOptionAdd( etString *sqlquery, int option );
-etID_STATE          etDBSQLiteTableAdd( etDBDriver *dbDriver, etDBObject *dbObject );
-etID_STATE          etDBSQLiteDataGet( etDBDriver *dbDriver, etDBObject *dbObject );
+
 etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject );
+etID_STATE          etDBSQLiteTableAdd( etDBDriver *dbDriver, etDBObject *dbObject );
+etID_STATE          etDBSQLiteDataAdd( etDBDriver *dbDriver, etDBObject *dbObject );
+etID_STATE          etDBSQLiteDataGet( etDBDriver *dbDriver, etDBObject *dbObject );
+etID_STATE          etDBSQLiteDataNext( etDBDriver *dbDriver, etDBObject *dbObject );
+
+
 
 
 // userspace
@@ -44,8 +49,9 @@ etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *file
     dbDriver->queryColumnOptionAdd = etDBSQLiteColumnOptionAdd;
     dbDriver->tableAdd = etDBSQLiteTableAdd;
     dbDriver->tableRemove = NULL;
+    dbDriver->dataAdd = etDBSQLiteDataAdd;
     dbDriver->dataGet = etDBSQLiteDataGet;
-    dbDriver->dataSet = NULL;
+    dbDriver->dataNext = etDBSQLiteDataNext;
 
 // alloc data for driver
     etMemoryAlloc( dbDriver->dbDriverData, sizeof(etDBSQLiteDriver) );
@@ -151,7 +157,9 @@ etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject ){
     sqliteDriver->sqliteState = sqlite3_step(sqliteDriver->sqliteStatement);
 
 // everything okay
-    if( sqliteDriver->sqliteState == SQLITE_OK || sqliteDriver->sqliteState == SQLITE_DONE ){
+    if( sqliteDriver->sqliteState == SQLITE_OK 
+    ||  sqliteDriver->sqliteState == SQLITE_DONE 
+    ||  sqliteDriver->sqliteState == SQLITE_ROW ){
         return etID_YES;
     }
 
@@ -220,7 +228,7 @@ etID_STATE          etDBSQLiteDataGet( etDBDriver *dbDriver, etDBObject *dbObjec
     etDebugCheckNull( dbObject );
     etDebugCheckNull( dbDriver->dbDriverData );
 
-//
+// vars
     etDBSQLiteDriver    *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
     etID_STATE          returnState = etID_STATE_NOTHING;
 
@@ -228,8 +236,10 @@ etID_STATE          etDBSQLiteDataGet( etDBDriver *dbDriver, etDBObject *dbObjec
 // create the query
     etDBSQLSelect( dbDriver, dbObject, sqliteDriver->sqlquery );
 
+// run the query
     returnState = etDBSQLiteRun( dbDriver, dbObject );
 
+// is there a row ?
     if( sqliteDriver->sqliteState == SQLITE_ROW ){
         return etID_YES;
     }

@@ -21,6 +21,8 @@
 #include "db/etDBObjectTable.h"
 #include "db/etDBObjectTableColumn.h"
 
+
+
 etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
 // check
     etDebugCheckNull( dbDriver );

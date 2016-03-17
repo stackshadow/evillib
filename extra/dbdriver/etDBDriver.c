@@ -21,6 +21,10 @@
 
 
 etID_STATE          etDBDriverTableAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
+// check
+    etDebugCheckNull(dbDriver);
+
+// call function
     if( dbDriver->tableAdd != NULL ){
         return dbDriver->tableAdd( dbDriver, dbObject );
     }
@@ -28,7 +32,56 @@ etID_STATE          etDBDriverTableAdd( etDBDriver *dbDriver, etDBObject *dbObje
     return etID_STATE_ERR;
 }
 
+
+etID_STATE          etDBDriverTableRemove( etDBDriver *dbDriver, etDBObject *dbObject ){
+// check
+    etDebugCheckNull(dbDriver);
+
+// call function
+    if( dbDriver->tableRemove != NULL ){
+        return dbDriver->tableRemove( dbDriver, dbObject );
+    }
+    
+    return etID_STATE_ERR;
+}
+
+
+
+
+etID_STATE          etDBDriverDataAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
+// check
+    etDebugCheckNull(dbDriver);
+
+// call function
+    if( dbDriver->dataAdd != NULL ){
+        return dbDriver->dataAdd( dbDriver, dbObject );
+    }
+    
+    return etID_STATE_ERR;
+}
+
+
+etID_STATE          etDBDriverDataChange( etDBDriver *dbDriver, etDBObject *dbObject ){
+// check
+    etDebugCheckNull(dbDriver);
+
+// call function
+    if( dbDriver->dataChange != NULL ){
+        return dbDriver->dataChange( dbDriver, dbObject );
+    }
+    
+    return etID_STATE_ERR;
+}
+
+
 etID_STATE          etDBDriverDataGet( etDBDriver *dbDriver, etDBObject *dbObject ){
+// check
+    etDebugCheckNull(dbDriver);
+
+// clean values
+    etDBObjectValueClean( dbObject );
+
+// call function
     if( dbDriver->dataGet != NULL ){
         return dbDriver->dataGet( dbDriver, dbObject );
     }
@@ -37,7 +90,17 @@ etID_STATE          etDBDriverDataGet( etDBDriver *dbDriver, etDBObject *dbObjec
 }
 
 
+etID_STATE          etDBDriverDataNext( etDBDriver *dbDriver, etDBObject *dbObject ){
+// check
+    etDebugCheckNull(dbDriver);
 
+// call function
+    if( dbDriver->dataNext != NULL ){
+        return dbDriver->dataNext( dbDriver, dbObject );
+    }
+    
+    return etID_STATE_ERR;
+}
 
 
 

@@ -33,13 +33,35 @@ typedef struct etDBDriver_s {
     etID_STATE      (*tableAdd)( etDBDriver *dbDriver, etDBObject *dbObject );
     etID_STATE      (*tableRemove)( etDBDriver *dbDriver, etDBObject *dbObject );
 // handle table data
+    etID_STATE      (*dataAdd)( etDBDriver *dbDriver, etDBObject *dbObject );
+    etID_STATE      (*dataChange)( etDBDriver *dbDriver, etDBObject *dbObject );
     etID_STATE      (*dataGet)( etDBDriver *dbDriver, etDBObject *dbObject );
-    etID_STATE      (*dataSet)( etDBDriver *dbDriver, etDBObject *dbObject );
     etID_STATE      (*dataNext)( etDBDriver *dbDriver, etDBObject *dbObject );
 
 
     void            *dbDriverData;
 } etDBDriver;
+
+
+etID_STATE          etDBDriverTableAdd( etDBDriver *dbDriver, etDBObject *dbObject );
+
+
+etID_STATE          etDBDriverTableRemove( etDBDriver *dbDriver, etDBObject *dbObject );
+
+
+
+
+etID_STATE          etDBDriverDataAdd( etDBDriver *dbDriver, etDBObject *dbObject );
+
+
+etID_STATE          etDBDriverDataChange( etDBDriver *dbDriver, etDBObject *dbObject );
+
+
+etID_STATE          etDBDriverDataGet( etDBDriver *dbDriver, etDBObject *dbObject );
+
+
+etID_STATE          etDBDriverDataNext( etDBDriver *dbDriver, etDBObject *dbObject );
+
 
 
 

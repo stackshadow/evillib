@@ -36,7 +36,7 @@ typedef struct etDBSQLiteDriver_s {
 
 
 
-
+etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *filename );
 
 
 

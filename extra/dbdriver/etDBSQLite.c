@@ -15,17 +15,23 @@
     You should have received a copy of the GNU Lesser General Public License
     along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
+#include "string/etString.h"
+#include "string/etStringChar.h"
 
 #include "dbdriver/etDBDriver.h"
+#include "dbdriver/etDBSQL.h"
 #include "dbdriver/etDBSQLite.h"
 #include "db/etDBObjectTableColumn.h"
 #include "db/etDBObjectValue.h"
+
 
 
 // intarnal function definitions
 etID_STATE          etDBSQLiteColumnTypeAdd( etString *sqlquery, etDBColumnType columnType );
 etID_STATE          etDBSQLiteColumnOptionAdd( etString *sqlquery, int option );
 
+//etID_STATE          etDBSQLiteConnect)( etDBDriver *dbDriver );
+etID_STATE          etDBSQLiteIsConnected( etDBDriver *dbDriver );
 etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject );
 etID_STATE          etDBSQLiteTableAdd( etDBDriver *dbDriver, etDBObject *dbObject );
 etID_STATE          etDBSQLiteDataAdd( etDBDriver *dbDriver, etDBObject *dbObject );
@@ -47,6 +53,8 @@ etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *file
 // setup function pointer
     dbDriver->queryColumnTypeAdd = etDBSQLiteColumnTypeAdd;
     dbDriver->queryColumnOptionAdd = etDBSQLiteColumnOptionAdd;
+    dbDriver->connect = NULL;
+    dbDriver->isConnected = etDBSQLiteIsConnected;
     dbDriver->tableAdd = etDBSQLiteTableAdd;
     dbDriver->tableRemove = NULL;
     dbDriver->dataAdd = etDBSQLiteDataAdd;
@@ -125,6 +133,20 @@ etID_STATE          etDBSQLiteColumnOptionAdd( etString *sqlquery, int option ){
 
 
 // private stuff
+etID_STATE          etDBSQLiteIsConnected( etDBDriver *dbDriver ){
+// check
+    etDebugCheckNull( dbDriver );
+
+// get driver-data
+    etDBSQLiteDriver *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+
+//
+    if( sqliteDriver->sqliteHandle != NULL ) return etID_YES;
+
+    return etID_NO;
+}
+
+
 etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject ){
 // check
     etDebugCheckNull( dbDriver );

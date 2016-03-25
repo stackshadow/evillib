@@ -23,11 +23,17 @@
 extern "C" {
 #endif
 
+#include "string/etString.h"
+
 typedef struct etDBDriver_s etDBDriver;
 typedef struct etDBDriver_s {
 // stuff to create querys
     etID_STATE      (*queryColumnTypeAdd)( etString *sqlquery, etDBColumnType columnType );
     etID_STATE      (*queryColumnOptionAdd)( etString *sqlquery, int option );
+
+// connection handling
+    etID_STATE      (*connect)( etDBDriver *dbDriver );
+    etID_STATE      (*isConnected)( etDBDriver *dbDriver );
 
 // handle table
     etID_STATE      (*tableAdd)( etDBDriver *dbDriver, etDBObject *dbObject );
@@ -41,6 +47,15 @@ typedef struct etDBDriver_s {
 
     void            *dbDriverData;
 } etDBDriver;
+
+
+
+etID_STATE          etDBDriverConnect( etDBDriver *dbDriver );
+
+
+etID_STATE          etDBDriverIsConnect( etDBDriver *dbDriver );
+
+
 
 
 etID_STATE          etDBDriverTableAdd( etDBDriver *dbDriver, etDBObject *dbObject );

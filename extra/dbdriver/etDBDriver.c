@@ -16,7 +16,40 @@
     along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "etDBDriver.h"
+#include "dbdriver/etDBDriver.h"
+
+
+
+
+etID_STATE          etDBDriverConnect( etDBDriver *dbDriver ){
+// check
+    etDebugCheckNull(dbDriver);
+
+
+// call function
+    if( dbDriver->connect != NULL ){
+        return dbDriver->connect( dbDriver );
+    }
+    
+    return etID_STATE_ERR;
+
+}
+
+
+etID_STATE          etDBDriverIsConnect( etDBDriver *dbDriver ){
+// check
+    etDebugCheckNull(dbDriver);
+
+
+// call function
+    if( dbDriver->isConnected != NULL ){
+        return dbDriver->isConnected( dbDriver );
+    }
+    
+    return etID_STATE_ERR;
+
+}
+
 
 
 

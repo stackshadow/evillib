@@ -66,6 +66,31 @@ etID_STATE      etDBObjectFilterAdd( etDBObject *dbObject, int filterGroup, etDB
 }
 
 
+etID_STATE      etDBObjectFilterSet( etDBObject *dbObject, const char *jsonString ){
+
+// vars
+    json_error_t    jsonError;
+    json_t          *jsonFilter = NULL;
+
+// load from json-string
+    jsonFilter = json_loads( jsonString, JSON_PRESERVE_ORDER, &jsonError );
+
+// handle error
+    if( jsonError.text != NULL ){
+        etDebugMessage( etID_STATE_ERR, jsonError.text );
+        return etID_STATE_ERR;
+    }
+
+// set it
+    if( json_object_set_new( dbObject->jsonRootObject, "filter", jsonFilter ) != 0 ){
+        return etID_STATE_ERR;
+    }
+
+// return ok
+    return etID_YES;
+}
+
+
 etID_STATE      etDBObjectFilterNext( etDBObject *dbObject, int *filterGroup, etDBFILTER_OP *filterOperation, const char **filterColumn, etDBFILTER_TYPE *filterType, const char **filterString ){
 // check
     etDebugCheckNull( dbObject );

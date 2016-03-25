@@ -13,5 +13,9 @@
       <Environment/>
       <Project Name="evillib" ConfigName="evillib-extra"/>
     </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="headers" Selected="no">
+      <Environment/>
+      <Project Name="evillib" ConfigName="headers"/>
+    </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

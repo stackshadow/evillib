@@ -2,7 +2,7 @@
 <CodeLite_Project Name="evillib" InternalType="">
   <Plugins>
     <Plugin Name="qmake">
-      <![CDATA[00050001N0011app - debug0000000000000001N0007develop0000000000000001N0004docu0000000000000001N0013evillib-extra0000000000000001N0022shared library - debug000000000000]]>
+      <![CDATA[00060001N0011app - debug0000000000000001N0007develop0000000000000001N0004docu0000000000000001N0013evillib-extra0000000000000001N0007headers0000000000000001N0022shared library - debug000000000000]]>
     </Plugin>
     <Plugin Name="CMakePlugin">
       <![CDATA[[{
@@ -52,6 +52,15 @@
   "parentProject": ""
  }, {
   "name": "evillib-extra",
+  "enabled": false,
+  "buildDirectory": "build",
+  "sourceDirectory": "$(ProjectPath)",
+  "generator": "",
+  "buildType": "",
+  "arguments": [],
+  "parentProject": ""
+ }, {
+  "name": "headers",
   "enabled": false,
   "buildDirectory": "build",
   "sourceDirectory": "$(ProjectPath)",
@@ -153,6 +162,8 @@
       <File Name="../extra/db/etDBObjectTableColumn.c"/>
       <File Name="../extra/db/etDBObjectValue.c"/>
       <File Name="../extra/db/etDBObjectValue.h"/>
+      <File Name="../extra/db/etDBObjectFilter.c"/>
+      <File Name="../extra/db/etDBObjectFilter.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="specialheaders">
       <File Name="../extra/specialheaders/evillib_start.h"/>
@@ -231,6 +242,7 @@
     <File Name="../tests/etDBObjectTable.c"/>
     <File Name="../tests/etDBObjectTableColumn.c"/>
     <File Name="../tests/etDBSQL.c"/>
+    <File Name="../tests/etDBObjectFilter.c"/>
   </VirtualDirectory>
   <VirtualDirectory Name="qt">
     <VirtualDirectory Name="tableEditor">
@@ -359,6 +371,49 @@
         <RebuildCommand/>
         <CleanCommand>make -f make/Makefile clean</CleanCommand>
         <BuildCommand>make -f make/Makefile evillib-extra</BuildCommand>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName/>
+        <WorkingDirectory>../</WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+      <Completion EnableCpp11="no" EnableCpp14="no">
+        <ClangCmpFlagsC/>
+        <ClangCmpFlags/>
+        <ClangPP/>
+        <SearchPaths>../extra/
+../extra/db
+../extra/dbdriver</SearchPaths>
+      </Completion>
+    </Configuration>
+    <Configuration Name="headers" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g -Wall" C_Options="" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="-O0" Required="yes">
+        <LibraryPath Value="."/>
+        <LibraryPath Value="Debug"/>
+      </Linker>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/tests/etDBSQL" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
+        <![CDATA[LD_LIBRARY_PATH=/tmp/evillib/build/obj/]]>
+      </Environment>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="/usr/bin/gdb" IsExtended="no">
+        <DebuggerSearchPaths>/tmp/evillib/build/obj</DebuggerSearchPaths>
+        <PostConnectCommands/>
+        <StartupCommands/>
+      </Debugger>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <RebuildCommand/>
+        <CleanCommand>make -f make/Makefile clean</CleanCommand>
+        <BuildCommand>make -f make/Makefile dev-install library-install</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>

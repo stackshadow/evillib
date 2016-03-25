@@ -1,0 +1,5 @@
+// Evillib - Version
+#define ET_VERSION_MAJOR 00
+#define ET_VERSION_MINOR 15
+#define ET_VERSION_PATCH 00
+#define ET_VERSIONSTRING "00.15-00"

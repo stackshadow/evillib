@@ -27,8 +27,10 @@
 
 
 
-/** @defgroup gretDBObject
-@short 
+/** @defgroup etDBObject
+@short The DB-Object
+
+
 */
 
 etID_STATE          __etDBObjectAlloc( etDBObject **p_dbObject ){
@@ -107,7 +109,7 @@ etID_STATE          etDBObjectTypeSet( json_t *jsonObject, const char *type ){
     return etID_STATE_ERR_INTERR;
 }
 
-/** @ingroup gretDBObject
+/** @ingroup etDBObject
 @short Check if an jsonObject is from type
 @param[in] jsonObject The json-object
 @param[in] type The type-name to check

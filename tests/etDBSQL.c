@@ -45,6 +45,7 @@
 #include "db/etDBObject.c"
 #include "db/etDBObjectTable.c"
 #include "db/etDBObjectTableColumn.c"
+#include "db/etDBObjectFilter.c"
 #include "db/etDBObjectValue.c"
 #include "dbdriver/etDBSQL.c"
 #include "dbdriver/etDBDriver.c"
@@ -99,10 +100,22 @@ int                     main( int argc, const char* argv[] ){
 
     etDBObjectValueClean( dbObject );
     etDBObjectValueSet( dbObject, "uuid", "000002" );
+    etDBObjectValueSet( dbObject, "displayName", "Berlin2" );
+    etDBObjectValueSet( dbObject, "postalcode", "10116" );
+    etDBObjectDump( dbObject );
+    etDBDriverDataAdd( &dbDriver, dbObject );
+
+    etDBObjectValueClean( dbObject );
+    etDBObjectValueSet( dbObject, "uuid", "000003" );
     etDBObjectValueSet( dbObject, "displayName", "Hannover" );
     etDBObjectValueSet( dbObject, "postalcode", "30159" );
     etDBObjectDump( dbObject );
     etDBDriverDataAdd( &dbDriver, dbObject );
+
+// we filter our data
+    etDBObjectFilterClear( dbObject );
+    etDBObjectFilterAdd( dbObject, 0, etDBFILTER_OP_AND, "displayName", etDBFILTER_TYPE_CONTAIN, "erlin" );
+
 
 
 // get data

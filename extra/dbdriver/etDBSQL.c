@@ -63,8 +63,9 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
 
     // column name
         if( etDBObjectTableColumnNameGet( dbObject, columnName ) != etID_YES ) return etID_STATE_ERR;
+        etStringCharAdd( sqlquery, "'" );
         etStringCharAdd( sqlquery, columnName );
-        etStringCharAdd( sqlquery, " " );
+        etStringCharAdd( sqlquery, "' " );
         
     // column type
         etDBObjectTableColumnTypeGet( dbObject, columnType );
@@ -204,6 +205,96 @@ etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, e
     etStringCharAdd( sqlquery, tableName );
 
 
+// WHERE
+    etID_STATE          isWHERE = etID_NO;
+    etID_STATE          isFirstOperation = etID_YES;
+    int                 actualFilterGroup = -1;
+    int                 filterGroup;
+    etDBFILTER_OP       filterOperation;
+    const char          *filterColumn;
+    etDBFILTER_TYPE     filterType;
+    const char          *filterString;
+
+
+    etDBObjectIterationReset( dbObject );
+    while( etDBObjectFilterNext( dbObject, &filterGroup, &filterOperation, &filterColumn, &filterType, &filterString ) == etID_YES ){
+
+    // add WHERE
+        if( isWHERE == etID_NO ){
+            etStringCharAdd( sqlquery, " WHERE" );
+            isWHERE = etID_YES;
+        }
+
+    // operation
+        if( isFirstOperation == etID_NO ){
+
+            if( filterOperation == etDBFILTER_OP_NOTHING ){
+                etStringCharAdd( sqlquery, " AND" );
+            }
+            if( filterOperation == etDBFILTER_OP_AND ){
+                etStringCharAdd( sqlquery, " AND" );
+            }
+            if( filterOperation == etDBFILTER_OP_OR ){
+                etStringCharAdd( sqlquery, " OR" );
+            }
+
+        }
+        isFirstOperation = etID_NO;
+
+    // "("
+        if( actualFilterGroup != filterGroup && actualFilterGroup != -1 ){
+            etStringCharAdd( sqlquery, " (" );
+        }
+
+    // column
+        etStringCharAdd( sqlquery, " " );
+        etStringCharAdd( sqlquery, filterColumn );
+
+    // type
+        if( filterType == etDBFILTER_TYPE_NOTHING ){
+            filterType = etDBFILTER_TYPE_EQUAL;
+        }
+
+        if( filterType == etDBFILTER_TYPE_EQUAL ){
+            filterType = etDBFILTER_TYPE_CONTAIN;
+        }
+
+        if( filterType == etDBFILTER_TYPE_NOTEQUAL ){
+            filterType = etDBFILTER_TYPE_CONTAIN;
+        }
+
+        if( filterType == etDBFILTER_TYPE_CONTAIN ){
+            etStringCharAdd( sqlquery, " LIKE '%" );
+            etStringCharAdd( sqlquery, filterString );
+            etStringCharAdd( sqlquery, "%'" );
+        }
+
+        if( filterType == etDBFILTER_TYPE_BEGIN ){
+            etStringCharAdd( sqlquery, " LIKE '" );
+            etStringCharAdd( sqlquery, filterString );
+            etStringCharAdd( sqlquery, "%' " );
+        }
+
+        if( filterType == etDBFILTER_TYPE_ENDs ){
+            etStringCharAdd( sqlquery, " LIKE '%" );
+            etStringCharAdd( sqlquery, filterString );
+            etStringCharAdd( sqlquery, "' " );
+        }
+
+    // ")"
+        if( actualFilterGroup != filterGroup && actualFilterGroup != -1 ){
+            etStringCharAdd( sqlquery, " )" );
+        }
+
+    // save actual filter group
+        if( actualFilterGroup != filterGroup || actualFilterGroup != -1 ){
+            actualFilterGroup = filterGroup;
+        }
+
+    }
+
+
+//SELECT * FROM 'main'.'city' WHERE displayName LIKE '%erlin%'
 
 
 }

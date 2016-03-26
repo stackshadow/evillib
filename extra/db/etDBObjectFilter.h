@@ -47,6 +47,28 @@ typedef enum {
 etDBFILTER_OP;
 
 
+
+
+etID_STATE      etDBObjectFilterClear( etDBObject *dbObject );
+
+
+etID_STATE      etDBObjectFilterAdd( etDBObject *dbObject, int filterGroup, etDBFILTER_OP filterOperation, const char *filterColumn, etDBFILTER_TYPE filterType, const char *filterString );
+
+
+etID_STATE      etDBObjectFilterSet( etDBObject *dbObject, const char *jsonString );
+
+
+etID_STATE      etDBObjectFilterNext( etDBObject *dbObject, int *filterGroup, etDBFILTER_OP *filterOperation, const char **filterColumn, etDBFILTER_TYPE *filterType, const char **filterString );
+
+
+
+
+
+
+
+
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -72,6 +72,41 @@ etID_STATE          etDBObjectValueSet( etDBObject *dbObject, const char *column
 }
 
 
+etID_STATE          __etDBObjectValueGet( etDBObject *dbObject, const char *columnName, const char **value ){
+// check
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( columnName );
+    etDebugCheckNull( value );
+
+// vars
+    json_t          *jsonColumnValues = NULL;
+    json_t          *jsonColumnValue = NULL;
+
+// get the object which hold all the values
+    jsonColumnValues = json_object_get( dbObject->jsonRootObject, "values" );
+    if( jsonColumnValues == NULL ){
+        return etDebugState(etID_STATE_NODATA);
+    }
+
+// get value
+    jsonColumnValue = json_object_get( jsonColumnValues, columnName );
+    if( jsonColumnValue == NULL ){
+        return etDebugState(etID_STATE_NODATA);
+    }
+
+// get the value
+    jsonColumnValue = json_object_get( jsonColumnValue, "value" );
+    if( jsonColumnValue == NULL ){
+        return etDebugState(etID_STATE_NODATA);
+    }
+
+// return value
+    *value = json_string_value( jsonColumnValue );
+
+    return etID_YES;
+}
+
+
 etID_STATE          __etDBObjectValueNext( etDBObject *dbObject, const char **p_columnName, const char **p_value ){
 // check
     etDebugCheckNull( dbObject );

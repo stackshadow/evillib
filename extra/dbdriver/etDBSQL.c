@@ -84,6 +84,8 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
     }
     
     etStringCharAdd( sqlquery, ");" );
+
+    return etID_YES;
 }
 
 
@@ -150,11 +152,93 @@ etID_STATE          etDBSQLInsertInto( etDBDriver *dbDriver, etDBObject *dbObjec
     etStringCharAdd( sqlquery, columnValue );
     etStringCharAdd( sqlquery, ")" );
 
+// free
+    etStringFree( valueString );
 /*
 INSERT INTO table_name (column1,column2,column3,...)
 VALUES (value1,value2,value3,...);
 */
+    return etID_YES;
+}
 
+
+etID_STATE          etDBSQLUpdate( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( sqlquery );
+
+
+// check if an table is selected
+    if( dbObject->jsonTableActual == NULL ){
+        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
+        return etID_STATE_WARN_SEQERR;
+    }
+
+// vars
+    etID_BOOL           firstColumn = etID_TRUE;
+    const char          *tableName = NULL;
+    const char          *columnName = NULL;
+    const char          *columnValue = NULL;
+    const char          *primaryColumn = NULL;
+    const char          *primaryColumnValue = NULL;
+
+
+// clear
+    etStringClean( sqlquery );
+
+// create table
+    etStringCharSet( sqlquery, "UPDATE ", 7 );
+
+// add table name
+    etDBObjectTableNameGet( dbObject, tableName );
+    etStringCharAdd( sqlquery, tableName );
+
+// columns
+    etStringCharAdd( sqlquery, " SET " );
+    etDBObjectIterationReset(dbObject);
+    while( etDBObjectValueNext(dbObject,columnName,columnValue) == etID_YES ){
+
+    // comma
+        if( firstColumn == etID_FALSE ){
+            etStringCharAdd( sqlquery, "," );
+        }
+        firstColumn = etID_FALSE;
+
+    // column name
+        etStringCharAdd( sqlquery, "\"" );
+        etStringCharAdd( sqlquery, columnName );
+        etStringCharAdd( sqlquery, "\" = " );
+
+    // column value
+        etStringCharAdd( sqlquery, "\"" );
+        etStringCharAdd( sqlquery, columnValue );
+        etStringCharAdd( sqlquery, "\"" );
+
+    }
+
+// get the primary key-column
+    if( etDBObjectTableColumnPrimaryGet( dbObject, primaryColumn ) != etID_YES ){
+        return etID_STATE_ERR_INTERR;
+    }
+// get the value of the primary column
+    if( etDBObjectValueGet( dbObject, primaryColumn, primaryColumnValue ) != etID_YES ){
+        return etID_STATE_ERR_INTERR;
+    }
+
+// WHERE
+    etStringCharAdd( sqlquery, " WHERE \"" );
+    etStringCharAdd( sqlquery, primaryColumn );
+    etStringCharAdd( sqlquery, "\" = \"" );
+    etStringCharAdd( sqlquery, primaryColumnValue );
+    etStringCharAdd( sqlquery, "\"" );
+
+
+
+/*
+UPDATE `doDB` SET `value`=? WHERE `_rowid_`='2';
+*/
+    return etID_YES;
 }
 
 
@@ -247,8 +331,9 @@ etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, e
         }
 
     // column
-        etStringCharAdd( sqlquery, " " );
+        etStringCharAdd( sqlquery, " \"" );
         etStringCharAdd( sqlquery, filterColumn );
+        etStringCharAdd( sqlquery, "\"" );
 
     // type
         if( filterType == etDBFILTER_TYPE_NOTHING ){
@@ -296,7 +381,7 @@ etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, e
 
 //SELECT * FROM 'main'.'city' WHERE displayName LIKE '%erlin%'
 
-
+    return etID_YES;
 }
 
 

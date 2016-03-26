@@ -30,6 +30,9 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
 etID_STATE          etDBSQLInsertInto( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );
 
 
+etID_STATE          etDBSQLUpdate( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );
+
+
 etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );
 
 

@@ -320,7 +320,19 @@ etID_STATE      __etDBObjectTableColumnPrimaryGet( etDBObject *dbObject, const c
 
 // get
     json_t *jsonPrimaryColumn = json_object_get( dbObject->jsonTableActual, "primaryColumn" );
-    if( jsonPrimaryColumn == NULL ) return etID_STATE_NODATA;
+    if( jsonPrimaryColumn == NULL ){
+
+    // get table name for debug info
+        const char *tableName = NULL;
+        if( etDBObjectTableNameGet( dbObject, tableName ) != etID_YES ){
+            return etID_STATE_ERR_INTERR;
+        }
+
+    // debug info
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "No Primary Column for table %s\n", tableName );
+        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
+        return etID_STATE_ERR_INTERR;
+    }
 
 // set the name
     *p_primaryColumnName = json_string_value(jsonPrimaryColumn);

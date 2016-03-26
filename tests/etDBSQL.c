@@ -72,8 +72,10 @@ int                     main( int argc, const char* argv[] ){
 // city table
     etDBObjectTableAdd( dbObject, "city" );
     etDBObjectTableColumnAdd( dbObject, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_UNIQUE );
+    etDBObjectTableColumnPrimarySet( dbObject, "uuid" );    
     etDBObjectTableColumnAdd( dbObject, "displayName", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
     etDBObjectTableColumnAdd( dbObject, "postalcode", etDBCOLUMN_TYPE_INT, etDBCOLUMN_OPTION_NOTHING );
+    
 
     etDBObjectDump( dbObject );
 
@@ -100,7 +102,7 @@ int                     main( int argc, const char* argv[] ){
 
     etDBObjectValueClean( dbObject );
     etDBObjectValueSet( dbObject, "uuid", "000002" );
-    etDBObjectValueSet( dbObject, "displayName", "Berlin2" );
+    etDBObjectValueSet( dbObject, "displayName", "Berlin" );
     etDBObjectValueSet( dbObject, "postalcode", "10116" );
     etDBObjectDump( dbObject );
     etDBDriverDataAdd( &dbDriver, dbObject );
@@ -112,15 +114,35 @@ int                     main( int argc, const char* argv[] ){
     etDBObjectDump( dbObject );
     etDBDriverDataAdd( &dbDriver, dbObject );
 
+// we change some data
+    etDBObjectValueClean( dbObject );
+    etDBObjectValueSet( dbObject, "uuid", "000002" );
+    etDBObjectValueSet( dbObject, "displayName", "IterCity" );
+    etDBObjectValueSet( dbObject, "postalcode", "0" );
+    etDBDriverDataChange( &dbDriver, dbObject );
+
+
+// vars
+    const char *tempValue;
+
+// try to get NOTHING
+    etDBObjectFilterClear( dbObject );
+    etDBObjectFilterAdd( dbObject, 0, etDBFILTER_OP_AND, "displayName", etDBFILTER_TYPE_CONTAIN, "Ahorn" );
+    etDBDriverDataGet( &dbDriver, dbObject );                   // run the query
+    etDBDriverDataNext( &dbDriver, dbObject );                  // get the first resultset
+    etDBObjectValueGet( dbObject, "displayName", tempValue );
+
+
 // we filter our data
     etDBObjectFilterClear( dbObject );
-    etDBObjectFilterAdd( dbObject, 0, etDBFILTER_OP_AND, "displayName", etDBFILTER_TYPE_CONTAIN, "erlin" );
-
-
+    etDBObjectFilterAdd( dbObject, 0, etDBFILTER_OP_AND, "uuid", etDBFILTER_TYPE_CONTAIN, "000001" );
 
 // get data
-    etDBDriverDataGet( &dbDriver, dbObject );
-    etDBSQLiteDataNext( &dbDriver, dbObject );
+    etDBDriverDataGet( &dbDriver, dbObject );                   // run the query
+    etDBDriverDataNext( &dbDriver, dbObject );                  // get the first resultset
+    etDBObjectValueGet( dbObject, "displayName", tempValue );
+    etDBObjectValueGet( dbObject, "displayName", tempValue );
+
 
 
 

@@ -180,6 +180,7 @@
       <File Name="../extra/dbdriver/etDBSQLite.h"/>
       <File Name="../extra/dbdriver/etDBDriver.c"/>
     </VirtualDirectory>
+    <File Name="../tests/etDBSQL.c"/>
   </VirtualDirectory>
   <VirtualDirectory Name="debian">
     <File Name="../debian/changelog"/>
@@ -241,7 +242,6 @@
     <File Name="../tests/etDBObject.c"/>
     <File Name="../tests/etDBObjectTable.c"/>
     <File Name="../tests/etDBObjectTableColumn.c"/>
-    <File Name="../tests/etDBSQL.c"/>
     <File Name="../tests/etDBObjectFilter.c"/>
   </VirtualDirectory>
   <VirtualDirectory Name="qt">

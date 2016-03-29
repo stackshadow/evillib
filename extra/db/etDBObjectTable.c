@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2016 by Martin Langlotz alias stackshadow
+/*  Copyright (C) 2016 by Martin Langlotz alias stackshadow
 
     This file is part of evillib.
 
@@ -23,6 +23,8 @@
 #include "core/etDebug.h"
 #include "core/etObject.h"
 #include "memory/etMemory.h"
+#include "string/etString.h"
+#include "string/etStringChar.h"
 #include "db/etDBObject.h"
 #include "db/etDBObjectTable.h"
 
@@ -270,5 +272,79 @@ etID_STATE      __etDBObjectTableNameGet( etDBObject *dbObject, const char **p_t
     return etID_YES;
 }
 
+/** @ingroup gretDBObjectTable
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
+@~english
+@short Set the name of the current table
+
+You can set the current table with etDBObjectTableNext() or etDBObjectTablePick()
+
+@param[in] dbObject The pointer to an etDBObject
+@param[in] tableName The new name of the current table
+@return \n
+*- @ref etID_STATE_ERR_PARAMETER
+*- @ref etID_YES
+*/
+etID_STATE      etDBObjectTableDisplayNameSet( etDBObject *dbObject, const char *langCode, const char *displayName ){
+// check
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( langCode );
+    etDebugCheckNull( displayName );
+
+// check if we pick a table
+    if( dbObject->jsonTableActual == NULL ){
+        etDebugMessage( etID_STATE_WARN, "You did not select a table, can not set a name" );
+        return etID_STATE_WARN_SEQERR;
+    }
+
+// build the language string
+    char fullLangString[15];
+    memset( fullLangString, 0, 15 );
+    strncpy( fullLangString, "displayName_", 12 );
+    strncpy( &fullLangString[12], langCode, 2 );
+
+// set the name
+    json_object_set_new( dbObject->jsonTableActual, fullLangString, json_string(displayName) );
+    
+    return etID_YES;
+}
+
+
+etID_STATE      __etDBObjectTableDisplayNameGet( etDBObject *dbObject, const char *langCode, const char **p_displayName ){
+// check
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( langCode );
+    etDebugCheckNull( p_displayName );
+
+// check if we pick a table
+    if( dbObject->jsonTableActual == NULL ){
+        etDebugMessage( etID_STATE_WARN, "You did not select a table, can not set a name" );
+        return etID_STATE_WARN_SEQERR;
+    }
+
+// build the language string
+    char fullLangString[15];
+    memset( fullLangString, 0, 15 );
+    strncpy( fullLangString, "displayName_", 12 );
+    strncpy( &fullLangString[12], langCode, 2 );
+
+// set the name
+    json_t *jsonDisplayName = json_object_get( dbObject->jsonTableActual, fullLangString );
+    if( jsonDisplayName == NULL ){
+        
+        fullLangString[12] = '\0';
+        jsonDisplayName = json_object_get( dbObject->jsonTableActual, fullLangString );
+        if( jsonDisplayName == NULL ){
+            return __etDBObjectTableNameGet( dbObject, p_displayName );
+        }
+        
+        *p_displayName = json_string_value(jsonDisplayName);
+        return etID_YES;
+        
+    }
+    
+    *p_displayName = json_string_value(jsonDisplayName);
+    return etID_YES;
+}
 

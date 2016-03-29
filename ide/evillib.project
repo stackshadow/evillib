@@ -272,7 +272,7 @@
         <LibraryPath Value="Debug"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/tests/etDBSQL" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="/tmp/evillib/build/tests/etDBObjectTable" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="/tmp/evillib/build" PauseExecWhenProcTerminates="yes" IsGUIProgram="no" IsEnabled="yes"/>
       <Environment EnvVarSetName="&lt;Use Defaults&gt;" DbgSetName="&lt;Use Defaults&gt;">
         <![CDATA[LD_LIBRARY_PATH=/tmp/evillib/build/obj/]]>
       </Environment>

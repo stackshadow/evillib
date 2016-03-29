@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2016 by Martin Langlotz alias stackshadow
+/*  Copyright (C) 2016 by Martin Langlotz alias stackshadow
 
     This file is part of evillib.
 
@@ -55,6 +55,10 @@ etID_STATE      etDBObjectTableNameSet( etDBObject *dbObject, const char *tableN
 etID_STATE      __etDBObjectTableNameGet( etDBObject *dbObject, const char **p_tableName );
 
 
+etID_STATE      etDBObjectTableDisplayNameSet( etDBObject *dbObject, const char *langCode, const char *displayName );
+
+#define         etDBObjectTableDisplayNameGet( dbObject, langCode, displayName ) __etDBObjectTableDisplayNameGet( dbObject, langCode, &displayName )
+etID_STATE      __etDBObjectTableDisplayNameGet( etDBObject *dbObject, const char *langCode, const char **p_displayName );
 
 
 

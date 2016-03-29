@@ -1,4 +1,4 @@
-/*  Copyright (C) 2014-2016 by Martin Langlotz alias stackshadow
+/*  Copyright (C) 2016 by Martin Langlotz alias stackshadow
 
     This file is part of evillib.
 

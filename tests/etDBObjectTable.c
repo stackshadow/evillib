@@ -106,7 +106,44 @@ int                     main( int argc, const char* argv[] ){
     }
 
 
+// this return just the table name
+    const char *displayName = NULL;
+    etDBObjectTableDisplayNameGet( table, "", displayName );
+    if( strncmp(displayName,"table2",6) != 0 ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table 'table2' don't return the correct display-name" );
+        etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+        return -1;
+    }
 
+// set some display names
+    etDBObjectTableDisplayNameSet( table, "de", "Tabelle 2" );
+    etDBObjectTableDisplayNameSet( table, "en", "table 2" );
+    etDBObjectTableDisplayNameSet( table, "", "default" );
+
+// check if display name work correct
+    displayName = NULL;
+    etDBObjectTableDisplayNameGet( table, "", displayName );
+    if( strncmp(displayName,"default",7) != 0 ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table 'table2' don't return the correct display-name" );
+        etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+        return -1;
+    }
+
+    displayName = NULL;
+    etDBObjectTableDisplayNameGet( table, "an", displayName );
+    if( strncmp(displayName,"default",7) != 0 ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table 'table2' don't return the correct display-name" );
+        etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+        return -1;
+    }
+
+    displayName = NULL;
+    etDBObjectTableDisplayNameGet( table, "de", displayName );
+    if( strncmp(displayName,"Tabelle 2",9) != 0 ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table 'table2' don't return the correct display-name" );
+        etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+        return -1;
+    }
 
     etDBObjectDump( table );
     etDBObjectFree( table );

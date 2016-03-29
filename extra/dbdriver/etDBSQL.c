@@ -341,7 +341,9 @@ etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, e
         }
 
         if( filterType == etDBFILTER_TYPE_EQUAL ){
-            filterType = etDBFILTER_TYPE_CONTAIN;
+            etStringCharAdd( sqlquery, " IS '" );
+            etStringCharAdd( sqlquery, filterString );
+            etStringCharAdd( sqlquery, "'" );
         }
 
         if( filterType == etDBFILTER_TYPE_NOTEQUAL ){

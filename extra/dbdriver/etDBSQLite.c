@@ -155,8 +155,16 @@ etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject ){
     etDebugCheckNull( dbObject );
     etDebugCheckNull( dbDriver->dbDriverData );
 
-//
+
+// get the sqlite driver data
     etDBSQLiteDriver *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+
+// call callback
+    if( dbDriver->queryAcknowledge != NULL ){
+        if( dbDriver->queryAcknowledge( dbDriver, dbObject, sqliteDriver->sqlquery ) != etID_YES ){
+            return etID_NO;
+        }
+    }
 
 // reset if already present
     if( sqliteDriver->sqliteStatement != NULL ){

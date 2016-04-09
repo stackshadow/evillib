@@ -31,6 +31,11 @@ typedef struct etDBDriver_s {
     etID_STATE      (*queryColumnTypeAdd)( etString *sqlquery, etDBColumnType columnType );
     etID_STATE      (*queryColumnOptionAdd)( etString *sqlquery, int option );
 
+// optional callback-functions
+    // this function is called before the query is executed, if the
+    // callback function return etID_NO the query will not be executed
+    etID_STATE      (*queryAcknowledge)( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );
+
 // connection handling
     etID_STATE      (*connect)( etDBDriver *dbDriver );
     etID_STATE      (*isConnected)( etDBDriver *dbDriver );

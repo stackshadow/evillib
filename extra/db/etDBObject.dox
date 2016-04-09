@@ -1,0 +1,8 @@
+etID_STATE          etDBObjectAlloc( etDBObject *dbObject );
+
+
+etID_STATE          etDBObjectFree( etDBObject *dbObject );
+
+
+
+

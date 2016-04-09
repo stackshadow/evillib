@@ -25,14 +25,35 @@
 #include "db/etDBObject.h"
 
 
+/** @defgroup etDB Database support
+@short The Database-Support
 
+The evillib-database support is split into two major objects. \n
+@par etDBObject
+The etDBObject holds all informations about tables, columns, and values
 
-/** @defgroup etDBObject
-@short The DB-Object
-
+@par etDBDriver
+The etDBDriver save/load tables, columns and values to an database like sqlite
 
 */
 
+/** @ingroup etDB
+@defgroup etDBObject etDBObject - The core etDBObject
+@short The DB-Object
+
+*/
+
+/** @ingroup etDBObject
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@fn etID_STATE etDBObjectAlloc( etDBObject *dbObject )
+
+@~english
+@brief Create an empty etDBObject
+@param[out] dbObject An pointer to an etDBObject-pointer
+@return If the etDBObject was correctly created \n
+*- @ref etID_YES
+*- @ref etID_STATE_NOMEMORY
+*/
 etID_STATE          __etDBObjectAlloc( etDBObject **p_dbObject ){
     etDebugCheckNull( p_dbObject );
     
@@ -50,7 +71,17 @@ etID_STATE          __etDBObjectAlloc( etDBObject **p_dbObject ){
     return etID_YES;
 }
 
+/** @ingroup etDBObject
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@fn etID_STATE etDBObjectFree( etDBObject *dbObject )
 
+@~english
+@brief Release an etDBObject
+@param[in,out] dbObject An pointer to an etDBObject-pointer
+@return If the etDBObject was correctly released \n
+*- @ref etID_YES
+*- @ref etID_STATE_ERR_PARAMETER
+*/
 etID_STATE          __etDBObjectFree( etDBObject **p_dbObject ){
     etDebugCheckNull( p_dbObject );
 
@@ -72,7 +103,16 @@ etID_STATE          __etDBObjectFree( etDBObject **p_dbObject ){
     return etID_YES;
 }
 
+/** @ingroup etDBObject
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
+@~english
+@brief Print out the object
+@param[in] dbObject The pointer to an etDBObject
+@return If the etDBObject was correctly dumped \n
+*- @ref etID_YES
+*- @ref etID_STATE_NOMEMORY
+*/
 etID_STATE          etDBObjectDump( etDBObject *dbObject ){
 // vars
     etDebugCheckNull( dbObject );
@@ -93,7 +133,20 @@ etID_STATE          etDBObjectDump( etDBObject *dbObject ){
     return etID_YES;
 }
 
+/** @ingroup etDBObject
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
+@~english
+@brief Reset the iteration process
+
+If you iterate through values, columns or tables, this function
+will set the iteration to the beginning
+
+@param[in] dbObject The pointer to an etDBObject
+@return If the etDBObject iterate from the beginning\n
+*- @ref etID_YES
+*- @ref etID_STATE_NOMEMORY
+*/
 etID_STATE          etDBObjectIterationReset( etDBObject *dbObject ){
 // check
     etDebugCheckNull( dbObject );
@@ -107,7 +160,19 @@ etID_STATE          etDBObjectIterationReset( etDBObject *dbObject ){
     return etID_YES;
 }
 
+/** @ingroup etDBObject
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@internal
+@~english
+@brief Set the type
 
+@param[in] jsonObject The pointer to an json-object
+@param[in] type The name of the type
+@return If the type was correctly set \n
+*- @ref etID_YES
+*- @ref etID_STATE_NOMEMORY
+*- @ref etID_STATE_ERR_INTERR 
+*/
 etID_STATE          etDBObjectTypeSet( json_t *jsonObject, const char *type ){
 // check
     etDebugCheckNull( jsonObject );

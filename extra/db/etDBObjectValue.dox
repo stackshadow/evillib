@@ -1,0 +1,16 @@
+
+
+
+
+
+
+etID_STATE          etDBObjectValueGet( etDBObject *dbObject, const char *columnName, const char *value );
+
+
+etID_STATE          etDBObjectValueNext( etDBObject *dbObject, const char **p_columnName, const char *value )
+
+
+
+
+
+etID_STATE          etDBObjectValueExport( etDBObject *dbObject, const char *jsonValue )

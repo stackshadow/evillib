@@ -34,10 +34,19 @@ etID_STATE          etDBObjectValueClean( etDBObject *dbObject );
 etID_STATE          etDBObjectValueSet( etDBObject *dbObject, const char *columnName, const char *value );
 
 #define             etDBObjectValueGet( dbObject, columnName, value ) __etDBObjectValueGet( dbObject, columnName, &value )
-etID_STATE          __etDBObjectValueGet( etDBObject *dbObject, const char *columnName, const char **value );
+etID_STATE          __etDBObjectValueGet( etDBObject *dbObject, const char *columnName, const char **p_value );
 
 #define             etDBObjectValueNext( dbObject, columnName, value ) __etDBObjectValueNext( dbObject, &columnName, &value )
 etID_STATE          __etDBObjectValueNext( etDBObject *dbObject, const char **p_columnName, const char **p_value );
+
+
+
+
+#define             etDBObjectValueExport( dbObject, jsonValue ) __etDBObjectValueExport( dbObject, &jsonValue )
+etID_STATE          __etDBObjectValueExport( etDBObject *dbObject, const char **p_jsonValue );
+
+
+etID_STATE          etDBObjectValueImport( etDBObject *dbObject, const char *jsonString );
 
 
 

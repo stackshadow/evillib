@@ -72,11 +72,11 @@ etID_STATE          etDBObjectValueSet( etDBObject *dbObject, const char *column
 }
 
 
-etID_STATE          __etDBObjectValueGet( etDBObject *dbObject, const char *columnName, const char **value ){
+etID_STATE          __etDBObjectValueGet( etDBObject *dbObject, const char *columnName, const char **p_value ){
 // check
     etDebugCheckNull( dbObject );
     etDebugCheckNull( columnName );
-    etDebugCheckNull( value );
+    etDebugCheckNull( p_value );
 
 // vars
     json_t          *jsonColumnValues = NULL;
@@ -101,7 +101,7 @@ etID_STATE          __etDBObjectValueGet( etDBObject *dbObject, const char *colu
     }
 
 // return value
-    *value = json_string_value( jsonColumnValue );
+    *p_value = json_string_value( jsonColumnValue );
 
     return etID_YES;
 }
@@ -153,4 +153,66 @@ etID_STATE          __etDBObjectValueNext( etDBObject *dbObject, const char **p_
 
     return etID_STATE_NODATA;
 }
+
+
+
+
+
+etID_STATE          __etDBObjectValueExport( etDBObject *dbObject, const char **p_jsonValue ){
+// check
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( p_jsonValue );
+
+
+
+// vars
+    json_t          *jsonColumnValues = NULL;
+
+// get the object which hold all the values
+    jsonColumnValues = json_object_get( dbObject->jsonRootObject, "values" );
+    if( jsonColumnValues == NULL ){
+        jsonColumnValues = json_object();
+        json_object_set_new( dbObject->jsonRootObject, "values", jsonColumnValues );
+    }
+
+// free dumping string
+    if( dbObject->dumpString != NULL ){
+        free((void*)dbObject->dumpString);
+        dbObject->dumpString = NULL;
+    }
+
+// dump string
+    dbObject->dumpString = json_dumps( jsonColumnValues, JSON_INDENT(4) );
+    *p_jsonValue = dbObject->dumpString;
+
+    return etID_YES;
+}
+
+
+etID_STATE          etDBObjectValueImport( etDBObject *dbObject, const char *jsonString ){
+// check
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( jsonString );
+
+
+// vars
+    json_error_t    jsonError;
+    json_t          *jsonColumnValues = NULL;
+
+
+// load
+    jsonColumnValues = json_loads( jsonString, JSON_PRESERVE_ORDER, &jsonError );
+    if( jsonError.line > 0 ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%s", jsonError.text );
+        etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+        return etID_NO;
+    }
+
+// get the object which hold all the values
+    json_object_set_new( dbObject->jsonRootObject, "values", jsonColumnValues );
+
+
+    return etID_YES;
+}
+
 

@@ -19,6 +19,9 @@
 #ifndef _H_etDBObject
 #define _H_etDBObject
 
+#include "evillib_defines.h"
+#include "core/etIDState.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -41,6 +44,9 @@ typedef struct etDBObject {
     int             jsonIteratorIndex;
     json_t          *jsonObjectToIterate;
     void            *jsonIterator;
+
+// some temporary values we keep track of
+    const char      *dumpString;
 
 // driver
     void            *driverData;

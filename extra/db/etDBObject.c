@@ -57,6 +57,12 @@ etID_STATE          __etDBObjectFree( etDBObject **p_dbObject ){
 // vars
     etDBObject *tempDBObject = *p_dbObject;
 
+// free temporary string
+    if( tempDBObject->dumpString != NULL ){
+        free((void*)tempDBObject->dumpString);
+        tempDBObject->dumpString = NULL;
+    }
+
 // release json stuff
     json_decref( tempDBObject->jsonRootObject );
     etMemoryRelease( tempDBObject );
@@ -71,12 +77,18 @@ etID_STATE          etDBObjectDump( etDBObject *dbObject ){
 // vars
     etDebugCheckNull( dbObject );
 
+// free dumping string
+    if( dbObject->dumpString != NULL ){
+        free((void*)dbObject->dumpString);
+        dbObject->dumpString = NULL;
+    }
+
+// dump string
+    dbObject->dumpString = json_dumps( dbObject->jsonRootObject, JSON_INDENT(4) );
+
+// debug message    
+    etDebugMessage( etID_LEVEL_DETAIL_DB, dbObject->dumpString );
     
-    char *jsonDump = json_dumps( dbObject->jsonRootObject, JSON_INDENT(4) );
-    
-    etDebugMessage( etID_LEVEL_DETAIL_DB, jsonDump );
-    
-    free(jsonDump);
 
     return etID_YES;
 }

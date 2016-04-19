@@ -44,6 +44,9 @@ etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName 
 etID_STATE      etDBObjectTableNext( etDBObject *dbObject );
 
 
+etID_STATE      etDBObjectTableIterate( etDBObject *dbObject, const char *langCode, void *userdata, etID_BOOL (*fctIterate)(void *userdata, const char *tableName, const char *tableDisplayName) );
+
+
 etID_STATE      etDBObjectTablePick( etDBObject *dbObject, const char *tableName );
 
 

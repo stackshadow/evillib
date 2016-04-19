@@ -30,7 +30,8 @@
 
 
 
-/** @defgroup gretDBObjectTable etDBObjectTable - Table handling for etDBObject
+/** @ingroup etDB
+@defgroup gretDBObjectTable etDBObjectTable - Table handling for etDBObject
 @short The etDBObject contains Tables, this functions handle this tables
 
 
@@ -151,6 +152,84 @@ etID_STATE      etDBObjectTableNext( etDBObject *dbObject ){
 
 // return no data
     return etID_STATE_NODATA;
+}
+
+
+etID_STATE      etDBObjectTableIterate( etDBObject *dbObject, const char *langCode, void *userdata, etID_BOOL (*fctIterate)(void *userdata, const char *tableName, const char *tableDisplayName) ){
+// check
+    etDebugCheckNull( dbObject );
+
+// vars
+    json_t      *jsonTables;
+    void        *jsonIterator;
+    json_t      *jsonIteratorObject;
+    json_t      *jsonValue;
+
+    const char  *tempCharArray;
+    const char  *tableName;
+    const char  *tableDisplayName;
+    
+
+// get the object which holds all tables
+    jsonTables = json_object_get( dbObject->jsonRootObject, "tables" );
+    if( jsonTables == NULL ){
+        return etID_STATE_NODATA;
+    }
+
+// build the language string
+    etString *fullLanguageString = NULL;
+    etStringAlloc( fullLanguageString );
+
+
+    jsonIterator = json_object_iter(jsonTables);
+    while( jsonIterator != NULL ){
+
+    //
+        jsonIteratorObject = json_object_iter_value(jsonIterator);
+
+    //
+        etStringCharSet( fullLanguageString, "displayName_\0", 13 );
+        etStringCharAdd( fullLanguageString, langCode );
+
+
+    // get table name
+        jsonValue = json_object_get( jsonIteratorObject, "name" );
+        if( jsonValue == NULL ){
+            goto next;
+        }
+        tableName = json_string_value(jsonValue);
+
+    // try to get displayName
+        etStringCharGet( fullLanguageString, tempCharArray );
+        jsonValue = json_object_get( jsonIteratorObject, tempCharArray );
+        if( jsonValue == NULL ){
+
+            etStringCharSet( fullLanguageString, "displayName_\0", 13 );
+            etStringCharGet( fullLanguageString, tempCharArray );
+            jsonValue = json_object_get( jsonIteratorObject, tempCharArray );
+            if( jsonValue == NULL ){
+                tableDisplayName = tableName;
+            } else {
+                tableDisplayName = json_string_value(jsonValue);
+            }
+
+        } else {
+            tableDisplayName = json_string_value(jsonValue);
+        }
+
+        fctIterate( userdata, tableName, tableDisplayName );
+
+next:
+    // next
+        jsonIterator = json_object_iter_next(jsonTables,jsonIterator);
+    }
+
+
+    
+    
+    
+    
+    
 }
 
 /** @ingroup gretDBObjectTable

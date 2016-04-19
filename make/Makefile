@@ -27,7 +27,7 @@ endif
 	@echo ""
 	@$(MAKE) --no-print-directory -f make/evillib-core.make $@
 	@$(MAKE) --no-print-directory -f make/evillib-extra.make $@
-	@#$(MAKE) --no-print-directory -f make/evillib-doc.make $@
+	@$(MAKE) --no-print-directory -f make/evillib-doc.make $@
 	@$(MAKE) --no-print-directory -f make/evillib-app.make $@
 	@echo -n "$(CNormal)"
 

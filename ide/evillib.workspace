@@ -17,5 +17,9 @@
       <Environment/>
       <Project Name="evillib" ConfigName="headers"/>
     </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="documentation" Selected="no">
+      <Environment/>
+      <Project Name="evillib" ConfigName="docu"/>
+    </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

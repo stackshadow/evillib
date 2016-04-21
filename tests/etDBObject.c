@@ -224,6 +224,19 @@ etID_STATE              etDBObjectTableColumnApiCheck(){
     }
 
 
+// check main column
+    const char *mainColumnName = NULL;
+    etDBObjectTableColumnMainSet( dbObject, "column1" );
+    etDBObjectTableColumnMainGet( dbObject, mainColumnName );
+    if( strncmp(mainColumnName,"column1",7) != 0 ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "mainColumnName %s != column1", mainColumnName );
+        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
+        return -1;
+    }
+
+
+
+
     etDBObjectDump( dbObject );
 
 

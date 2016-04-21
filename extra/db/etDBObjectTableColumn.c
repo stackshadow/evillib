@@ -340,4 +340,84 @@ etID_STATE      __etDBObjectTableColumnPrimaryGet( etDBObject *dbObject, const c
     return etID_YES;
 }
 
+/** @ingroup etDBObjectTableColumn
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+
+@~english
+@short Set the column which holds the main value
+
+This function is primary for user-interfaces and sets the column which holds the main value which are primary meant
+to be displayed by an user interface
+
+@param[in] dbObject The pointer to an etDBObject
+@param[in] mainColumnName The name of the main column
+@return \n
+*- @ref etID_STATE_ERR_PARAMETER
+*- @ref etID_STATE_WARN_SEQERR
+*- @ref etID_YES
+*/
+etID_STATE      etDBObjectTableColumnMainSet( etDBObject *dbObject, const char *mainColumnName ){
+// check
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( mainColumnName );
+
+// check if we pick a table
+    if( dbObject->jsonTableActual == NULL ){
+        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
+        return etID_STATE_WARN_SEQERR;
+    }
+
+// set the name
+    json_object_set_new( dbObject->jsonTableActual, "mainColumn", json_string(mainColumnName) );
+    
+    return etID_YES;
+}
+
+/** @ingroup etDBObjectTableColumn
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+@fn etID_STATE etDBObjectTableColumnPrimaryGet( etDBObject *dbObject, const char *primaryColumnName )
+@~english
+@short Get the name of the main column @see etDBObjectTableColumnMainSet()
+
+@param[in] dbObject The pointer to an etDBObject
+@param[out] mainColumnName The name of the main column
+@return \n
+*- @ref etID_STATE_ERR_PARAMETER
+*- @ref etID_STATE_WARN_SEQERR
+*- @ref etID_STATE_NODATA
+*- @ref etID_YES
+*/
+etID_STATE      __etDBObjectTableColumnMainGet( etDBObject *dbObject, const char **p_mainColumnName ){
+// check
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( p_mainColumnName );
+
+// check if we pick a table
+    if( dbObject->jsonTableActual == NULL ){
+        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
+        return etID_STATE_WARN_SEQERR;
+    }
+
+// get
+    json_t *jsonMainColumn = json_object_get( dbObject->jsonTableActual, "mainColumn" );
+    if( jsonMainColumn == NULL ){
+
+    // get table name for debug info
+        const char *tableName = NULL;
+        if( etDBObjectTableNameGet( dbObject, tableName ) != etID_YES ){
+            return etID_STATE_ERR_INTERR;
+        }
+
+    // debug info
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "No Main Column for table %s\n", tableName );
+        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
+        return etID_STATE_ERR_INTERR;
+    }
+
+// set the name
+    *p_mainColumnName = json_string_value(jsonMainColumn);
+    
+    return etID_YES;
+}
+
 

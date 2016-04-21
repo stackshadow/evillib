@@ -83,6 +83,11 @@ etID_STATE      etDBObjectTableColumnPrimarySet( etDBObject *dbObject, const cha
 etID_STATE      __etDBObjectTableColumnPrimaryGet( etDBObject *dbObject, const char **p_primaryColumnName );
 
 
+etID_STATE      etDBObjectTableColumnMainSet( etDBObject *dbObject, const char *mainColumnName );
+
+#define         etDBObjectTableColumnMainGet( dbObject, mainColumnName ) __etDBObjectTableColumnMainGet( dbObject, &mainColumnName )
+etID_STATE      __etDBObjectTableColumnMainGet( etDBObject *dbObject, const char **p_mainColumnName );
+
 
 
 

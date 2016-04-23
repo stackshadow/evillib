@@ -121,6 +121,8 @@ etID_STATE      etDBObjectTableColumnNext( etDBObject *dbObject ){
 @~english
 @short Call for every column the fctItreate callback-function
 
+This function DONT change the pick-state of an table ;)
+
 The callback function is in the following form:
 @code
 etID_BOOL fctIterate( void *userdata, const char *columnName, etDBColumnType columnType, char columnOption );
@@ -133,12 +135,14 @@ etID_BOOL fctIterate( void *userdata, const char *columnName, etDBColumnType col
 *- @ref etID_STATE_ERR_PARAMETER
 *- @ref etID_YES
 */
-etID_STATE      etDBObjectTableColumnIterate( etDBObject *dbObject, void *userdata, etID_BOOL (*fctIterate)(void *userdata, const char *columnName, etDBColumnType columnType, char columnOption) ){
+etID_STATE      etDBObjectTableColumnIterate( etDBObject *dbObject, const char *tableName, void *userdata, etID_BOOL (*fctIterate)(void *userdata, const char *columnName, etDBColumnType columnType, char columnOption) ){
 // check
     etDebugCheckNull( dbObject );
     etDebugCheckNull( fctIterate );
 
 // vars
+    json_t      *jsonTables;
+    json_t      *jsonTable;
     json_t      *jsonColumns;
     json_t      *jsonColumn;
     void        *jsonIterator;
@@ -148,14 +152,22 @@ etID_STATE      etDBObjectTableColumnIterate( etDBObject *dbObject, void *userda
 
     
 
-// check if we pick a table
-    if( dbObject->jsonTableActual == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
+// get the object which holds all tables
+    jsonTables = json_object_get( dbObject->jsonRootObject, "tables" );
+    if( jsonTables == NULL ){
+        etDebugMessage( etID_STATE_WARN, "There are no tables" );
+        return etID_STATE_WARN_SEQERR;
+    }
+
+// pick table
+    jsonTable = json_object_get( jsonTables, tableName );
+    if( jsonTable == NULL ){
+        etDebugMessage( etID_STATE_WARN, "Table not found" );
         return etID_STATE_WARN_SEQERR;
     }
 
 // get the columns
-    jsonColumns = json_object_get( dbObject->jsonTableActual, "columns" );
+    jsonColumns = json_object_get( jsonTable, "columns" );
     if( jsonColumns == NULL ){
         etDebugMessage( etID_STATE_WARN, "There is no column array inside the table" );
         return etID_STATE_WARN_SEQERR;

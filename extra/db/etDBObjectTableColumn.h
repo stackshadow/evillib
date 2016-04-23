@@ -60,7 +60,7 @@ etID_STATE      etDBObjectTableColumnAdd( etDBObject *dbObject, const char *colu
 etID_STATE      etDBObjectTableColumnNext( etDBObject *dbObject );
 
 
-etID_STATE      etDBObjectTableColumnIterate( etDBObject *dbObject, void *userdata, etID_BOOL (*fctIterate)(void *userdata, const char *columnName, etDBColumnType columnType, char columnOption) );
+etID_STATE      etDBObjectTableColumnIterate( etDBObject *dbObject, const char *tableName, void *userdata, etID_BOOL (*fctIterate)(void *userdata, const char *columnName, etDBColumnType columnType, char columnOption) );
 
 
 etID_STATE      etDBObjectTableColumnPick( etDBObject *dbObject, const char *columnName );

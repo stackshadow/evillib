@@ -115,6 +115,76 @@ etID_STATE      etDBObjectTableColumnNext( etDBObject *dbObject ){
     return etID_STATE_NODATA;
 }
 
+/** @ingroup gretDBObjectTable
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+
+@~english
+@short Call for every column the fctItreate callback-function
+
+The callback function is in the following form:
+@code
+etID_BOOL fctIterate( void *userdata, const char *columnName, etDBColumnType columnType, char columnOption );
+@endcode
+
+@param[in] dbObject The pointer to an etDBObject
+@param[in] userdata An void-pointer to userdata which is passed as first argument in the callback-function
+@param[in] fctIterate The callback function 
+@return \n
+*- @ref etID_STATE_ERR_PARAMETER
+*- @ref etID_YES
+*/
+etID_STATE      etDBObjectTableColumnIterate( etDBObject *dbObject, void *userdata, etID_BOOL (*fctIterate)(void *userdata, const char *columnName, etDBColumnType columnType, char columnOption) ){
+// check
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( fctIterate );
+
+// vars
+    json_t      *jsonColumns;
+    json_t      *jsonColumn;
+    void        *jsonIterator;
+    json_t      *jsonColumnName;
+    json_t      *jsonColumnType;
+    json_t      *jsonColumnOption;
+
+    
+
+// check if we pick a table
+    if( dbObject->jsonTableActual == NULL ){
+        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
+        return etID_STATE_WARN_SEQERR;
+    }
+
+// get the columns
+    jsonColumns = json_object_get( dbObject->jsonTableActual, "columns" );
+    if( jsonColumns == NULL ){
+        etDebugMessage( etID_STATE_WARN, "There is no column array inside the table" );
+        return etID_STATE_WARN_SEQERR;
+    }
+
+// iterate
+    jsonIterator = json_object_iter(jsonColumns);
+    while( jsonIterator != NULL ){
+
+    //
+        jsonColumn = json_object_iter_value(jsonIterator);
+        
+        jsonColumnName = json_object_get( jsonColumn, "name" );
+        jsonColumnType = json_object_get( jsonColumn, "columnType" );
+        jsonColumnOption = json_object_get( jsonColumn, "columnOption" );
+        
+        fctIterate( userdata, json_string_value(jsonColumnName), json_integer_value(jsonColumnType), json_integer_value(jsonColumnOption) );
+
+    // next
+        jsonIterator = json_object_iter_next(jsonColumns,jsonIterator);
+    }
+
+    
+    
+    
+    
+    
+}
+
 /** @ingroup etDBObjectTableColumn
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 

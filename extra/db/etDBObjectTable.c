@@ -104,57 +104,25 @@ etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName 
 
 
 
-
 /** @ingroup gretDBObjectTable
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
 @~english
-@short Go to the next table
+@short Call for every table the fctItreate callback-function
 
-This function does also an etDBObjectTableReset()
+The callback function is in the following form:
+@code
+etID_BOOL (*fctIterate)(void *userdata, const char *tableName, const char *tableDisplayName);
+@endcode
 
 @param[in] dbObject The pointer to an etDBObject
+@param[in] langCode the language code as two letter char-array
+@param[in] userdata An void-pointer to userdata which is passed as first argument in the callback-function
+@param[in] fctIterate The callback function 
 @return \n
 *- @ref etID_STATE_ERR_PARAMETER
 *- @ref etID_YES
 */
-etID_STATE      etDBObjectTableNext( etDBObject *dbObject ){
-// check
-    etDebugCheckNull( dbObject );
-
-// vars
-    json_t      *jsonTables;
-
-// get the object which holds all tables
-    jsonTables = json_object_get( dbObject->jsonRootObject, "tables" );
-    if( jsonTables == NULL ){
-    // create a new table
-        jsonTables = json_object();
-        if( json_object_set_new( dbObject->jsonRootObject, "tables", jsonTables ) != 0 ){
-            return etID_STATE_ERR;
-        }
-
-    }
-
-    if( dbObject->jsonIterator == NULL ){
-        dbObject->jsonObjectToIterate = jsonTables;
-        dbObject->jsonIterator = json_object_iter( dbObject->jsonObjectToIterate );
-    } else {
-    // iterate
-        dbObject->jsonIterator = json_object_iter_next( dbObject->jsonObjectToIterate, dbObject->jsonIterator );
-    }
-
-// check size
-    if( dbObject->jsonIterator != NULL){
-        dbObject->jsonTableActual = json_object_iter_value( dbObject->jsonIterator );
-        return etID_YES;
-    }
-
-// return no data
-    return etID_STATE_NODATA;
-}
-
-
 etID_STATE      etDBObjectTableIterate( etDBObject *dbObject, const char *langCode, void *userdata, etID_BOOL (*fctIterate)(void *userdata, const char *tableName, const char *tableDisplayName) ){
 // check
     etDebugCheckNull( dbObject );

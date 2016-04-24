@@ -39,8 +39,8 @@ etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName 
 
 
 
-
-etID_STATE      etDBObjectTableIterate( etDBObject *dbObject, const char *langCode, void *userdata, etID_BOOL (*fctIterate)(void *userdata, const char *tableName, const char *tableDisplayName) );
+#define         etDBObjectTableNext( dbObject, tableName ) __etDBObjectTableNext( dbObject, &tableName )
+etID_STATE      __etDBObjectTableNext( etDBObject *dbObject, const char **p_tableName );
 
 
 etID_STATE      etDBObjectTablePick( etDBObject *dbObject, const char *tableName );

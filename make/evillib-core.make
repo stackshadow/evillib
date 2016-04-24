@@ -77,7 +77,7 @@ install: evillib-core-install
 headersRel = $(subst $(sourcePathCore)/,,$(headers))
 headersTarget = $(addprefix $(includeDir)/evillib-$(Version)/,$(headersRel))
 
-
+evillib-app: $(sourcePathCore)/evillib_version.h
 $(sourcePathCore)/evillib_version.h:
 	@echo "${CCommand}make $@ ${CNormal}"
 	$(MKDIR) $(buildPath)

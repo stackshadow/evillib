@@ -30,7 +30,7 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
     etDebugCheckNull( sqlquery );
 
 // check if an table is selected
-    if( dbObject->jsonTableActual == NULL ){
+    if( dbObject->jsonTable == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
@@ -97,7 +97,7 @@ etID_STATE          etDBSQLInsertInto( etDBDriver *dbDriver, etDBObject *dbObjec
 
 
 // check if an table is selected
-    if( dbObject->jsonTableActual == NULL ){
+    if( dbObject->jsonTable == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
@@ -170,7 +170,7 @@ etID_STATE          etDBSQLUpdate( etDBDriver *dbDriver, etDBObject *dbObject, e
 
 
 // check if an table is selected
-    if( dbObject->jsonTableActual == NULL ){
+    if( dbObject->jsonTable == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
@@ -250,7 +250,7 @@ etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, e
 
 
 // check if an table is selected
-    if( dbObject->jsonTableActual == NULL ){
+    if( dbObject->jsonTable == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }

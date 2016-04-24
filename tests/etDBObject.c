@@ -48,12 +48,6 @@
 #include "db/etDBObjectValue.c"
 
 
-etID_BOOL               cb_etDBObjectTableIterate( void *userdata, const char *tableName, const char *tableDisplayName ){
-    snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table name %s displayName %s", tableName, tableDisplayName );
-    etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
-    return etID_TRUE;
-}
-
 
 etID_STATE              etDBObjectTableApiCheck(){
     etApicheckTimer( "etDB: check table" );
@@ -67,7 +61,7 @@ etID_STATE              etDBObjectTableApiCheck(){
 // this should not ! work
     const char *testTableName = NULL;
     if( etDBObjectTableNameGet( table, testTableName ) == etID_YES ){
-        return -1;
+        exit(-1);
     }
 
 // append two tables
@@ -80,32 +74,16 @@ etID_STATE              etDBObjectTableApiCheck(){
 
 // we go to every table
     etDBObjectIterationReset( table );
-
-/*
-    etDBObjectTableNext( table );
-    etDBObjectTableNameGet( table, testTableName );
-    if( strncmp(testTableName,"table1",6) != 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table %s != table1", testTableName );
+    int tableCounter = 0;
+    while( etDBObjectTableNext( table, testTableName ) == etID_YES ){
+        tableCounter++;
+    }
+    if( tableCounter != 3 ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table counter is not correct" );
         etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        return -1;
+        exit(-1);
     }
 
-    etDBObjectTableNext( table );
-    etDBObjectTableNameGet( table, testTableName );
-    if( strncmp(testTableName,"table2",6) != 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table %s != table2", testTableName );
-        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        return -1;
-    }
-
-    etDBObjectTableNext( table );
-    etDBObjectTableNameGet( table, testTableName );
-    if( strncmp(testTableName,"table3",6) != 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table %s != table3", testTableName );
-        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        return -1;
-    }
-*/
 
 // pick a table
     etDBObjectTablePick( table, "table2" );
@@ -113,7 +91,7 @@ etID_STATE              etDBObjectTableApiCheck(){
     if( strncmp(testTableName,"table2",6) != 0 ){
         snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table %s != table2", testTableName );
         etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        return -1;
+        exit(-1);
     }
 
 
@@ -123,7 +101,7 @@ etID_STATE              etDBObjectTableApiCheck(){
     if( strncmp(displayName,"table2",6) != 0 ){
         snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table 'table2' don't return the correct display-name" );
         etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        return -1;
+        exit(-1);
     }
 
 // set some display names
@@ -137,7 +115,7 @@ etID_STATE              etDBObjectTableApiCheck(){
     if( strncmp(displayName,"default",7) != 0 ){
         snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table 'table2' don't return the correct display-name" );
         etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        return -1;
+        exit(-1);
     }
 
     displayName = NULL;
@@ -157,8 +135,6 @@ etID_STATE              etDBObjectTableApiCheck(){
     }
 
 
-// use the iterator function
-    etDBObjectTableIterate( table, "de", NULL, cb_etDBObjectTableIterate );
 
 
     etDBObjectDump( table );
@@ -184,8 +160,7 @@ etID_STATE              etDBObjectTableColumnApiCheck(){
 // pick table2
     etDBObjectTablePick( dbObject, "table2" );
 
-
-// add some columns
+// add some columns to table2
     etDBObjectTableColumnAdd( dbObject, "column1", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
     etDBObjectTableColumnAdd( dbObject, "column2", etDBCOLUMN_TYPE_INT, etDBCOLUMN_OPTION_NOTHING );
     etDBObjectTableColumnAdd( dbObject, "column3", etDBCOLUMN_TYPE_FLOAT, etDBCOLUMN_OPTION_NOTHING );

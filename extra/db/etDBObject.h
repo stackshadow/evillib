@@ -35,8 +35,11 @@ typedef struct etDBObject {
 
 
 // actual positions
-    json_t          *jsonTableActual;
-    json_t          *jsonColumnActual;
+    json_t          *jsonTables;
+    json_t          *jsonTable;
+
+    json_t          *jsonColumns;
+    json_t          *jsonColumn;
 
 
 // temporary values
@@ -51,7 +54,6 @@ typedef struct etDBObject {
 // driver
     void            *driverData;
 } etDBObject;
-
 
 
 
@@ -72,6 +74,28 @@ etID_STATE          etDBObjectTypeSet( json_t *jsonObject, const char *type );
 
 
 etID_STATE          etDBObjectTypeCheck( json_t *jsonObject, const char *type );
+
+
+
+
+#define             etDBObjectTablesCheck( dbObject ) if( dbObject->jsonTables == NULL ) { \
+        etDebugMessage( etID_STATE_WARN, "No Tables present in dbObject" ); \
+        return etID_STATE_WARN_SEQERR; \
+    }
+
+#define             etDBObjectTableCheck( dbObject ) if( dbObject->jsonTable == NULL ) { \
+        etDebugMessage( etID_STATE_WARN, "No Table Selected" ); \
+        return etID_STATE_WARN_SEQERR; \
+    }
+
+#define             etDBObjectColumnsCheck( dbObject ) if( dbObject->jsonColumns == NULL ) { \
+        etDebugMessage( etID_STATE_WARN, "No columns present in table" ); \
+        return etID_STATE_WARN_SEQERR; \
+    }
+#define             etDBObjectColumnCheck( dbObject ) if( dbObject->jsonColumn == NULL ) { \
+        etDebugMessage( etID_STATE_WARN, "No Tables present in dbObject" ); \
+        return etID_STATE_WARN_SEQERR; \
+    }
 
 
 

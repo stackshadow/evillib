@@ -40,6 +40,7 @@
 */
 
 
+
 /** @ingroup gretDBObjectTable
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
@@ -60,24 +61,23 @@ etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName 
     etDebugCheckNull( dbObject );
     etDebugCheckNull( tableName );
 
-// vars
-    json_t      *jsonTables;
-    json_t      *jsonTable;
+// check tables array
+    if( dbObject->jsonTables == NULL ){
+        dbObject->jsonTables = json_object_get( dbObject->jsonRootObject, "tables" );
+        if( dbObject->jsonTables == NULL ){
+            dbObject->jsonTables = json_object();
+            if( json_object_set_new( dbObject->jsonRootObject, "tables", dbObject->jsonTables ) != 0 ){
+                return etID_STATE_ERR;
+            }
+        }
+    }
 
+// vars
+    json_t      *jsonTables = dbObject->jsonTables;
+    json_t      *jsonTable = NULL;
 
 // reset the index stuff
     etDBObjectIterationReset( dbObject );
-
-// get the object which holds all tables
-    jsonTables = json_object_get( dbObject->jsonRootObject, "tables" );
-    if( jsonTables == NULL ){
-    // create a new table
-        jsonTables = json_object();
-        if( json_object_set_new( dbObject->jsonRootObject, "tables", jsonTables ) != 0 ){
-            return etID_STATE_ERR;
-        }
-
-    }
 
 // create the table
     jsonTable = json_object();
@@ -85,7 +85,6 @@ etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName 
         return etID_STATE_ERR;
     }
 // set the type
-    if( etDBObjectTypeSet( jsonTable, etDBObject_TYPE_TABLE ) != etID_YES ) return etID_STATE_ERR;
     if( json_object_set_new( jsonTable, "name", json_string(tableName) ) != 0 ) return etID_STATE_ERR;
     if( json_object_set_new( jsonTable, "inDB", json_integer(0) ) != 0 ) return etID_STATE_ERR;
 
@@ -96,7 +95,9 @@ etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName 
     }
 
 // save the new created table
-    dbObject->jsonTableActual = jsonTable;
+    dbObject->jsonTable = jsonTable;
+    dbObject->jsonColumns = NULL;
+    dbObject->jsonColumn = NULL;
 
 // return
     return etID_YES;
@@ -106,98 +107,55 @@ etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName 
 
 /** @ingroup gretDBObjectTable
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
-
+ 
 @~english
-@short Call for every table the fctItreate callback-function
-
-The callback function is in the following form:
-@code
-etID_BOOL (*fctIterate)(void *userdata, const char *tableName, const char *tableDisplayName);
-@endcode
-
+@short Go to the next table
+ 
+This function does also an etDBObjectTableReset()
+ 
 @param[in] dbObject The pointer to an etDBObject
-@param[in] langCode the language code as two letter char-array
-@param[in] userdata An void-pointer to userdata which is passed as first argument in the callback-function
-@param[in] fctIterate The callback function 
 @return \n
 *- @ref etID_STATE_ERR_PARAMETER
 *- @ref etID_YES
 */
-etID_STATE      etDBObjectTableIterate( etDBObject *dbObject, const char *langCode, void *userdata, etID_BOOL (*fctIterate)(void *userdata, const char *tableName, const char *tableDisplayName) ){
+etID_STATE      __etDBObjectTableNext( etDBObject *dbObject, const char **p_tableName ){
 // check
     etDebugCheckNull( dbObject );
+    etDebugCheckNull( p_tableName );
 
 // vars
-    json_t      *jsonTables;
-    void        *jsonIterator;
-    json_t      *jsonIteratorObject;
-    json_t      *jsonValue;
+    if( dbObject->jsonTables == NULL ){
+    // get the columns object
+        dbObject->jsonTables = json_object_get( dbObject->jsonTable, "columns" );
+        if( dbObject->jsonTables == NULL ) return etID_STATE_ERR;
+    }
 
-    const char  *tempCharArray;
-    const char  *tableName;
-    const char  *tableDisplayName;
+// vars
+    json_t      *jsonTables = dbObject->jsonTables;
     
+// iterate
+    if( dbObject->jsonIterator == NULL ){
+        dbObject->jsonObjectToIterate = jsonTables;
+        dbObject->jsonIterator = json_object_iter( dbObject->jsonObjectToIterate );
+    } else {
+    // iterate
+        dbObject->jsonIterator = json_object_iter_next( dbObject->jsonObjectToIterate, dbObject->jsonIterator );
+    }
 
-// get the object which holds all tables
-    jsonTables = json_object_get( dbObject->jsonRootObject, "tables" );
-    if( jsonTables == NULL ){
+// end if list
+    if( dbObject->jsonIterator == NULL){
         return etID_STATE_NODATA;
     }
 
-// build the language string
-    etString *fullLanguageString = NULL;
-    etStringAlloc( fullLanguageString );
+// get table from iterator
+    dbObject->jsonTable = json_object_iter_value( dbObject->jsonIterator );
+    dbObject->jsonColumns = NULL;
+    dbObject->jsonColumn = NULL;
 
+// get table name
+    __etDBObjectTableNameGet( dbObject, p_tableName );
 
-    jsonIterator = json_object_iter(jsonTables);
-    while( jsonIterator != NULL ){
-
-    //
-        jsonIteratorObject = json_object_iter_value(jsonIterator);
-
-    //
-        etStringCharSet( fullLanguageString, "displayName_\0", 13 );
-        etStringCharAdd( fullLanguageString, langCode );
-
-
-    // get table name
-        jsonValue = json_object_get( jsonIteratorObject, "name" );
-        if( jsonValue == NULL ){
-            goto next;
-        }
-        tableName = json_string_value(jsonValue);
-
-    // try to get displayName
-        etStringCharGet( fullLanguageString, tempCharArray );
-        jsonValue = json_object_get( jsonIteratorObject, tempCharArray );
-        if( jsonValue == NULL ){
-
-            etStringCharSet( fullLanguageString, "displayName_\0", 13 );
-            etStringCharGet( fullLanguageString, tempCharArray );
-            jsonValue = json_object_get( jsonIteratorObject, tempCharArray );
-            if( jsonValue == NULL ){
-                tableDisplayName = tableName;
-            } else {
-                tableDisplayName = json_string_value(jsonValue);
-            }
-
-        } else {
-            tableDisplayName = json_string_value(jsonValue);
-        }
-
-        fctIterate( userdata, tableName, tableDisplayName );
-
-next:
-    // next
-        jsonIterator = json_object_iter_next(jsonTables,jsonIterator);
-    }
-
-
-    
-    
-    
-    
-    
+    return etID_YES;
 }
 
 /** @ingroup gretDBObjectTable
@@ -221,21 +179,22 @@ etID_STATE      etDBObjectTablePick( etDBObject *dbObject, const char *tableName
     etDebugCheckNull( dbObject );
     etDebugCheckNull( tableName );
 
-// vars
-    json_t      *jsonTables;
+//
+    etDBObjectTablesCheck( dbObject );
 
-// get the object which holds all tables
-    jsonTables = json_object_get( dbObject->jsonRootObject, "tables" );
-    if( jsonTables == NULL ){
-        return etID_STATE_NODATA;
-    }
+// vars
+    json_t      *jsonTables = dbObject->jsonTables;
 
 // pick table
-    dbObject->jsonTableActual = json_object_get( jsonTables, tableName );
-    if( dbObject->jsonTableActual != NULL ) return etID_YES;
+    dbObject->jsonTable = json_object_get( jsonTables, tableName );
+    if( dbObject->jsonTable == NULL ) return etID_STATE_NODATA;
 
+// reset the actual stuff
+    dbObject->jsonColumns = NULL;
+    dbObject->jsonColumn = NULL;
+    etDBObjectIterationReset( dbObject );
 
-    return etID_STATE_NODATA;
+    return etID_YES;
 }
 
 
@@ -260,13 +219,11 @@ etID_STATE      etDBObjectTableNameSet( etDBObject *dbObject, const char *tableN
     etDebugCheckNull( tableName );
 
 // check if we pick a table
-    if( dbObject->jsonTableActual == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table, can not set a name" );
-        return etID_STATE_WARN_SEQERR;
-    }
+    etDBObjectTableCheck( dbObject );
+
 
 // set the name
-    json_object_set_new( dbObject->jsonTableActual, "name", json_string(tableName) );
+    json_object_set_new( dbObject->jsonTable, "name", json_string(tableName) );
     
     return etID_YES;
 }
@@ -296,17 +253,13 @@ etID_STATE      __etDBObjectTableNameGet( etDBObject *dbObject, const char **p_t
 
 
 // check if we pick a table
-    if( dbObject->jsonTableActual == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table, so you don't get a name" );
-        *p_tableName = "";
-        return etID_STATE_WARN_SEQERR;
-    }
+    etDBObjectTableCheck( dbObject );
 
 // vars
     json_t      *jsonTableName = NULL;
 
 // try to get the table name
-    jsonTableName = json_object_get( dbObject->jsonTableActual, "name" );
+    jsonTableName = json_object_get( dbObject->jsonTable, "name" );
     if( jsonTableName == NULL ){
         *p_tableName = "";
         return etID_STATE_NODATA;
@@ -340,10 +293,8 @@ etID_STATE      etDBObjectTableDisplayNameSet( etDBObject *dbObject, const char 
     etDebugCheckNull( displayName );
 
 // check if we pick a table
-    if( dbObject->jsonTableActual == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table, can not set a name" );
-        return etID_STATE_WARN_SEQERR;
-    }
+    etDBObjectTableCheck( dbObject );
+
 
 // build the language string
     char fullLangString[15];
@@ -352,7 +303,7 @@ etID_STATE      etDBObjectTableDisplayNameSet( etDBObject *dbObject, const char 
     strncpy( &fullLangString[12], langCode, 2 );
 
 // set the name
-    json_object_set_new( dbObject->jsonTableActual, fullLangString, json_string(displayName) );
+    json_object_set_new( dbObject->jsonTable, fullLangString, json_string(displayName) );
     
     return etID_YES;
 }
@@ -365,10 +316,8 @@ etID_STATE      __etDBObjectTableDisplayNameGet( etDBObject *dbObject, const cha
     etDebugCheckNull( p_displayName );
 
 // check if we pick a table
-    if( dbObject->jsonTableActual == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table, can not set a name" );
-        return etID_STATE_WARN_SEQERR;
-    }
+    etDBObjectTableCheck( dbObject );
+
 
 // build the language string
     char fullLangString[15];
@@ -377,11 +326,11 @@ etID_STATE      __etDBObjectTableDisplayNameGet( etDBObject *dbObject, const cha
     strncpy( &fullLangString[12], langCode, 2 );
 
 // set the name
-    json_t *jsonDisplayName = json_object_get( dbObject->jsonTableActual, fullLangString );
+    json_t *jsonDisplayName = json_object_get( dbObject->jsonTable, fullLangString );
     if( jsonDisplayName == NULL ){
         
         fullLangString[12] = '\0';
-        jsonDisplayName = json_object_get( dbObject->jsonTableActual, fullLangString );
+        jsonDisplayName = json_object_get( dbObject->jsonTable, fullLangString );
         if( jsonDisplayName == NULL ){
             return __etDBObjectTableNameGet( dbObject, p_displayName );
         }

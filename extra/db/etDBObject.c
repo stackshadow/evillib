@@ -65,7 +65,8 @@ etID_STATE          __etDBObjectAlloc( etDBObject **p_dbObject ){
 
 // set
     tempDBObject->jsonRootObject = json_object();
-    
+
+
 // return
     *p_dbObject = tempDBObject;
     return etID_YES;

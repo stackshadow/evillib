@@ -36,16 +36,16 @@ etID_STATE      etDBObjectTableColumnAdd( etDBObject *dbObject, const char *colu
 
 
 // check if we pick a table
-    if( dbObject->jsonTableActual == NULL ){
+    if( dbObject->jsonTable == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
 
 // get the columns object
-    json_t *jsonColumns = json_object_get( dbObject->jsonTableActual, "columns" );
-    if( jsonColumns == NULL ){
-        jsonColumns = json_object();
-        json_object_set( dbObject->jsonTableActual, "columns", jsonColumns );
+    dbObject->jsonColumns = json_object_get( dbObject->jsonTable, "columns" );
+    if( dbObject->jsonColumns == NULL ){
+        dbObject->jsonColumns = json_object();
+        json_object_set( dbObject->jsonTable, "columns", dbObject->jsonColumns );
     }
 
 
@@ -58,7 +58,7 @@ etID_STATE      etDBObjectTableColumnAdd( etDBObject *dbObject, const char *colu
     if( json_object_set_new( jsonColumn, "inDB", json_integer(0) ) != 0 ) return etID_STATE_ERR;
 
 // append the column to the table
-    if( json_object_set_new( jsonColumns, columnName, jsonColumn ) != 0 ) return etID_STATE_ERR;
+    if( json_object_set_new( dbObject->jsonColumns, columnName, jsonColumn ) != 0 ) return etID_STATE_ERR;
 
 
     return etID_YES;
@@ -85,7 +85,7 @@ etID_STATE      etDBObjectTableColumnNext( etDBObject *dbObject ){
     etDebugCheckNull( dbObject );
 
 // check if we pick a table
-    if( dbObject->jsonTableActual == NULL ){
+    if( dbObject->jsonTable == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
@@ -95,7 +95,7 @@ etID_STATE      etDBObjectTableColumnNext( etDBObject *dbObject ){
 // vars
     if( dbObject->jsonIterator == NULL ){
     // get the columns object
-        json_t *jsonColumns = json_object_get( dbObject->jsonTableActual, "columns" );
+        json_t *jsonColumns = json_object_get( dbObject->jsonTable, "columns" );
         if( jsonColumns == NULL ) return etID_STATE_ERR;
 
         dbObject->jsonObjectToIterate = jsonColumns;
@@ -107,7 +107,7 @@ etID_STATE      etDBObjectTableColumnNext( etDBObject *dbObject ){
 
 // get object
     if( dbObject->jsonIterator != NULL){
-        dbObject->jsonColumnActual = json_object_iter_value( dbObject->jsonIterator );
+        dbObject->jsonColumn = json_object_iter_value( dbObject->jsonIterator );
         return etID_YES;
     }
 
@@ -217,18 +217,18 @@ etID_STATE      etDBObjectTableColumnPick( etDBObject *dbObject, const char *col
     etDebugCheckNull( columnName );
 
 // check if we pick a table
-    if( dbObject->jsonTableActual == NULL ){
+    if( dbObject->jsonTable == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
 
 // get the columns object
-    json_t *jsonColumns = json_object_get( dbObject->jsonTableActual, "columns" );
+    json_t *jsonColumns = json_object_get( dbObject->jsonTable, "columns" );
     if( jsonColumns == NULL ) return etID_STATE_ERR;
 
 // pick column
-    dbObject->jsonColumnActual = json_object_get( jsonColumns, columnName );
-    if( dbObject->jsonColumnActual != NULL ) return etID_YES;
+    dbObject->jsonColumn = json_object_get( jsonColumns, columnName );
+    if( dbObject->jsonColumn != NULL ) return etID_YES;
 
 
     return etID_STATE_NODATA;
@@ -258,7 +258,7 @@ etID_STATE      __etDBObjectTableColumnNameGet( etDBObject *dbObject, const char
 
 
 // check if we pick a column
-    if( dbObject->jsonColumnActual == NULL ){
+    if( dbObject->jsonColumn == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a column" );
         *p_columnName = "";
         return etID_STATE_WARN_SEQERR;
@@ -268,7 +268,7 @@ etID_STATE      __etDBObjectTableColumnNameGet( etDBObject *dbObject, const char
     json_t      *jsonColumnName = NULL;
 
 // try to get the table name
-    jsonColumnName = json_object_get( dbObject->jsonColumnActual, "name" );
+    jsonColumnName = json_object_get( dbObject->jsonColumn, "name" );
     if( jsonColumnName == NULL ){
         *p_columnName = "";
         return etID_STATE_NODATA;
@@ -289,7 +289,7 @@ etID_STATE      __etDBObjectTableColumnTypeGet( etDBObject *dbObject, etDBColumn
 
 
 // check if we pick a column
-    if( dbObject->jsonColumnActual == NULL ){
+    if( dbObject->jsonColumn == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a column" );
         *p_columnType = etDBCOLUMN_TYPE_NOTHING;
         return etID_STATE_WARN_SEQERR;
@@ -299,7 +299,7 @@ etID_STATE      __etDBObjectTableColumnTypeGet( etDBObject *dbObject, etDBColumn
     json_t      *jsonColumnType = NULL;
 
 // try to get the table name
-    jsonColumnType = json_object_get( dbObject->jsonColumnActual, "columnType" );
+    jsonColumnType = json_object_get( dbObject->jsonColumn, "columnType" );
     if( jsonColumnType == NULL ){
         *p_columnType = etDBCOLUMN_TYPE_NOTHING;
         return etID_STATE_NODATA;
@@ -320,7 +320,7 @@ etID_STATE      __etDBObjectTableColumnOptionGet( etDBObject *dbObject, int *p_c
 
 
 // check if we pick a column
-    if( dbObject->jsonColumnActual == NULL ){
+    if( dbObject->jsonColumn == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a column" );
         *p_columnOption = etDBCOLUMN_OPTION_NOTHING;
         return etID_STATE_WARN_SEQERR;
@@ -330,7 +330,7 @@ etID_STATE      __etDBObjectTableColumnOptionGet( etDBObject *dbObject, int *p_c
     json_t      *jsonColumnOption = NULL;
 
 // try to get the table name
-    jsonColumnOption = json_object_get( dbObject->jsonColumnActual, "columnOption" );
+    jsonColumnOption = json_object_get( dbObject->jsonColumn, "columnOption" );
     if( jsonColumnOption == NULL ){
         *p_columnOption = etDBCOLUMN_OPTION_NOTHING;
         return etID_STATE_NODATA;
@@ -364,13 +364,13 @@ etID_STATE      etDBObjectTableColumnPrimarySet( etDBObject *dbObject, const cha
     etDebugCheckNull( primaryColumnName );
 
 // check if we pick a table
-    if( dbObject->jsonTableActual == NULL ){
+    if( dbObject->jsonTable == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
 
 // set the name
-    json_object_set_new( dbObject->jsonTableActual, "primaryColumn", json_string(primaryColumnName) );
+    json_object_set_new( dbObject->jsonTable, "primaryColumn", json_string(primaryColumnName) );
     
     return etID_YES;
 }
@@ -395,13 +395,13 @@ etID_STATE      __etDBObjectTableColumnPrimaryGet( etDBObject *dbObject, const c
     etDebugCheckNull( p_primaryColumnName );
 
 // check if we pick a table
-    if( dbObject->jsonTableActual == NULL ){
+    if( dbObject->jsonTable == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
 
 // get
-    json_t *jsonPrimaryColumn = json_object_get( dbObject->jsonTableActual, "primaryColumn" );
+    json_t *jsonPrimaryColumn = json_object_get( dbObject->jsonTable, "primaryColumn" );
     if( jsonPrimaryColumn == NULL ){
 
     // get table name for debug info
@@ -444,13 +444,13 @@ etID_STATE      etDBObjectTableColumnMainSet( etDBObject *dbObject, const char *
     etDebugCheckNull( mainColumnName );
 
 // check if we pick a table
-    if( dbObject->jsonTableActual == NULL ){
+    if( dbObject->jsonTable == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
 
 // set the name
-    json_object_set_new( dbObject->jsonTableActual, "mainColumn", json_string(mainColumnName) );
+    json_object_set_new( dbObject->jsonTable, "mainColumn", json_string(mainColumnName) );
     
     return etID_YES;
 }
@@ -475,13 +475,13 @@ etID_STATE      __etDBObjectTableColumnMainGet( etDBObject *dbObject, const char
     etDebugCheckNull( p_mainColumnName );
 
 // check if we pick a table
-    if( dbObject->jsonTableActual == NULL ){
+    if( dbObject->jsonTable == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
 
 // get
-    json_t *jsonMainColumn = json_object_get( dbObject->jsonTableActual, "mainColumn" );
+    json_t *jsonMainColumn = json_object_get( dbObject->jsonTable, "mainColumn" );
     if( jsonMainColumn == NULL ){
 
     // get table name for debug info

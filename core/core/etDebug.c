@@ -41,7 +41,7 @@ extern "C" {
 #endif
 
 
-void                    etDebugPrintMessageDefault();
+void                    etDebugPrintMessageDefault( etDebug* etDebugActual );
 etDebug                 etDebugEvillib[1] = {
     {
         .Sync = PTHREAD_MUTEX_INITIALIZER,

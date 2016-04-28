@@ -31,7 +31,7 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
 
 // check if an table is selected
     if( dbObject->jsonTable == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
+        etDebugMessage( etID_LEVEL_WARNING, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
 

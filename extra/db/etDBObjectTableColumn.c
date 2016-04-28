@@ -164,21 +164,21 @@ etID_STATE      etDBObjectTableColumnIterate( etDBObject *dbObject, const char *
 // get the object which holds all tables
     jsonTables = json_object_get( dbObject->jsonRootObject, "tables" );
     if( jsonTables == NULL ){
-        etDebugMessage( etID_STATE_WARN, "There are no tables" );
+        etDebugMessage( etID_LEVEL_WARNING, "There are no tables" );
         return etID_STATE_WARN_SEQERR;
     }
 
 // pick table
     jsonTable = json_object_get( jsonTables, tableName );
     if( jsonTable == NULL ){
-        etDebugMessage( etID_STATE_WARN, "Table not found" );
+        etDebugMessage( etID_LEVEL_WARNING, "Table not found" );
         return etID_STATE_WARN_SEQERR;
     }
 
 // get the columns
     jsonColumns = json_object_get( jsonTable, "columns" );
     if( jsonColumns == NULL ){
-        etDebugMessage( etID_STATE_WARN, "There is no column array inside the table" );
+        etDebugMessage( etID_LEVEL_WARNING, "There is no column array inside the table" );
         return etID_STATE_WARN_SEQERR;
     }
 
@@ -227,7 +227,7 @@ etID_STATE      etDBObjectTableColumnPick( etDBObject *dbObject, const char *col
 
 // check if we pick a table
     if( dbObject->jsonTable == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
+        etDebugMessage( etID_LEVEL_WARNING, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
 
@@ -268,7 +268,7 @@ etID_STATE      __etDBObjectTableColumnNameGet( etDBObject *dbObject, const char
 
 // check if we pick a column
     if( dbObject->jsonColumn == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a column" );
+        etDebugMessage( etID_LEVEL_WARNING, "You did not select a column" );
         *p_columnName = "";
         return etID_STATE_WARN_SEQERR;
     }
@@ -299,7 +299,7 @@ etID_STATE      __etDBObjectTableColumnTypeGet( etDBObject *dbObject, etDBColumn
 
 // check if we pick a column
     if( dbObject->jsonColumn == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a column" );
+        etDebugMessage( etID_LEVEL_WARNING, "You did not select a column" );
         *p_columnType = etDBCOLUMN_TYPE_NOTHING;
         return etID_STATE_WARN_SEQERR;
     }
@@ -330,7 +330,7 @@ etID_STATE      __etDBObjectTableColumnOptionGet( etDBObject *dbObject, int *p_c
 
 // check if we pick a column
     if( dbObject->jsonColumn == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a column" );
+        etDebugMessage( etID_LEVEL_WARNING, "You did not select a column" );
         *p_columnOption = etDBCOLUMN_OPTION_NOTHING;
         return etID_STATE_WARN_SEQERR;
     }
@@ -374,7 +374,7 @@ etID_STATE      etDBObjectTableColumnPrimarySet( etDBObject *dbObject, const cha
 
 // check if we pick a table
     if( dbObject->jsonTable == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
+        etDebugMessage( etID_LEVEL_WARNING, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
 
@@ -405,7 +405,7 @@ etID_STATE      __etDBObjectTableColumnPrimaryGet( etDBObject *dbObject, const c
 
 // check if we pick a table
     if( dbObject->jsonTable == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
+        etDebugMessage( etID_LEVEL_WARNING, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
 
@@ -454,7 +454,7 @@ etID_STATE      etDBObjectTableColumnMainSet( etDBObject *dbObject, const char *
 
 // check if we pick a table
     if( dbObject->jsonTable == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
+        etDebugMessage( etID_LEVEL_WARNING, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
 
@@ -485,7 +485,7 @@ etID_STATE      __etDBObjectTableColumnMainGet( etDBObject *dbObject, const char
 
 // check if we pick a table
     if( dbObject->jsonTable == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
+        etDebugMessage( etID_LEVEL_WARNING, "You did not select a table" );
         return etID_STATE_WARN_SEQERR;
     }
 

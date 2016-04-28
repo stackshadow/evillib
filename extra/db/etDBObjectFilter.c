@@ -95,7 +95,7 @@ etID_STATE      etDBObjectFilterSet( etDBObject *dbObject, const char *jsonStrin
 
 // handle error
     if( jsonError.text != NULL ){
-        etDebugMessage( etID_STATE_ERR, jsonError.text );
+        etDebugMessage( etID_LEVEL_ERR, jsonError.text );
         return etID_STATE_ERR;
     }
 
@@ -145,7 +145,7 @@ etID_STATE      etDBObjectFilterNext( etDBObject *dbObject, int *filterGroup, et
 
     jsonValue = json_object_get( jsonFilter, "operation" );
     if( jsonValue != NULL ){
-        *filterOperation = json_integer_value(jsonValue);
+        *filterOperation = (etDBFILTER_OP)json_integer_value(jsonValue);
     } else {
         *filterOperation = etDBFILTER_OP_NOTHING;
     }
@@ -159,7 +159,7 @@ etID_STATE      etDBObjectFilterNext( etDBObject *dbObject, int *filterGroup, et
     
     jsonValue = json_object_get( jsonFilter, "type" );
     if( jsonValue != NULL ){
-        *filterType = json_integer_value(jsonValue);
+        *filterType = (etDBFILTER_TYPE)json_integer_value(jsonValue);
     } else {
         *filterType = etDBFILTER_TYPE_NOTHING;
     }

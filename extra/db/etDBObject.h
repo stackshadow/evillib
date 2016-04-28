@@ -34,13 +34,19 @@ typedef struct etDBObject {
     json_t          *jsonRootObject;        // the json root-object
 
 
-// actual positions
+// tables
     json_t          *jsonTables;
     json_t          *jsonTable;
 
+// columns
     json_t          *jsonColumns;
     json_t          *jsonColumn;
 
+// values
+    json_t          *jsonValues;
+
+// filter
+    json_t          *jsonFilters;
 
 // temporary values
 // values for iteration
@@ -82,7 +88,6 @@ etID_STATE          etDBObjectTypeCheck( json_t *jsonObject, const char *type );
         etDebugMessage( etID_STATE_WARN, "No Tables present in dbObject" ); \
         return etID_STATE_WARN_SEQERR; \
     }
-
 #define             etDBObjectTableCheck( dbObject ) if( dbObject->jsonTable == NULL ) { \
         etDebugMessage( etID_STATE_WARN, "No Table Selected" ); \
         return etID_STATE_WARN_SEQERR; \
@@ -96,6 +101,13 @@ etID_STATE          etDBObjectTypeCheck( json_t *jsonObject, const char *type );
         etDebugMessage( etID_STATE_WARN, "No Tables present in dbObject" ); \
         return etID_STATE_WARN_SEQERR; \
     }
+
+#define             etDBObjectValuesCheck( dbObject ) if( dbObject->jsonValues == NULL ) { \
+        etDebugMessage( etID_STATE_WARN, "No values present in dbObject" ); \
+        return etID_STATE_WARN_SEQERR; \
+    }
+
+
 
 
 

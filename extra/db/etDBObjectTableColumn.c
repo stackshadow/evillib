@@ -36,21 +36,25 @@ etID_STATE      etDBObjectTableColumnAdd( etDBObject *dbObject, const char *colu
 
 
 // check if we pick a table
-    if( dbObject->jsonTable == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
-        return etID_STATE_WARN_SEQERR;
-    }
+    etDBObjectTableCheck( dbObject );
 
 // get the columns object
-    dbObject->jsonColumns = json_object_get( dbObject->jsonTable, "columns" );
     if( dbObject->jsonColumns == NULL ){
-        dbObject->jsonColumns = json_object();
-        json_object_set( dbObject->jsonTable, "columns", dbObject->jsonColumns );
+        dbObject->jsonColumns = json_object_get( dbObject->jsonTable, "columns" );
+        if( dbObject->jsonColumns == NULL ){
+            dbObject->jsonColumns = json_object();
+            if( json_object_set_new( dbObject->jsonTable, "columns", dbObject->jsonColumns ) != 0 ){
+                return etID_STATE_ERR;
+            }
+        }
     }
 
+// vars
+    json_t          *jsonColumns = dbObject->jsonColumns;
+    json_t          *jsonColumn = NULL;
 
 // create a new column
-    json_t          *jsonColumn = json_object();
+    jsonColumn = json_object();
     if( etDBObjectTypeSet( jsonColumn, etDBObject_TYPE_COLUMN ) != etID_YES ) return etID_STATE_ERR;
     if( json_object_set_new( jsonColumn, "name", json_string(columnName) ) != 0 ) return etID_STATE_ERR;
     if( json_object_set_new( jsonColumn, "columnType", json_integer(columnType) ) != 0 ) return etID_STATE_ERR;
@@ -58,8 +62,8 @@ etID_STATE      etDBObjectTableColumnAdd( etDBObject *dbObject, const char *colu
     if( json_object_set_new( jsonColumn, "inDB", json_integer(0) ) != 0 ) return etID_STATE_ERR;
 
 // append the column to the table
-    if( json_object_set_new( dbObject->jsonColumns, columnName, jsonColumn ) != 0 ) return etID_STATE_ERR;
-
+    if( json_object_set_new( jsonColumns, columnName, jsonColumn ) != 0 ) return etID_STATE_ERR;
+    dbObject->jsonColumn = jsonColumn;
 
     return etID_YES;
 }
@@ -80,39 +84,44 @@ etID_STATE      etDBObjectTableColumnAdd( etDBObject *dbObject, const char *colu
 *- @ref etID_STATE_WARN_SEQERR when you dont select an table before
 *- @ref etID_YES
 */
-etID_STATE      etDBObjectTableColumnNext( etDBObject *dbObject ){
+etID_STATE      __etDBObjectTableColumnNext( etDBObject *dbObject, const char **p_columnName ){
 // check
     etDebugCheckNull( dbObject );
 
 // check if we pick a table
-    if( dbObject->jsonTable == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
-        return etID_STATE_WARN_SEQERR;
+    etDBObjectTableCheck( dbObject );
+
+
+// get the columns object
+    if( dbObject->jsonColumns == NULL ){
+        dbObject->jsonColumns = json_object_get( dbObject->jsonTable, "columns" );
+        if( dbObject->jsonColumns == NULL ){
+            *p_columnName = NULL;
+            return etID_STATE_ERR;
+        }
     }
 
-
-
-// vars
+// iterate
     if( dbObject->jsonIterator == NULL ){
-    // get the columns object
-        json_t *jsonColumns = json_object_get( dbObject->jsonTable, "columns" );
-        if( jsonColumns == NULL ) return etID_STATE_ERR;
-
-        dbObject->jsonObjectToIterate = jsonColumns;
+        dbObject->jsonObjectToIterate = dbObject->jsonColumns;
         dbObject->jsonIterator = json_object_iter( dbObject->jsonObjectToIterate );
     } else {
     // iterate
         dbObject->jsonIterator = json_object_iter_next( dbObject->jsonObjectToIterate, dbObject->jsonIterator );
     }
 
-// get object
-    if( dbObject->jsonIterator != NULL){
-        dbObject->jsonColumn = json_object_iter_value( dbObject->jsonIterator );
-        return etID_YES;
+
+// end if list
+    if( dbObject->jsonIterator == NULL){
+        *p_columnName = NULL;
+        return etID_STATE_NODATA;
     }
 
-// return no data
-    return etID_STATE_NODATA;
+// get object
+    dbObject->jsonColumn = json_object_iter_value( dbObject->jsonIterator );
+    __etDBObjectTableColumnNameGet( dbObject, p_columnName );
+
+    return etID_YES;
 }
 
 /** @ingroup gretDBObjectTable

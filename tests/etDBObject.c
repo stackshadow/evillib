@@ -146,7 +146,9 @@ etID_STATE              etDBObjectTableColumnApiCheck(){
     etApicheckTimer( "etDB: check column" );
 
 // alloc the dbobject
-    etDBObject *dbObject;
+    etDBObject      *dbObject;
+    const char      *column = NULL;
+    
     etDBObjectAlloc( dbObject );
 
 // add some tables
@@ -154,7 +156,6 @@ etID_STATE              etDBObjectTableColumnApiCheck(){
     etDBObjectTableAdd( dbObject, "table2" );
     etDBObjectTableAdd( dbObject, "table3" );
     etDBObjectTableAdd( dbObject, "table4" );
-    etDBObjectDump( dbObject );
 
 
 // pick table2
@@ -165,37 +166,30 @@ etID_STATE              etDBObjectTableColumnApiCheck(){
     etDBObjectTableColumnAdd( dbObject, "column2", etDBCOLUMN_TYPE_INT, etDBCOLUMN_OPTION_NOTHING );
     etDBObjectTableColumnAdd( dbObject, "column3", etDBCOLUMN_TYPE_FLOAT, etDBCOLUMN_OPTION_NOTHING );
 
-
+    
     etDBObjectTablePick( dbObject, "table1" );
     etDBObjectIterationReset( dbObject );
-    if( etDBObjectTableColumnNext( dbObject ) == etID_YES ){
+    if( etDBObjectTableColumnNext( dbObject, column ) == etID_YES ){
         exit(-1);
     }
 
     etDBObjectTablePick( dbObject, "table2" );
     etDBObjectIterationReset( dbObject );
-    if( etDBObjectTableColumnNext( dbObject ) != etID_YES ){
+    if( etDBObjectTableColumnNext( dbObject, column ) != etID_YES ){
         exit(-1);
     }
 
-// now we check the column names
+// count if we have three columns
     const char *columnName = NULL;
-    etDBObjectTableColumnNameGet( dbObject, columnName );
-    if( strncmp(columnName,"column1",7) != 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "columnName %s != column1", columnName );
-        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        return -1;
+    int columnCounter = 0;
+    etDBObjectIterationReset( dbObject );
+    while( etDBObjectTableColumnNext( dbObject, columnName ) == etID_YES ){
+        columnCounter++;
     }
-
-
-    if( etDBObjectTableColumnNext( dbObject ) != etID_YES ){
+    if( columnCounter != 3 ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Column counter is not 3" );
+        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
         exit(-1);
-    }
-    etDBObjectTableColumnNameGet( dbObject, columnName );
-    if( strncmp(columnName,"column2",7) != 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "columnName %s != column2", columnName );
-        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        return -1;
     }
 
 

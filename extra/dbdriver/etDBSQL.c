@@ -54,7 +54,7 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
     
     etStringCharAdd( sqlquery, "( " );
     etDBObjectIterationReset(dbObject);
-    while( etDBObjectTableColumnNext(dbObject) == etID_YES ){
+    while( etDBObjectTableColumnNext(dbObject,columnName) == etID_YES ){
         
     // comma
         if( firstColumn == etID_FALSE ){
@@ -62,7 +62,6 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
         }
 
     // column name
-        if( etDBObjectTableColumnNameGet( dbObject, columnName ) != etID_YES ) return etID_STATE_ERR;
         etStringCharAdd( sqlquery, "'" );
         etStringCharAdd( sqlquery, columnName );
         etStringCharAdd( sqlquery, "' " );
@@ -267,7 +266,7 @@ etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, e
     etStringCharSet( sqlquery, "SELECT ", 7 );
 
     etDBObjectIterationReset(dbObject);
-    while( etDBObjectTableColumnNext(dbObject) == etID_YES ){
+    while( etDBObjectTableColumnNext(dbObject,columnName) == etID_YES ){
 
     // comma
         if( firstColumn == etID_FALSE ){
@@ -275,7 +274,6 @@ etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, e
         }
 
     // column name
-        if( etDBObjectTableColumnNameGet( dbObject, columnName ) != etID_YES ) return etID_STATE_ERR;
         etStringCharAdd( sqlquery, "\"" );
         etStringCharAdd( sqlquery, columnName );
         etStringCharAdd( sqlquery, "\"" );

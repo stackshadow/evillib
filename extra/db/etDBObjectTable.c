@@ -61,7 +61,7 @@ etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName 
     etDebugCheckNull( dbObject );
     etDebugCheckNull( tableName );
 
-// check tables array
+// find object which hold all tables
     if( dbObject->jsonTables == NULL ){
         dbObject->jsonTables = json_object_get( dbObject->jsonRootObject, "tables" );
         if( dbObject->jsonTables == NULL ){
@@ -123,11 +123,14 @@ etID_STATE      __etDBObjectTableNext( etDBObject *dbObject, const char **p_tabl
     etDebugCheckNull( dbObject );
     etDebugCheckNull( p_tableName );
 
-// vars
+// find object which hold all tables
     if( dbObject->jsonTables == NULL ){
     // get the columns object
         dbObject->jsonTables = json_object_get( dbObject->jsonTable, "columns" );
-        if( dbObject->jsonTables == NULL ) return etID_STATE_ERR;
+        if( dbObject->jsonTables == NULL ){
+            *p_tableName = NULL;
+            return etID_STATE_ERR;
+        }
     }
 
 // vars
@@ -144,6 +147,7 @@ etID_STATE      __etDBObjectTableNext( etDBObject *dbObject, const char **p_tabl
 
 // end if list
     if( dbObject->jsonIterator == NULL){
+        *p_tableName = NULL;
         return etID_STATE_NODATA;
     }
 

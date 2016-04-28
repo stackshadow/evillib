@@ -56,8 +56,8 @@ etID_STATE      etDBObjectTableColumnAdd( etDBObject *dbObject, const char *colu
 
 
 
-
-etID_STATE      etDBObjectTableColumnNext( etDBObject *dbObject );
+#define         etDBObjectTableColumnNext( dbObject, columnName ) __etDBObjectTableColumnNext( dbObject, &columnName )
+etID_STATE      __etDBObjectTableColumnNext( etDBObject *dbObject, const char **p_columnName );
 
 
 etID_STATE      etDBObjectTableColumnIterate( etDBObject *dbObject, const char *tableName, void *userdata, etID_BOOL (*fctIterate)(void *userdata, const char *columnName, etDBColumnType columnType, char columnOption) );

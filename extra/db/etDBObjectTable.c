@@ -126,7 +126,7 @@ etID_STATE      __etDBObjectTableNext( etDBObject *dbObject, const char **p_tabl
 // find object which hold all tables
     if( dbObject->jsonTables == NULL ){
     // get the columns object
-        dbObject->jsonTables = json_object_get( dbObject->jsonTable, "columns" );
+        dbObject->jsonTables = json_object_get( dbObject->jsonRootObject, "tables" );
         if( dbObject->jsonTables == NULL ){
             *p_tableName = NULL;
             return etID_STATE_ERR;

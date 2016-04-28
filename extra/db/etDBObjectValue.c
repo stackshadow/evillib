@@ -36,7 +36,8 @@ etID_STATE          etDBObjectValueClean( etDBObject *dbObject ){
     etDebugCheckNull( dbObject );
 
 // vars
-    json_object_set_new( dbObject->jsonRootObject, "values", json_object() );
+    dbObject->jsonValues = json_object();
+    json_object_set_new( dbObject->jsonRootObject, "values", dbObject->jsonValues );
 
     return etID_YES;
 }

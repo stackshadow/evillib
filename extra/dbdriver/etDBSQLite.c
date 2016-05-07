@@ -82,6 +82,7 @@ etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *file
 
 // close handle
     sqlite3_close(sqliteDriver->sqliteHandle);
+    sqliteDriver->sqliteHandle = NULL;
 
 // return
     return etID_STATE_ERR;
@@ -299,6 +300,9 @@ etID_STATE          etDBSQLiteDataGet( etDBDriver *dbDriver, etDBObject *dbObjec
 
 // run the query
     returnState = etDBSQLiteRun( dbDriver, dbObject );
+    if( returnState != etID_YES ){
+        return etID_STATE_ERR_INTERR;
+    }
 
 // is there a row ?
     if( sqliteDriver->sqliteState == SQLITE_ROW ){
@@ -317,7 +321,6 @@ etID_STATE          etDBSQLiteDataNext( etDBDriver *dbDriver, etDBObject *dbObje
 
 // vars
     etDBSQLiteDriver    *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
-    etID_STATE          returnState = etID_STATE_NOTHING;
 
 // clean calues
     etDBObjectValueClean( dbObject );
@@ -330,7 +333,7 @@ etID_STATE          etDBSQLiteDataNext( etDBDriver *dbDriver, etDBObject *dbObje
         for( int columnIndex = 0; columnIndex < columnCount; columnIndex++ ){
             
             const char* columnName = sqlite3_column_name( sqliteDriver->sqliteStatement, columnIndex );
-            const char* columnValue = sqlite3_column_text( sqliteDriver->sqliteStatement, columnIndex );
+            const char* columnValue = (const char*)sqlite3_column_text( sqliteDriver->sqliteStatement, columnIndex );
             
             etDBObjectValueSet( dbObject, columnName, columnValue );
             

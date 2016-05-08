@@ -29,7 +29,7 @@
 
 
 
-etID_STATE      etDBObjectTableColumnAdd( etDBObject *dbObject, const char *columnName, etDBColumnType columnType, char columnOption ){
+etID_STATE      etDBObjectTableColumnAdd( etDBObject *dbObject, const char *columnName, etDBColumnType columnType, int columnOption ){
 // check
     etDebugCheckNull( dbObject );
     etDebugCheckNull( columnName );
@@ -203,7 +203,7 @@ etID_STATE      etDBObjectTableColumnIterate( etDBObject *dbObject, const char *
     
     
     
-    
+    return etID_YES;
 }
 
 /** @ingroup etDBObjectTableColumn
@@ -265,13 +265,8 @@ etID_STATE      __etDBObjectTableColumnNameGet( etDBObject *dbObject, const char
     etDebugCheckNull( dbObject );
     etDebugCheckNull( p_columnName );
 
-
 // check if we pick a column
-    if( dbObject->jsonColumn == NULL ){
-        etDebugMessage( etID_LEVEL_WARNING, "You did not select a column" );
-        *p_columnName = "";
-        return etID_STATE_WARN_SEQERR;
-    }
+    etDBObjectColumnCheck( dbObject );
 
 // vars
     json_t      *jsonColumnName = NULL;
@@ -290,19 +285,107 @@ etID_STATE      __etDBObjectTableColumnNameGet( etDBObject *dbObject, const char
     return etID_YES;
 }
 
+/** @ingroup gretDBObjectTable
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+
+@~english
+@short Set the name of the current table
+
+You can set the current table with etDBObjectTableNext() or etDBObjectTablePick()
+
+@param[in] dbObject The pointer to an etDBObject
+@param[in] tableName The new name of the current table
+@return \n
+*- @ref etID_STATE_ERR_PARAMETER
+*- @ref etID_YES
+*/
+etID_STATE      etDBObjectTableColumnDisplayNameSet( etDBObject *dbObject, const char *langCode, const char *displayName ){
+// check
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( langCode );
+    etDebugCheckNull( displayName );
+
+// check if we pick a column
+    etDBObjectColumnCheck( dbObject );
+
+
+// build the language string
+    char fullLangString[15];
+    memset( fullLangString, 0, 15 );
+    strncpy( fullLangString, "displayName_", 12 );
+    strncpy( &fullLangString[12], langCode, 2 );
+
+// set the name
+    json_object_set_new( dbObject->jsonColumn, fullLangString, json_string(displayName) );
+    
+    return etID_YES;
+}
+
+
+etID_STATE      __etDBObjectTableColumnDisplayNameGet( etDBObject *dbObject, const char *langCode, const char **p_displayName ){
+// check
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( langCode );
+    etDebugCheckNull( p_displayName );
+
+// check if we pick a table
+    etDBObjectColumnCheck( dbObject );
+
+
+// build the language string
+    char fullLangString[15];
+    memset( fullLangString, 0, 15 );
+    strncpy( fullLangString, "displayName_", 12 );
+    strncpy( &fullLangString[12], langCode, 2 );
+
+// set the name
+    json_t *jsonDisplayName = json_object_get( dbObject->jsonColumn, fullLangString );
+    if( jsonDisplayName == NULL ){
+        
+        fullLangString[12] = '\0';
+        jsonDisplayName = json_object_get( dbObject->jsonColumn, fullLangString );
+        if( jsonDisplayName == NULL ){
+            return __etDBObjectTableNameGet( dbObject, p_displayName );
+        }
+        
+        *p_displayName = json_string_value(jsonDisplayName);
+        return etID_YES;
+        
+    }
+    
+    *p_displayName = json_string_value(jsonDisplayName);
+    return etID_YES;
+}
+
+
+etID_STATE      etDBObjectTableColumnTypeSet( etDBObject *dbObject, etDBColumnType columnType ){
+// check
+    etDebugCheckNull( dbObject );
+
+// check if we pick a column
+    etDBObjectColumnCheck( dbObject );
+
+// vars
+    json_t      *jsonColumnType = json_integer(columnType);
+
+// save
+    if( json_object_set_new( dbObject->jsonColumn, "columnType", jsonColumnType ) != 0 ){
+        return etID_STATE_ERR;
+    }
+
+// return
+    return etID_YES;
+}
+
 
 etID_STATE      __etDBObjectTableColumnTypeGet( etDBObject *dbObject, etDBColumnType *p_columnType ){
 // check
     etDebugCheckNull( dbObject );
     etDebugCheckNull( p_columnType );
 
-
 // check if we pick a column
-    if( dbObject->jsonColumn == NULL ){
-        etDebugMessage( etID_LEVEL_WARNING, "You did not select a column" );
-        *p_columnType = etDBCOLUMN_TYPE_NOTHING;
-        return etID_STATE_WARN_SEQERR;
-    }
+    etDBObjectColumnCheck( dbObject );
+
 
 // vars
     json_t      *jsonColumnType = NULL;
@@ -318,6 +401,26 @@ etID_STATE      __etDBObjectTableColumnTypeGet( etDBObject *dbObject, etDBColumn
     *p_columnType = json_integer_value( jsonColumnType );
 
 
+    return etID_YES;
+}
+
+
+etID_STATE      etDBObjectTableColumnOptionSet( etDBObject *dbObject, int columnOption ){
+// check
+    etDebugCheckNull( dbObject );
+
+// check if we pick a column
+    etDBObjectColumnCheck( dbObject );
+
+// vars
+    json_t      *jsonColumnType = json_integer(columnOption);
+
+// save
+    if( json_object_set_new( dbObject->jsonColumn, "columnOption", jsonColumnType ) != 0 ){
+        return etID_STATE_ERR;
+    }
+
+// return
     return etID_YES;
 }
 

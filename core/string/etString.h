@@ -35,10 +35,11 @@ extern "C" {
 
 typedef struct etString {
     etObject;
-    
+
     unsigned int    lengthActual;   /*!< The number of actual used chars */
     unsigned int    lengthMax;      /*!< The number of actual used chars */
 
+    etID_BOOL       isWChar;
     void            *data;          /*!< The memory for the string */
 } etString;
 

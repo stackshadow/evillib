@@ -128,6 +128,13 @@ etID_STATE              etStringCharSet( etString *etStringActual, const char *s
     etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
 #endif
 
+// handle wchar
+    if( etStringActual->isWChar == etID_TRUE ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "etString is an wchar. Please use etStringWChar functions !" );
+        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
+        return etID_STATE_ERR_INTERR;
+    }
+
 // Vars
     etID_STATE        ReturnValue = etID_YES;
     size_t            sourceLen = strlen(source);
@@ -140,15 +147,18 @@ etID_STATE              etStringCharSet( etString *etStringActual, const char *s
 // Copy the memory
     size_t SourceSize = sourceLen * sizeof(char);
     etMemoryClean( etStringActual->data );
-    ReturnValue = etMemorySet( etStringActual->data, (void*)source, SourceSize );
+    ReturnValue = etMemorySet( etStringActual->data, (void*)source, SourceSize + sizeof(char), SourceSize );
+    ((char*)etStringActual->data)[SourceSize] = '\0';
 
 // save length
     etStringActual->lengthActual = sourceLen;
+    etStringActual->isWChar = etID_FALSE;
 
 // Return
     if( ReturnValue != etID_YES ) return ReturnValue;
     return etID_YES;
 }
+
 
 /** @ingroup grStringChar
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
@@ -175,6 +185,13 @@ etID_STATE              etStringCharAdd( etString *etStringActual, const char *s
     etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
 #endif
 
+// handle wchar
+    if( etStringActual->isWChar == etID_TRUE ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "etString is an wchar. Please use etStringWChar functions !" );
+        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
+        return etID_STATE_ERR_INTERR;
+    }
+
 //Vars
     etID_STATE        ReturnValue = etID_YES;
     size_t            actualSize = etStringActual->lengthActual * sizeof(char);
@@ -183,8 +200,8 @@ etID_STATE              etStringCharAdd( etString *etStringActual, const char *s
 
 
 // Set the memory with an offset
-    ReturnValue = etMemorySetOffset( etStringActual->data, (void*)source, actualSize, sourceSize );
-
+    ReturnValue = etMemorySetOffset( etStringActual->data, (void*)source, actualSize + sourceSize + sizeof(char), actualSize, sourceSize );
+    ((char*)etStringActual->data)[actualSize + sourceSize] = '\0';
 
 #ifndef ET_DEBUG_OFF
     const char *tempString;
@@ -195,10 +212,12 @@ etID_STATE              etStringCharAdd( etString *etStringActual, const char *s
 
 // save length
     etStringActual->lengthActual = etStringActual->lengthActual + sourceLen;
+    //((char*)etStringActual->data)[etStringActual->lengthActual-1] = '\0';
 
     if( ReturnValue != etID_YES ) return ReturnValue;
     return etID_YES;
 }
+
 
 /** @ingroup grStringChar
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>

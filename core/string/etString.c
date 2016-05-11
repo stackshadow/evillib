@@ -88,12 +88,13 @@ etID_STATE                __etStringAllocLen( etString **p_etStringActual, int N
             return etDebugState(etID_STATE_CRIT_NOMEMORY);
     }
 
-    if( NewLen > 0 ){
-    // String properties
-        etStringActual->lengthActual = 0;
-        etStringActual->lengthMax = NewLen;
+// String properties
+    etStringActual->lengthActual = 0;
+    etStringActual->lengthMax = NewLen;
+    etStringActual->isWChar = etID_NO;
 
-    // Allocate memory for string
+// Allocate memory for string
+    if( NewLen > 0 ){
         etMemoryAlloc( etStringActual->data, sizeof(char)*NewLen );
     }
 

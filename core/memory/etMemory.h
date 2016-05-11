@@ -59,11 +59,11 @@ void                        __etMemoryRelease( void **p_data );
 
 etID_STATE                  etMemoryClean( void *data );
 
-#define                     etMemorySet( dest, source, size ) __etMemorySet( (void**)&dest, source, size )
-etID_STATE                  __etMemorySet( void **p_dest, void *source, size_t size );
+#define                     etMemorySet( dest, source, size, bytesToCopy ) __etMemorySet( (void**)&dest, source, size, bytesToCopy )
+etID_STATE                  __etMemorySet( void **p_dest, void *source, size_t size, size_t bytesToCopy );
 
-#define                     etMemorySetOffset( data, dataSource, offset, size ) __etMemorySetOffset( (void**)&data, dataSource, offset, size )
-etID_STATE                  __etMemorySetOffset( void **p_data, void *dataSource, size_t offset, size_t size );
+#define                     etMemorySetOffset( data, dataSource, size, bytesToCopy, bytesToAppend ) __etMemorySetOffset( (void**)&data, dataSource, size, bytesToCopy, bytesToAppend )
+etID_STATE                  __etMemorySetOffset( void **p_data, void *dataSource, size_t size, size_t bytesToCopy, size_t bytesToAppend );
 
 
 

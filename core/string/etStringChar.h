@@ -30,6 +30,10 @@ extern "C" {
 #define                 etStringCharGet( etStringActual, char ) __etStringCharGet( etStringActual, &char )
 etID_STATE              __etStringCharGet( etString *etStringActual, const char **p_char );
 
+#define                 etStringWCharGet( etStringActual, p_wchar ) __etStringWCharGet( etStringActual, &p_wchar )
+etID_STATE              __etStringWCharGet( etString *etStringActual, wchar_t **p_wchar );
+
+
 #define                 etStringCharCopy( etStringActual, dest, maxLen ) __etStringCharCopy( etStringActual, (char*)(&dest), maxLen )
 etID_STATE              __etStringCharCopy( etString *etStringActual, char *target, int maxLen );
 
@@ -37,7 +41,13 @@ etID_STATE              __etStringCharCopy( etString *etStringActual, char *targ
 etID_STATE              etStringCharSet( etString *etStringActual, const char *source, int maxLen );
 
 
+etID_STATE              etStringWCharSet( etString *etStringActual, wchar_t *source, int maxLen );
+
+
 etID_STATE              etStringCharAdd( etString *etStringActual, const char *source );
+
+
+etID_STATE              etStringWCharAdd( etString *etStringActual, wchar_t *source );
 
 
 int                     etStringCharFind( etString *etStringActual, const char *compareString, int offset );

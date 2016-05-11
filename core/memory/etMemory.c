@@ -306,7 +306,7 @@ So the dest-pointer can be different after call of this function
 *- @ref etID_YES
 *- @ref etID_NO
 */
-etID_STATE                  __etMemorySet( void **p_dest, void *source, size_t size ){
+etID_STATE                  __etMemorySet( void **p_dest, void *source, size_t size, size_t bytesToCopy ){
 //Checks
     etDebugCheckNull( p_dest );
     etDebugCheckNull( *p_dest );
@@ -322,6 +322,11 @@ etID_STATE                  __etMemorySet( void **p_dest, void *source, size_t s
         return etDebugState( etID_STATE_ERR_INTERR );
     }
 
+// check size
+    if( bytesToCopy > size ){
+        size = bytesToCopy;
+    }
+
 // Not enough size
     if( etMemoryBlockHasSpace(etMemoryBlockActual,size) != etID_YES ){
         
@@ -334,12 +339,12 @@ etID_STATE                  __etMemorySet( void **p_dest, void *source, size_t s
 
 // Debug
     #ifndef ET_DEBUG_OFF
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p set %li bytes from %p", etMemoryBlockData, size, source );
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p (%li bytes) set %li bytes from %p", etMemoryBlockData, size, bytesToCopy, source );
         etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
     #endif
 
 // Copy the rest
-    memcpy( etMemoryBlockData, source, size );
+    memcpy( etMemoryBlockData, source, bytesToCopy );
 
 
 // Return
@@ -364,7 +369,7 @@ This function checks if the etMemoryBlock can hold your requested size + offset 
 *- @ref etID_YES
 *- @ref etID_NO
 */
-etID_STATE                  __etMemorySetOffset( void **p_data, void *dataSource, size_t offset, size_t size ){
+etID_STATE                  __etMemorySetOffset( void **p_data, void *dataSource, size_t size, size_t bytesToCopy, size_t bytesToAppend ){
 //Checks
     etDebugCheckNull( p_data );
     if( size == 0 ) return etID_YES;
@@ -378,8 +383,13 @@ etID_STATE                  __etMemorySetOffset( void **p_data, void *dataSource
 // get the memory block from the data
     etMemoryBlockListBlockGet( etMemoryList, etMemoryBlockData, etMemoryBlockActual );
 
+// check size
+    if( (bytesToCopy + bytesToAppend) > size ){
+        size = bytesToCopy + bytesToAppend;
+    }
+
 // Not enough size
-    if( etMemoryBlockHasSpace(etMemoryBlockActual,offset + size) != etID_YES ){
+    if( etMemoryBlockHasSpace(etMemoryBlockActual,size) != etID_YES ){
 
     // Debug
         #ifndef ET_DEBUG_OFF
@@ -389,10 +399,10 @@ etID_STATE                  __etMemorySetOffset( void **p_data, void *dataSource
 
     // We allocate a new Block
         void *etMemoryBlockDataNew = NULL;
-        etMemoryRequest( etMemoryBlockDataNew, offset + size );
+        etMemoryRequest( etMemoryBlockDataNew, size );
 
     // Copy
-        memcpy( etMemoryBlockDataNew, etMemoryBlockData, offset );
+        memcpy( etMemoryBlockDataNew, etMemoryBlockData, bytesToCopy );
     
     // Release the old one
         etMemoryBlockRelease( etMemoryBlockActual, etID_TRUE );
@@ -403,17 +413,17 @@ etID_STATE                  __etMemorySetOffset( void **p_data, void *dataSource
 
 // Copy the data
     #ifndef ET_DEBUG_OFF
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "copy %li to %p with an offset of %li", size, etMemoryBlockActual, offset );
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "copy %li to %p with an offset of %li", bytesToCopy, etMemoryBlockActual, bytesToAppend );
         etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
     #endif
 
 // calculate the pointer
     size_t sPointer = (size_t)etMemoryBlockData;
-    sPointer += offset;
+    sPointer += bytesToCopy;
     void *etMemoryBlockDataOffset = (void*)sPointer;
 
 // Copy the rest
-    memcpy( etMemoryBlockDataOffset, dataSource, size );
+    memcpy( etMemoryBlockDataOffset, dataSource, bytesToAppend );
 
 /* Future
     char *cPointer = (char*)sPointer;

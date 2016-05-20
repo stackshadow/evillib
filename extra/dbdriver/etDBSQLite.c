@@ -34,6 +34,7 @@ etID_STATE          etDBSQLiteColumnOptionAdd( etString *sqlquery, int option );
 etID_STATE          etDBSQLiteIsConnected( etDBDriver *dbDriver );
 etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject );
 etID_STATE          etDBSQLiteTableAdd( etDBDriver *dbDriver, etDBObject *dbObject );
+etID_STATE          etDBSQLiteColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject );
 etID_STATE          etDBSQLiteDataAdd( etDBDriver *dbDriver, etDBObject *dbObject );
 etID_STATE          etDBSQLiteDataChange( etDBDriver *dbDriver, etDBObject *dbObject );
 etID_STATE          etDBSQLiteDataGet( etDBDriver *dbDriver, etDBObject *dbObject );
@@ -56,8 +57,13 @@ etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *file
     dbDriver->queryColumnOptionAdd = etDBSQLiteColumnOptionAdd;
     dbDriver->connect = NULL;
     dbDriver->isConnected = etDBSQLiteIsConnected;
+
     dbDriver->tableAdd = etDBSQLiteTableAdd;
     dbDriver->tableRemove = NULL;
+
+    dbDriver->columnAdd = etDBSQLiteColumnAdd;
+    dbDriver->columnRemove = NULL;
+
     dbDriver->dataAdd = etDBSQLiteDataAdd;
     dbDriver->dataChange = etDBSQLiteDataChange;
     dbDriver->dataGet = etDBSQLiteDataGet;
@@ -163,6 +169,14 @@ etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject ){
 // call callback
     if( dbDriver->queryAcknowledge != NULL ){
         if( dbDriver->queryAcknowledge( dbDriver, dbObject, sqliteDriver->sqlquery ) != etID_YES ){
+            
+        // show rejected query
+            const char *query;
+            etStringCharGet( sqliteDriver->sqlquery, query );
+            snprintf( etDebugTempMessage, etDebugTempMessageLen, "Rejected query: %s", query );
+            etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );            
+
+        // return
             return etID_NO;
         }
     }
@@ -218,6 +232,31 @@ etID_STATE          etDBSQLiteTableAdd( etDBDriver *dbDriver, etDBObject *dbObje
 
 // create the query
     if( etDBSQLTableCreate( dbDriver, dbObject, sqliteDriver->sqlquery ) != etID_YES ) return etID_STATE_ERR_INTERR;
+
+// run the query
+    returnState = etDBSQLiteRun( dbDriver, dbObject );
+    if( returnState == etID_YES ){
+        return etID_YES;
+    }
+
+// return
+    return etID_NO;
+}
+
+
+etID_STATE          etDBSQLiteColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
+
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbDriver->dbDriverData );
+
+//
+    etDBSQLiteDriver    *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+    etID_STATE          returnState = etID_STATE_NOTHING;
+
+// create the query
+    if( etDBSQLColumnAdd( dbDriver, dbObject, sqliteDriver->sqlquery ) != etID_YES ) return etID_STATE_ERR_INTERR;
 
 // run the query
     returnState = etDBSQLiteRun( dbDriver, dbObject );

@@ -43,6 +43,9 @@ typedef struct etDBDriver_s {
 // handle table
     etID_STATE      (*tableAdd)( etDBDriver *dbDriver, etDBObject *dbObject );
     etID_STATE      (*tableRemove)( etDBDriver *dbDriver, etDBObject *dbObject );
+// handle columns
+    etID_STATE      (*columnAdd)( etDBDriver *dbDriver, etDBObject *dbObject );
+    etID_STATE      (*columnRemove)( etDBDriver *dbDriver, etDBObject *dbObject );
 // handle table data
     etID_STATE      (*dataAdd)( etDBDriver *dbDriver, etDBObject *dbObject );
     etID_STATE      (*dataChange)( etDBDriver *dbDriver, etDBObject *dbObject );
@@ -67,6 +70,11 @@ etID_STATE          etDBDriverTableAdd( etDBDriver *dbDriver, etDBObject *dbObje
 
 
 etID_STATE          etDBDriverTableRemove( etDBDriver *dbDriver, etDBObject *dbObject );
+
+
+
+
+etID_STATE          etDBDriverColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject );
 
 
 

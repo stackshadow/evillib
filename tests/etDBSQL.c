@@ -58,6 +58,7 @@ int                     main( int argc, const char* argv[] ){
     etDebugLevelSet( etID_LEVEL_DETAIL_DB );
 
 
+
 // alloc the dbobject
     etDBObject *dbObject;
     etDBObjectAlloc( dbObject );
@@ -92,6 +93,22 @@ int                     main( int argc, const char* argv[] ){
     etDBObjectTablePick( dbObject, "city" );
     etDBDriverTableAdd( &dbDriver, dbObject );
 
+// oh no, we forget something for the table, we need an adittional column
+    etDBObjectTableColumnAdd( dbObject, "inhabitants", etDBCOLUMN_TYPE_INT, etDBCOLUMN_OPTION_NOTHING );
+    etDBDriverColumnAdd( &dbDriver, dbObject );
+
+
+/*
+SELECT uuid,postalcode,displayName,inhabitants  FROM city;
+
+DROP TABLE IF EXISTS t1_backup;
+CREATE TABLE t1_backup( 'postalcode' INTEGER,'uuid' TEXT  UNIQUE,'displayName' TEXT );
+INSERT INTO t1_backup SELECT postalcode,uuid,displayName FROM city;
+DROP TABLE city;
+ALTER TABLE t1_backup RENAME TO city
+
+*/
+
 // we add some data
     etDBObjectValueClean( dbObject );
     etDBObjectValueSet( dbObject, "uuid", "000001" );
@@ -114,12 +131,20 @@ int                     main( int argc, const char* argv[] ){
     etDBObjectDump( dbObject );
     etDBDriverDataAdd( &dbDriver, dbObject );
 
+    etDBObjectValueClean( dbObject );
+    etDBObjectValueSet( dbObject, "uuid", "000004" );
+    etDBObjectValueSet( dbObject, "displayName", " Iter \"The big\" City" );
+    etDBObjectValueSet( dbObject, "postalcode", "0" );
+    etDBDriverDataAdd( &dbDriver, dbObject );
+
+
 // we change some data
     etDBObjectValueClean( dbObject );
     etDBObjectValueSet( dbObject, "uuid", "000002" );
     etDBObjectValueSet( dbObject, "displayName", "IterCity" );
     etDBObjectValueSet( dbObject, "postalcode", "0" );
     etDBDriverDataChange( &dbDriver, dbObject );
+
 
 
 // vars

@@ -39,7 +39,7 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
     etStringClean( sqlquery );
 
 // create table
-    etStringCharAdd( sqlquery, "CREATE TABLE " );
+    etStringCharSet( sqlquery, "CREATE TABLE ", -1 );
     
 // add table name
     const char *tableName = NULL;
@@ -60,6 +60,9 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
         if( firstColumn == etID_FALSE ){
             etStringCharAdd( sqlquery, "," );
         }
+
+    char test[strlen(columnName)+1];
+    memcpy( test, columnName, strlen(columnName) );
 
     // column name
         etStringCharAdd( sqlquery, "'" );
@@ -83,6 +86,63 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
     }
     
     etStringCharAdd( sqlquery, ");" );
+
+    return etID_YES;
+}
+
+
+etID_STATE          etDBSQLColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( sqlquery );
+
+// check if an table and column is selected
+    etDBObjectTableCheck( dbObject );
+    etDBObjectColumnCheck( dbObject );
+
+// clear
+    etStringClean( sqlquery );
+
+// create table
+    etStringCharSet( sqlquery, "ALTER TABLE ", -1 );
+
+// add table name
+    const char *tableName = NULL;
+    etDBObjectTableNameGet( dbObject, tableName );
+    etStringCharAdd( sqlquery, tableName );
+
+    etStringCharAdd( sqlquery, " ADD COLUMN " );
+
+// columns
+    etID_BOOL           firstColumn = etID_TRUE;
+    const char          *columnName = NULL;
+    etDBColumnType      columnType;
+    int                 columnOption = etDBCOLUMN_OPTION_NOTHING;
+
+
+    etDBObjectTableColumnNameGet( dbObject, columnName );
+
+// column name
+    etStringCharAdd( sqlquery, "'" );
+    etStringCharAdd( sqlquery, columnName );
+    etStringCharAdd( sqlquery, "' " );
+    
+// column type
+    etDBObjectTableColumnTypeGet( dbObject, columnType );
+    if( dbDriver->queryColumnTypeAdd != NULL ){
+        dbDriver->queryColumnTypeAdd( sqlquery, columnType );
+    }
+    
+// get column specials ( like primary key )
+    etDBObjectTableColumnOptionGet( dbObject, columnOption );
+    if( dbDriver->queryColumnOptionAdd != NULL ){
+        dbDriver->queryColumnOptionAdd( sqlquery, columnOption );
+    }
+    
+        
+    
+    etStringCharAdd( sqlquery, ";" );
 
     return etID_YES;
 }
@@ -138,9 +198,9 @@ etID_STATE          etDBSQLInsertInto( etDBDriver *dbDriver, etDBObject *dbObjec
         etStringCharAdd( sqlquery, "\"" );
 
     // column value
-        etStringCharAdd( valueString, "\"" );
+        etStringCharAdd( valueString, "\'" );
         etStringCharAdd( valueString, columnValue );
-        etStringCharAdd( valueString, "\"" );
+        etStringCharAdd( valueString, "\'" );
 
         firstColumn = etID_FALSE;
     }
@@ -187,7 +247,7 @@ etID_STATE          etDBSQLUpdate( etDBDriver *dbDriver, etDBObject *dbObject, e
     etStringClean( sqlquery );
 
 // create table
-    etStringCharSet( sqlquery, "UPDATE ", 7 );
+    etStringCharSet( sqlquery, "UPDATE \0", 8 );
 
 // add table name
     etDBObjectTableNameGet( dbObject, tableName );
@@ -210,9 +270,9 @@ etID_STATE          etDBSQLUpdate( etDBDriver *dbDriver, etDBObject *dbObject, e
         etStringCharAdd( sqlquery, "\" = " );
 
     // column value
-        etStringCharAdd( sqlquery, "\"" );
+        etStringCharAdd( sqlquery, "\'" );
         etStringCharAdd( sqlquery, columnValue );
-        etStringCharAdd( sqlquery, "\"" );
+        etStringCharAdd( sqlquery, "\'" );
 
     }
 

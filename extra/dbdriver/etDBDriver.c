@@ -81,6 +81,21 @@ etID_STATE          etDBDriverTableRemove( etDBDriver *dbDriver, etDBObject *dbO
 
 
 
+etID_STATE          etDBDriverColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
+// check
+    etDebugCheckNull(dbDriver);
+
+// call function
+    if( dbDriver->columnAdd != NULL ){
+        return dbDriver->columnAdd( dbDriver, dbObject );
+    }
+    
+    return etID_STATE_ERR;
+}
+
+
+
+
 etID_STATE          etDBDriverDataAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
 // check
     etDebugCheckNull(dbDriver);

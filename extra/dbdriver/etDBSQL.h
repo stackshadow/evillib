@@ -24,13 +24,22 @@ extern "C" {
 #endif
 
 
-etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );
+etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery, const char *columnEnclose );
 
 
-etID_STATE          etDBSQLInsertInto( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );
+etID_STATE          etDBSQLTableRemove( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );
 
 
-etID_STATE          etDBSQLUpdate( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );
+etID_STATE          etDBSQLColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery, const char *columnEnclose );
+
+
+etID_STATE          etDBSQLDataAdd( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );
+
+
+etID_STATE          etDBSQLDataChange( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );
+
+
+etID_STATE          etDBSQLDataRemove( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery, const char *columnEnclose );
 
 
 etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );

@@ -23,7 +23,8 @@
 
 
 
-etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
+
+etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery, const char *columnEnclose ){
 // check
     etDebugCheckNull( dbDriver );
     etDebugCheckNull( dbObject );
@@ -40,7 +41,7 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
 
 // create table
     etStringCharSet( sqlquery, "CREATE TABLE ", -1 );
-    
+
 // add table name
     const char *tableName = NULL;
     etDBObjectTableNameGet( dbObject, tableName );
@@ -51,11 +52,11 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
     const char          *columnName = NULL;
     etDBColumnType      columnType;
     int                 columnOption = etDBCOLUMN_OPTION_NOTHING;
-    
+
     etStringCharAdd( sqlquery, "( " );
     etDBObjectIterationReset(dbObject);
     while( etDBObjectTableColumnNext(dbObject,columnName) == etID_YES ){
-        
+
     // comma
         if( firstColumn == etID_FALSE ){
             etStringCharAdd( sqlquery, "," );
@@ -65,33 +66,63 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
     memcpy( test, columnName, strlen(columnName) );
 
     // column name
-        etStringCharAdd( sqlquery, "'" );
+        etStringCharAdd( sqlquery, columnEnclose );
         etStringCharAdd( sqlquery, columnName );
-        etStringCharAdd( sqlquery, "' " );
-        
+        etStringCharAdd( sqlquery, columnEnclose );
+        etStringCharAdd( sqlquery, " " );
+
     // column type
         etDBObjectTableColumnTypeGet( dbObject, columnType );
         if( dbDriver->queryColumnTypeAdd != NULL ){
             dbDriver->queryColumnTypeAdd( sqlquery, columnType );
         }
-        
+
     // get column specials ( like primary key )
         etDBObjectTableColumnOptionGet( dbObject, columnOption );
         if( dbDriver->queryColumnOptionAdd != NULL ){
             dbDriver->queryColumnOptionAdd( sqlquery, columnOption );
         }
-        
-        
+
+
         firstColumn = etID_FALSE;
     }
-    
+
     etStringCharAdd( sqlquery, ");" );
 
     return etID_YES;
 }
 
 
-etID_STATE          etDBSQLColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
+etID_STATE          etDBSQLTableRemove( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( sqlquery );
+
+// check if an table is selected
+    if( dbObject->jsonTable == NULL ){
+        etDebugMessage( etID_LEVEL_WARNING, "You did not select a table" );
+        return etID_STATE_WARN_SEQERR;
+    }
+
+// clear
+    etStringClean( sqlquery );
+
+// create table
+    etStringCharSet( sqlquery, "DROP TABLE ", -1 );
+
+// add table name
+    const char *tableName = NULL;
+    etDBObjectTableNameGet( dbObject, tableName );
+    etStringCharAdd( sqlquery, tableName );
+    etStringCharAdd( sqlquery, ";" );
+
+    return etID_YES;
+
+}
+
+
+etID_STATE          etDBSQLColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery, const char *columnEnclose ){
 // check
     etDebugCheckNull( dbDriver );
     etDebugCheckNull( dbObject );
@@ -115,7 +146,6 @@ etID_STATE          etDBSQLColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject
     etStringCharAdd( sqlquery, " ADD COLUMN " );
 
 // columns
-    etID_BOOL           firstColumn = etID_TRUE;
     const char          *columnName = NULL;
     etDBColumnType      columnType;
     int                 columnOption = etDBCOLUMN_OPTION_NOTHING;
@@ -124,31 +154,32 @@ etID_STATE          etDBSQLColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject
     etDBObjectTableColumnNameGet( dbObject, columnName );
 
 // column name
-    etStringCharAdd( sqlquery, "'" );
+    etStringCharAdd( sqlquery, columnEnclose );
     etStringCharAdd( sqlquery, columnName );
-    etStringCharAdd( sqlquery, "' " );
-    
+    etStringCharAdd( sqlquery, columnEnclose );
+    etStringCharAdd( sqlquery, " " );
+
 // column type
     etDBObjectTableColumnTypeGet( dbObject, columnType );
     if( dbDriver->queryColumnTypeAdd != NULL ){
         dbDriver->queryColumnTypeAdd( sqlquery, columnType );
     }
-    
+
 // get column specials ( like primary key )
     etDBObjectTableColumnOptionGet( dbObject, columnOption );
     if( dbDriver->queryColumnOptionAdd != NULL ){
         dbDriver->queryColumnOptionAdd( sqlquery, columnOption );
     }
-    
-        
-    
+
+
+
     etStringCharAdd( sqlquery, ";" );
 
     return etID_YES;
 }
 
 
-etID_STATE          etDBSQLInsertInto( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
+etID_STATE          etDBSQLDataAdd( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
 // check
     etDebugCheckNull( dbDriver );
     etDebugCheckNull( dbObject );
@@ -221,7 +252,7 @@ VALUES (value1,value2,value3,...);
 }
 
 
-etID_STATE          etDBSQLUpdate( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
+etID_STATE          etDBSQLDataChange( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
 // check
     etDebugCheckNull( dbDriver );
     etDebugCheckNull( dbObject );
@@ -288,15 +319,68 @@ etID_STATE          etDBSQLUpdate( etDBDriver *dbDriver, etDBObject *dbObject, e
 // WHERE
     etStringCharAdd( sqlquery, " WHERE \"" );
     etStringCharAdd( sqlquery, primaryColumn );
-    etStringCharAdd( sqlquery, "\" = \"" );
+    etStringCharAdd( sqlquery, "\" = '" );
     etStringCharAdd( sqlquery, primaryColumnValue );
-    etStringCharAdd( sqlquery, "\"" );
+    etStringCharAdd( sqlquery, "'" );
 
 
 
 /*
 UPDATE `doDB` SET `value`=? WHERE `_rowid_`='2';
 */
+    return etID_YES;
+}
+
+
+etID_STATE          etDBSQLDataRemove( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery, const char *columnEnclose ){
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbObject );
+    etDebugCheckNull( sqlquery );
+
+
+// check if an table is selected
+    if( dbObject->jsonTable == NULL ){
+        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
+        return etID_STATE_WARN_SEQERR;
+    }
+
+// vars
+    const char          *tableName = NULL;
+    const char          *primaryColumn = NULL;
+    const char          *primaryColumnValue = NULL;
+
+
+
+// clear
+    etStringClean( sqlquery );
+
+// create table
+    etStringCharSet( sqlquery, "DELETE FROM \0", 13 );
+
+// add table name
+    etDBObjectTableNameGet( dbObject, tableName );
+    etStringCharAdd( sqlquery, tableName );
+
+
+// get the primary key-column
+    if( etDBObjectTableColumnPrimaryGet( dbObject, primaryColumn ) != etID_YES ){
+        return etID_STATE_ERR_INTERR;
+    }
+// get the value of the primary column
+    if( etDBObjectValueGet( dbObject, primaryColumn, primaryColumnValue ) != etID_YES ){
+        return etID_STATE_ERR_INTERR;
+    }
+
+// WHERE
+    etStringCharAdd( sqlquery, " WHERE " );
+    etStringCharAdd( sqlquery, columnEnclose );
+    etStringCharAdd( sqlquery, primaryColumn );
+    etStringCharAdd( sqlquery, columnEnclose );
+    etStringCharAdd( sqlquery, " = '" );
+    etStringCharAdd( sqlquery, primaryColumnValue );
+    etStringCharAdd( sqlquery, "'" );
+
     return etID_YES;
 }
 

@@ -126,9 +126,9 @@ etID_STATE          etDBObjectDump( etDBObject *dbObject ){
 
 // dump string
     dbObject->dumpString = json_dumps( dbObject->jsonRootObject, JSON_INDENT(4) );
-
+    printf( dbObject->dumpString );
 // debug message    
-    etDebugMessage( etID_LEVEL_DETAIL_DB, dbObject->dumpString );
+    //etDebugMessage( etID_LEVEL_DETAIL_DB, dbObject->dumpString );
     
 
     return etID_YES;

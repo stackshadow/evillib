@@ -36,23 +36,19 @@ This disable the debugging function during compile time, which results in a smal
 
 #include "core/etDebug.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
-void                    etDebugPrintMessageDefault( etDebug* etDebugActual );
 etDebug                 etDebugEvillib[1] = {
     {
         .Sync = PTHREAD_MUTEX_INITIALIZER,
     // Standart visible levels
         .LevelVisible = etID_LEVEL_ERR,
-        
+
         .printMessage = etDebugPrintMessageDefault
     }
 };
-int                     etDebugTempMessageLen = 256;
-char                    etDebugTempMessage[256];
+int                     etDebugTempMessageLen = 512;
+char                    etDebugTempMessage[512];
 
 // For snprintf()
 
@@ -100,15 +96,15 @@ void                    etDebugPrintMessageDefault( etDebug* etDebugActual ){
         case etID_LEVEL_DETAIL_NET:
             fprintf( OutputStream, "\033[0;48m[DEBUG]\033[00m [NET]" );
             break;
-            
+
         case etID_LEVEL_DETAIL_THREAD:
             fprintf( OutputStream, "\033[0;48m[DEBUG]\033[00m [THREAD]" );
             break;
-            
+
         case etID_LEVEL_DETAIL_DB:
             fprintf( OutputStream, "\033[0;48m[DEBUG]\033[00m [DB]" );
             break;
-            
+
         case etID_LEVEL_TEST:
             fprintf( OutputStream, "\033[0;48m[DEBUG]\033[00m [TEST]" );
             break;
@@ -173,7 +169,6 @@ void                    etDebugPrintMessageDefault( etDebug* etDebugActual ){
 
 
 void                    etDebugPrintMessage(){
-
     if( etDebugEvillib->printMessage != NULL ){
         etDebugEvillib->printMessage( etDebugEvillib );
     }
@@ -185,6 +180,7 @@ void                    etDebugPrintMessage(){
 // ################ state stuff ################
 
 etID_STATE              etDebugStateToMessage( etID_STATE state, const char *function, int line ){
+
 
 // Set info
     etDebugEvillib->Function = function;
@@ -254,6 +250,11 @@ etID_STATE              etDebugStateToMessage( etID_STATE state, const char *fun
 @return The state just returned
 */
 etID_STATE              etDebugStateExtern( etID_STATE state, const char *function, int line ){
+
+// only print message over an amount of visible level
+    if( etDebugEvillib->Level < etDebugEvillib->LevelVisible ) return state;
+
+
     etDebugStateToMessage( state, function, line );
     etDebugPrintMessage();
 
@@ -262,6 +263,10 @@ etID_STATE              etDebugStateExtern( etID_STATE state, const char *functi
 
 
 etID_STATE              etDebugStateIntern( etID_STATE state, const char *function, int line ){
+
+// only print message over an amount of visible level
+    if( etDebugEvillib->Level < etDebugEvillib->LevelVisible ) return state;
+
 
     const char *programName = etDebugEvillib->Program;
 
@@ -338,8 +343,4 @@ etID_STATE              etDebugLevelSet( etID_LEVEL debugLevels ){
 
 
 
-
-#ifdef __cplusplus
-}
-#endif
 

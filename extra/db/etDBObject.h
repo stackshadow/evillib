@@ -98,7 +98,7 @@ etID_STATE          etDBObjectTypeCheck( json_t *jsonObject, const char *type );
         return etID_STATE_WARN_SEQERR; \
     }
 #define             etDBObjectColumnCheck( dbObject ) if( dbObject->jsonColumn == NULL ) { \
-        etDebugMessage( etID_STATE_WARN, "No Tables present in dbObject" ); \
+        etDebugMessage( etID_STATE_WARN, "No column selected" ); \
         return etID_STATE_WARN_SEQERR; \
     }
 

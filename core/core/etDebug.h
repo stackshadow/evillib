@@ -25,6 +25,7 @@
 
 #include "core/etIDState.h"
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -43,17 +44,21 @@ struct etDebug_s {
     const char*         Function;               /*!< calling Function */
     int                 FunctionLine;           /*!< Line of calling function */
     const char*         Message;                /*!< Message */
-    
+
     void                (*printMessage)( etDebug* etDebugActual );
 };
 
-extern etDebug             etDebugEvillib[1];
-extern int                etDebugTempMessageLen;
-extern char             etDebugTempMessage[256];
+extern etDebug          etDebugEvillib[1];
+extern int              etDebugTempMessageLen;
+extern char             etDebugTempMessage[512];
 
 
 #if __GNUC__ >= 2
-    #define __ET_DEBUG_FUNCTION __FUNCTION__
+    #ifndef __cplusplus
+        #define __ET_DEBUG_FUNCTION __FUNCTION__
+    #else
+        #define __ET_DEBUG_FUNCTION __PRETTY_FUNCTION__
+    #endif
 #else
     #define __ET_DEBUG_FUNCTION "unknow"
 #endif
@@ -78,7 +83,7 @@ extern char             etDebugTempMessage[256];
 
 void                    etDebugPrintMessage();
 
-
+void                    etDebugPrintMessageDefault( etDebug* etDebugActual );
 etID_STATE              etDebugStateToMessage( etID_STATE state, const char *function, int line );
 etID_STATE              etDebugStateExtern( etID_STATE state, const char *function, int line );
 etID_STATE              etDebugStateIntern( etID_STATE state, const char *function, int line );
@@ -94,10 +99,10 @@ etID_STATE              etDebugStateIntern( etID_STATE state, const char *functi
         #define etDebugMessage( messageLevel, Message ) (etDebugMessageExtern( messageLevel, __ET_DEBUG_FUNCTION, __LINE__, Message ))
     #endif
 
-    
+
 
 #else
-    #define etDebugMessage( messageLevel, Message ) 
+    #define etDebugMessage( messageLevel, Message )
 #endif
 
 void                    etDebugMessageExtern( etID_LEVEL messageLevel, const char *function, int line, const char *message );
@@ -132,15 +137,19 @@ etID_STATE              etDebugLevelSet( etID_LEVEL debugLevels );
 
 
 
-#endif
+
 
 
 #ifdef __cplusplus
 }
 #endif
 
+
+
+#endif // _H_evillib_etDebug
+
 /**
-@endcond 
+@endcond
 */
 
 

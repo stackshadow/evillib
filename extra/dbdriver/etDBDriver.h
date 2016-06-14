@@ -39,6 +39,7 @@ typedef struct etDBDriver_s {
 // connection handling
     etID_STATE      (*connect)( etDBDriver *dbDriver );
     etID_STATE      (*isConnected)( etDBDriver *dbDriver );
+    etID_STATE      (*disconnect)( etDBDriver *dbDriver );
 
 // handle table
     etID_STATE      (*tableAdd)( etDBDriver *dbDriver, etDBObject *dbObject );
@@ -49,6 +50,7 @@ typedef struct etDBDriver_s {
 // handle table data
     etID_STATE      (*dataAdd)( etDBDriver *dbDriver, etDBObject *dbObject );
     etID_STATE      (*dataChange)( etDBDriver *dbDriver, etDBObject *dbObject );
+    etID_STATE      (*dataRemove)( etDBDriver *dbDriver, etDBObject *dbObject );
     etID_STATE      (*dataGet)( etDBDriver *dbDriver, etDBObject *dbObject );
     etID_STATE      (*dataNext)( etDBDriver *dbDriver, etDBObject *dbObject );
 
@@ -77,12 +79,18 @@ etID_STATE          etDBDriverTableRemove( etDBDriver *dbDriver, etDBObject *dbO
 etID_STATE          etDBDriverColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject );
 
 
+etID_STATE          etDBDriverColumnRemove( etDBDriver *dbDriver, etDBObject *dbObject );
+
+
 
 
 etID_STATE          etDBDriverDataAdd( etDBDriver *dbDriver, etDBObject *dbObject );
 
 
 etID_STATE          etDBDriverDataChange( etDBDriver *dbDriver, etDBObject *dbObject );
+
+
+etID_STATE          etDBDriverDataRemove( etDBDriver *dbDriver, etDBObject *dbObject );
 
 
 etID_STATE          etDBDriverDataGet( etDBDriver *dbDriver, etDBObject *dbObject );

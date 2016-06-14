@@ -30,7 +30,7 @@ etID_STATE          etDBDriverConnect( etDBDriver *dbDriver ){
     if( dbDriver->connect != NULL ){
         return dbDriver->connect( dbDriver );
     }
-    
+
     return etID_STATE_ERR;
 
 }
@@ -45,7 +45,22 @@ etID_STATE          etDBDriverIsConnect( etDBDriver *dbDriver ){
     if( dbDriver->isConnected != NULL ){
         return dbDriver->isConnected( dbDriver );
     }
-    
+
+    return etID_STATE_ERR;
+
+}
+
+
+etID_STATE          etDBDriverDisConnect( etDBDriver *dbDriver ){
+// check
+    etDebugCheckNull(dbDriver);
+
+
+// call function
+    if( dbDriver->disconnect != NULL ){
+        return dbDriver->disconnect( dbDriver );
+    }
+
     return etID_STATE_ERR;
 
 }
@@ -61,7 +76,7 @@ etID_STATE          etDBDriverTableAdd( etDBDriver *dbDriver, etDBObject *dbObje
     if( dbDriver->tableAdd != NULL ){
         return dbDriver->tableAdd( dbDriver, dbObject );
     }
-    
+
     return etID_STATE_ERR;
 }
 
@@ -74,7 +89,7 @@ etID_STATE          etDBDriverTableRemove( etDBDriver *dbDriver, etDBObject *dbO
     if( dbDriver->tableRemove != NULL ){
         return dbDriver->tableRemove( dbDriver, dbObject );
     }
-    
+
     return etID_STATE_ERR;
 }
 
@@ -89,7 +104,20 @@ etID_STATE          etDBDriverColumnAdd( etDBDriver *dbDriver, etDBObject *dbObj
     if( dbDriver->columnAdd != NULL ){
         return dbDriver->columnAdd( dbDriver, dbObject );
     }
-    
+
+    return etID_STATE_ERR;
+}
+
+
+etID_STATE          etDBDriverColumnRemove( etDBDriver *dbDriver, etDBObject *dbObject ){
+// check
+    etDebugCheckNull(dbDriver);
+
+// call function
+    if( dbDriver->columnRemove != NULL ){
+        return dbDriver->columnRemove( dbDriver, dbObject );
+    }
+
     return etID_STATE_ERR;
 }
 
@@ -104,7 +132,7 @@ etID_STATE          etDBDriverDataAdd( etDBDriver *dbDriver, etDBObject *dbObjec
     if( dbDriver->dataAdd != NULL ){
         return dbDriver->dataAdd( dbDriver, dbObject );
     }
-    
+
     return etID_STATE_ERR;
 }
 
@@ -117,7 +145,20 @@ etID_STATE          etDBDriverDataChange( etDBDriver *dbDriver, etDBObject *dbOb
     if( dbDriver->dataChange != NULL ){
         return dbDriver->dataChange( dbDriver, dbObject );
     }
-    
+
+    return etID_STATE_ERR;
+}
+
+
+etID_STATE          etDBDriverDataRemove( etDBDriver *dbDriver, etDBObject *dbObject ){
+// check
+    etDebugCheckNull(dbDriver);
+
+// call function
+    if( dbDriver->dataRemove != NULL ){
+        return dbDriver->dataRemove( dbDriver, dbObject );
+    }
+
     return etID_STATE_ERR;
 }
 
@@ -133,7 +174,7 @@ etID_STATE          etDBDriverDataGet( etDBDriver *dbDriver, etDBObject *dbObjec
     if( dbDriver->dataGet != NULL ){
         return dbDriver->dataGet( dbDriver, dbObject );
     }
-    
+
     return etID_STATE_ERR;
 }
 
@@ -146,7 +187,7 @@ etID_STATE          etDBDriverDataNext( etDBDriver *dbDriver, etDBObject *dbObje
     if( dbDriver->dataNext != NULL ){
         return dbDriver->dataNext( dbDriver, dbObject );
     }
-    
+
     return etID_STATE_ERR;
 }
 

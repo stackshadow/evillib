@@ -20,36 +20,49 @@
 #include "evillib_defines.h"
 #include "evillib_depends.h"
 
-#include "core/etObject.h"
 
-#include "core/etDebug.h"
-#include "core/etDebug.c"
-
-#include "memory/etMemoryBlock.h"
-#include "memory/etMemoryBlock.c"
-#include "memory/etMemoryBlockList.h"
-#include "memory/etMemoryBlockList.c"
-#include "memory/etMemory.h"
-#include "memory/etMemory.c"
-
-#include "core/etVersion.h"
-#include "core/etVersion.c"
 #include "core/etInit.h"
 #include "core/etInit.c"
 
-#include "string/etString.h"
-#include "string/etString.c"
-#include "string/etStringChar.h"
-#include "string/etStringChar.c"
-
 #include "system/etFile.h"
 #include "system/etFile.c"
+
+#include "app/etApicheck.h"
+#include "app/etApicheck.c"
 
 
 int                     main( int argc, const char* argv[] ){
     etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
     etMemoryDump( NULL, NULL );
+
+
+    etApicheckTimer( "etFileExist: check" );
+
+// parameter check
+    if( etFileExist( NULL, "fstab" ) != etID_STATE_ERR_PARAMETER ){
+        return etID_LEVEL_CRITICAL;
+    }
+    if( etFileExist( "/etc", NULL ) != etID_STATE_ERR_PARAMETER ){
+        return etID_LEVEL_CRITICAL;
+    }
+
+// this file should NOT exist !
+    if( etFileExist( "/etc", "DontExist" ) != etID_NO ){
+        etDebugMessage( etID_LEVEL_CRITICAL, "etFileExist sees a file which not exists !" );
+        return etID_LEVEL_CRITICAL;
+    }
+
+// this file MUST exist in a unix system !
+    if( etFileExist( "/etc", "fstab" ) != etID_YES ){
+        etDebugMessage( etID_LEVEL_CRITICAL, "etFileExist sees a file which not exists !" );
+        return etID_LEVEL_CRITICAL;
+    }
+
+
+
+
+    etApicheckTimer( "OK" );
 
 
 

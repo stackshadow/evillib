@@ -16,6 +16,11 @@
     along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef _C_etMemoryBlockList
+#define _C_etMemoryBlockList
+
+
+
 #include "evillib_defines.h"
 #include "evillib_depends.h"
 
@@ -23,6 +28,7 @@
 #include "core/etObject.h"
 #include "memory/etMemoryBlockList.h"
 
+#include "memory/etMemoryBlock.c"
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,7 +57,7 @@ Q}
 @~english
 @brief Init the etMemoryList
 
-The etMemoryList keeps track of all used and released Blocks. 
+The etMemoryList keeps track of all used and released Blocks.
 */
 etID_STATE                  __etMemoryBlockListAlloc( etMemoryBlockList **p_list ){
 // Already init ?
@@ -103,7 +109,7 @@ etID_STATE                  __etMemoryBlockListFree( etMemoryBlockList **p_list 
 
 // return
     *p_list = NULL;
-    return etID_YES;    
+    return etID_YES;
 }
 
 /** @ingroup grMemoryList
@@ -122,13 +128,13 @@ etID_STATE                  etMemoryBlockListFreeBlocks( etMemoryBlockList *list
 // Vars
     etMemoryBlock    *etMemoryBlockActual = NULL;
     etMemoryBlock    *etMemoryBlockNext = NULL;
-    
+
 
     etMemoryBlockActual = list->start->next;
     while( etMemoryBlockActual != NULL ){
         etMemoryBlockNext = etMemoryBlockActual->next;
 
-        
+
         if( etMemoryBlockActual->state & etID_MEM_STATE_ALLOCED ){
             etMemoryBlockFree(etMemoryBlockActual);
         }
@@ -178,20 +184,20 @@ etID_STATE                  __etMemoryBlockListBlockGet( etMemoryBlockList *list
 
 // vars
     etMemoryBlock           *memoryBlock;
-    
+
     memoryBlock = list->start->next;
     while( memoryBlock != NULL ){
-        
+
         if( memoryBlock->data == memoryData ){
             *p_block = memoryBlock;
-            
+
             #ifndef ET_DEBUG_OFF
             snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p: Found pointer %p in the list: %p", list, memoryData, memoryBlock );
             etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
             #endif
             return etID_YES;
         }
-        
+
         memoryBlock = memoryBlock->next;
     }
 
@@ -226,7 +232,7 @@ etID_STATE                  __etMemoryBlockListRequest( etMemoryBlockList *list,
 // Vars
     etMemoryBlock    *blockIterator = NULL;
     etMemoryBlock    *blockCanditate = NULL;
-    
+
 
     blockIterator = list->start->next;
     while( blockIterator != NULL ){
@@ -257,7 +263,7 @@ etID_STATE                  __etMemoryBlockListRequest( etMemoryBlockList *list,
     if( blockCanditate == NULL ){
         return etID_STATE_NODATA;
     }
-    
+
     return etID_YES;
 }
 
@@ -279,7 +285,7 @@ etID_STATE                  etMemoryBlockListDump( etMemoryBlockList *list ){
 
 
 #ifndef ET_DEBUG_OFF
-        
+
     blockIterator = list->start;
     while( blockIterator != NULL ){
 
@@ -299,12 +305,12 @@ etID_STATE                  etMemoryBlockListDump( etMemoryBlockList *list ){
                 if( blockIterator->state & etID_MEM_STATE_USED ) fprintf( stdout, "[USED]" );
                 if( blockIterator->state & etID_MEM_STATE_LOCKED ) fprintf( stdout, "[LOCKED]" );
             }
-            
+
             fprintf( stdout, "[%lu]", blockIterator->size );
 
-            
+
             fprintf( stdout, "\n" );
-        
+
         blockIterator = blockIterator->next;
     }
 
@@ -318,4 +324,8 @@ etID_STATE                  etMemoryBlockListDump( etMemoryBlockList *list ){
 
 #ifdef __cplusplus
 }
+#endif
+
+
+
 #endif

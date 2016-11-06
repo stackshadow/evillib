@@ -23,7 +23,7 @@
 extern "C" {
 #endif
 
-#include "postgresql/libpq-fe.h"
+#include "libpq-fe.h"
 
 typedef struct etDBPSQLDriver_s {
     etString*       sqlquery;

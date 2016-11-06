@@ -20,23 +20,10 @@
 #include "evillib_defines.h"
 #include "evillib_depends.h"
 
-
-#include "core/etDebug.h"
-#include "core/etDebug.c"
-
-#include "memory/etMemoryBlock.h"
+// binarys we need
+//#include "core/etInit.c"
 #include "memory/etMemoryBlock.c"
-#include "memory/etMemoryBlockList.h"
-#include "memory/etMemoryBlockList.c"
-#include "memory/etMemory.h"
-#include "memory/etMemory.c"
 
-#include "core/etVersion.h"
-#include "core/etVersion.c"
-#include "core/etInit.h"
-#include "core/etInit.c"
-
-#include "app/etApicheck.h"
 #include "app/etApicheck.c"
 
 etID_STATE              etApichecketMemoryBlock(){
@@ -45,7 +32,6 @@ etID_STATE              etApichecketMemoryBlock(){
 
 // Vars
     etMemoryBlock       *etMemoryBlockActual = NULL;
-    etMemoryBlock       *etMemoryBlockTemp = NULL;
     etMemoryBlock       *etMemoryBlockForCopy = NULL;
     etID_STATE          returnState = etID_NO;
     char                *etMemoryData = NULL;
@@ -102,7 +88,7 @@ etID_STATE              etApichecketMemoryBlock(){
     }
 
 // Release memory
-    etMemoryBlockRelease( etMemoryBlockActual, etID_TRUE );
+    etMemoryBlockSetReleaseState( etMemoryBlockActual, etID_TRUE );
 
 // Is it free? ( should be )
     if( etMemoryBlockIsFree( etMemoryBlockActual ) != etID_YES ){
@@ -123,7 +109,7 @@ etID_STATE              etApichecketMemoryBlock(){
 
 
 int                     main( int argc, const char* argv[] ){
-    etInit( argc, argv );
+    //etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
 
     return etApichecketMemoryBlock();

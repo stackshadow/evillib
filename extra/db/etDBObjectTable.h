@@ -28,7 +28,15 @@
 extern "C" {
 #endif
 
-
+typedef struct etDBTable_t {
+    etString*       tableName;
+    etString*       displayName;
+    
+// columns
+    etList*         columns;
+    void*           columnIterator;
+    
+} etDBTable;
 
 
 

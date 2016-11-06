@@ -17,27 +17,16 @@
 */
 
 
+
+
 #include "evillib_defines.h"
 #include "evillib_depends.h"
 
-#include "core/etObject.h"
-
-#include "core/etDebug.h"
-#include "core/etDebug.c"
-
-#include "memory/etMemoryBlock.h"
-#include "memory/etMemoryBlock.c"
-#include "memory/etMemoryBlockList.h"
-#include "memory/etMemoryBlockList.c"
-#include "memory/etMemory.h"
+// binarys we need
+#include "core/etInit.c"
 #include "memory/etMemory.c"
 
-#include "core/etVersion.h"
-#include "core/etVersion.c"
-#include "core/etInit.h"
-#include "core/etInit.c"
-
-#include "app/etApicheck.h"
+// check binarys
 #include "app/etApicheck.c"
 
 
@@ -62,8 +51,8 @@ etID_STATE              etMemoryTestNULL(){
     __etMemoryAlloc( NULL, 10 );
     __etMemoryRequest( NULL, 10 );
     __etMemoryRelease( NULL );
-    __etMemorySet( NULL, NULL, 10 );
-    __etMemorySetOffset( NULL, NULL, 10, 10 );
+    __etMemorySet( NULL, NULL, 10, 10 );
+    __etMemorySetOffset( NULL, NULL, 10, 10, 10 );
     etMemoryBlockGet( NULL, NULL );
 
     etApicheckTimer( "OK" );
@@ -116,13 +105,11 @@ etID_STATE              etMemoryTestData(){
     etMemoryRequest( memoryData08, 8 );
     etMemoryRequest( memoryData10, 10 );
     etMemoryRequest( memoryData20, 20 );
-    
-    const char *testString = memoryData10;
+
 
 // We write a string to the block
-    etMemorySet( memoryData10, (void*)"test1\0", 6 );
-    testString = memoryData10;
-    
+    etMemorySet( memoryData10, (void*)"test1\0", 6, 5 );
+
     if( strncmp( memoryData10, "test1", 5 ) == 0 ){
         snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds the String: '%s' this is good", memoryData10, (char*)memoryData10 );
         etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
@@ -132,8 +119,8 @@ etID_STATE              etMemoryTestData(){
     }
 
 // Append some data
-    etMemorySetOffset( memoryData10, (void*)"ing\0", 4, 4 );
-    
+    etMemorySetOffset( memoryData10, (void*)"ing\0", 8, 4, 4 );
+
     if( strncmp( memoryData10, "testing", 7 ) == 0 ){
         snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds the String: '%s' this is good", memoryData10, (char*)etMemoryBlockActualData );
         etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
@@ -143,7 +130,7 @@ etID_STATE              etMemoryTestData(){
     }
 
 // append some more data
-    etMemorySetOffset( memoryData10, (void*)" a new string\0", 7, 13 );
+    etMemorySetOffset( memoryData10, (void*)" a new string\0", 20, 7, 13 );
 
     if( strncmp( memoryData10, "testing a new string", 20 ) == 0 ){
         snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p holds the String: '%s' this is good", memoryData10, (char*)etMemoryBlockActualData );
@@ -166,10 +153,9 @@ int                     main( int argc, const char* argv[] ){
     //etMemoryTestNULL();
     //etMemoryTestAlloc();
     etMemoryTestData();
-    
+
     return 0;
 }
-
 
 
 

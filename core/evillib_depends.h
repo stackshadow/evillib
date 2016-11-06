@@ -27,27 +27,27 @@
     #include <stddef.h>
     #include <malloc.h>
 
-    #include <pty.h> // for openpty and forkpty
-    #include <utmp.h> // for login_tty
+    //#include <pty.h> // for openpty and forkpty
+    //#include <utmp.h> // for login_tty
 
     #include <fcntl.h> // fcntl
 
-    #include <linux/loop.h>
-    #include <sys/ioctl.h>
+    //#include <linux/loop.h>
+    //#include <sys/ioctl.h>
     #include <fcntl.h>
     #include <sys/stat.h> // mkfifo
     #include <dirent.h> //opendir
-    #include <mntent.h>
+    //#include <mntent.h>
     #include <unistd.h>
 
     #include <wchar.h>
     #include <pthread.h>
 
 //Shared memory
-    #include <sys/shm.h>
+    //#include <sys/shm.h>
 
 // Dynamic open
-    #include <dlfcn.h>
+    //#include <dlfcn.h>
 
 #ifndef ET_BLOCKDEVICE_OFF
     #include <blkid/blkid.h>
@@ -58,9 +58,9 @@
 #endif
 
 // etComm
-    #include <netdb.h>
-    #include <netinet/in.h>
-    #include <arpa/inet.h>
+//    #include <netdb.h>
+//    #include <netinet/in.h>
+//    #include <arpa/inet.h>
 
 // Threading
     #include <pthread.h>

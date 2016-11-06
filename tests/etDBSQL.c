@@ -50,52 +50,57 @@
 #include "dbdriver/etDBSQL.c"
 #include "dbdriver/etDBDriver.c"
 #include "dbdriver/etDBSQLite.c"
+#include "dbdriver/etDBPSQL.c"
 
 
-int                     main( int argc, const char* argv[] ){
-    etInit( argc, argv );
-    etDebugLevelSet( etID_LEVEL_ALL );
-    etDebugLevelSet( etID_LEVEL_DETAIL_DB );
+etDBDriver              dbDriver;
+etDBObject*             dbObject;
 
 
 
-// alloc the dbobject
-    etDBObject *dbObject;
-    etDBObjectAlloc( dbObject );
 
-// contact table
-    etDBObjectTableAdd( dbObject, "contacts" );
-    etDBObjectTableColumnAdd( dbObject, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_UNIQUE );
-    etDBObjectTableColumnAdd( dbObject, "prename", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
-    etDBObjectTableColumnAdd( dbObject, "familyname", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
-    etDBObjectTableColumnAdd( dbObject, "city_uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
+etDBDriver*             etDBSQLiteTest(){
 
-// city table
-    etDBObjectTableAdd( dbObject, "city" );
-    etDBObjectTableColumnAdd( dbObject, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_UNIQUE );
-    etDBObjectTableColumnPrimarySet( dbObject, "uuid" );    
-    etDBObjectTableColumnAdd( dbObject, "displayName", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
-    etDBObjectTableColumnAdd( dbObject, "postalcode", etDBCOLUMN_TYPE_INT, etDBCOLUMN_OPTION_NOTHING );
-    
-
-    etDBObjectDump( dbObject );
 
 
 // init the driver
-    etDBDriver dbDriver;
     etDBSQLiteDriverInit( &dbDriver, "/tmp/test.sqlite" );
+
+    return NULL;
+}
+
+
+void                    etDBDriverTest( etDBDriver *dbDriver ){
+
+// is connected ?
+    if( etDBDriverIsConnect(dbDriver) != etID_YES ){
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Not Connected" );
+        etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+        return;
+    }
+
+
+// we add  dummy and delete it
+    etDBObjectTablePick( dbObject, "dummy" );
+    etDBDriverTableAdd( dbDriver, dbObject );
 
 // we select the table we would like to add
     etDBObjectTablePick( dbObject, "contacts" );
-    etDBDriverTableAdd( &dbDriver, dbObject );
+    etDBDriverTableAdd( dbDriver, dbObject );
 
 // we select the table we would like to add
     etDBObjectTablePick( dbObject, "city" );
-    etDBDriverTableAdd( &dbDriver, dbObject );
+    etDBDriverTableAdd( dbDriver, dbObject );
+
+// delete table
+    etDBObjectTablePick( dbObject, "dummy" );
+    etDBDriverTableRemove( dbDriver, dbObject );
+
 
 // oh no, we forget something for the table, we need an adittional column
+    etDBObjectTablePick( dbObject, "city" );
     etDBObjectTableColumnAdd( dbObject, "inhabitants", etDBCOLUMN_TYPE_INT, etDBCOLUMN_OPTION_NOTHING );
-    etDBDriverColumnAdd( &dbDriver, dbObject );
+    etDBDriverColumnAdd( dbDriver, dbObject );
 
 
 /*
@@ -110,32 +115,34 @@ ALTER TABLE t1_backup RENAME TO city
 */
 
 // we add some data
+    etDBObjectTablePick( dbObject, "city" );
+
     etDBObjectValueClean( dbObject );
     etDBObjectValueSet( dbObject, "uuid", "000001" );
     etDBObjectValueSet( dbObject, "displayName", "Berlin" );
     etDBObjectValueSet( dbObject, "postalcode", "10115" );
     etDBObjectDump( dbObject );
-    etDBDriverDataAdd( &dbDriver, dbObject );
+    etDBDriverDataAdd( dbDriver, dbObject );
 
     etDBObjectValueClean( dbObject );
     etDBObjectValueSet( dbObject, "uuid", "000002" );
     etDBObjectValueSet( dbObject, "displayName", "Berlin" );
     etDBObjectValueSet( dbObject, "postalcode", "10116" );
     etDBObjectDump( dbObject );
-    etDBDriverDataAdd( &dbDriver, dbObject );
+    etDBDriverDataAdd( dbDriver, dbObject );
 
     etDBObjectValueClean( dbObject );
     etDBObjectValueSet( dbObject, "uuid", "000003" );
     etDBObjectValueSet( dbObject, "displayName", "Hannover" );
     etDBObjectValueSet( dbObject, "postalcode", "30159" );
     etDBObjectDump( dbObject );
-    etDBDriverDataAdd( &dbDriver, dbObject );
+    etDBDriverDataAdd( dbDriver, dbObject );
 
     etDBObjectValueClean( dbObject );
     etDBObjectValueSet( dbObject, "uuid", "000004" );
     etDBObjectValueSet( dbObject, "displayName", " Iter \"The big\" City" );
     etDBObjectValueSet( dbObject, "postalcode", "0" );
-    etDBDriverDataAdd( &dbDriver, dbObject );
+    etDBDriverDataAdd( dbDriver, dbObject );
 
 
 // we change some data
@@ -143,9 +150,12 @@ ALTER TABLE t1_backup RENAME TO city
     etDBObjectValueSet( dbObject, "uuid", "000002" );
     etDBObjectValueSet( dbObject, "displayName", "IterCity" );
     etDBObjectValueSet( dbObject, "postalcode", "0" );
-    etDBDriverDataChange( &dbDriver, dbObject );
+    etDBDriverDataChange( dbDriver, dbObject );
 
-
+// we delete some data
+    etDBObjectValueClean( dbObject );
+    etDBObjectValueSet( dbObject, "uuid", "000004" );
+    etDBDriverDataRemove( dbDriver, dbObject );
 
 // vars
     const char *tempValue;
@@ -153,8 +163,8 @@ ALTER TABLE t1_backup RENAME TO city
 // try to get NOTHING
     etDBObjectFilterClear( dbObject );
     etDBObjectFilterAdd( dbObject, 0, etDBFILTER_OP_AND, "displayName", etDBFILTER_TYPE_CONTAIN, "Ahorn" );
-    etDBDriverDataGet( &dbDriver, dbObject );                   // run the query
-    etDBDriverDataNext( &dbDriver, dbObject );                  // get the first resultset
+    etDBDriverDataGet( dbDriver, dbObject );                   // run the query
+    etDBDriverDataNext( dbDriver, dbObject );                  // get the first resultset
     etDBObjectValueGet( dbObject, "displayName", tempValue );
 
 
@@ -163,13 +173,74 @@ ALTER TABLE t1_backup RENAME TO city
     etDBObjectFilterAdd( dbObject, 0, etDBFILTER_OP_AND, "uuid", etDBFILTER_TYPE_CONTAIN, "000001" );
 
 // get data
-    etDBDriverDataGet( &dbDriver, dbObject );                   // run the query
-    etDBDriverDataNext( &dbDriver, dbObject );                  // get the first resultset
+    etDBDriverDataGet( dbDriver, dbObject );                   // run the query
+    etDBDriverDataNext( dbDriver, dbObject );                  // get the first resultset
     etDBObjectValueGet( dbObject, "displayName", tempValue );
     etDBObjectValueGet( dbObject, "displayName", tempValue );
 
 
+}
+
+
+int                     main( int argc, const char* argv[] ){
+    etInit( argc, argv );
+    etDebugLevelSet( etID_LEVEL_ALL );
+    etDebugLevelSet( etID_LEVEL_DETAIL_DB );
+
+// alloc the dbobject
+    etDBObjectAlloc( dbObject );
+
+// contact table
+    etDBObjectTableAdd( dbObject, "contacts" );
+    etDBObjectTableColumnAdd( dbObject, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_UNIQUE );
+    etDBObjectTableColumnAdd( dbObject, "prename", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
+    etDBObjectTableColumnAdd( dbObject, "familyname", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
+    etDBObjectTableColumnAdd( dbObject, "city_uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
+
+// city table
+    etDBObjectTableAdd( dbObject, "city" );
+    etDBObjectTableColumnAdd( dbObject, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_UNIQUE );
+    etDBObjectTableColumnPrimarySet( dbObject, "uuid" );
+    etDBObjectTableColumnAdd( dbObject, "displayName", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
+    etDBObjectTableColumnAdd( dbObject, "postalcode", etDBCOLUMN_TYPE_INT, etDBCOLUMN_OPTION_NOTHING );
+
+// dummy
+    etDBObjectTableAdd( dbObject, "dummy" );
+    etDBObjectTableColumnAdd( dbObject, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_UNIQUE );
+    etDBObjectTableColumnPrimarySet( dbObject, "uuid" );
+
+
+    etDBObjectDump( dbObject );
+
+
+// init the driver
+    etDBPSQLDriverInit( &dbDriver, "localhost", "127.0.0.1", "5435", "root", "root", "doDB", "require" );
+    //etDBSQLiteTest();
+    etDBDriverTest( &dbDriver );
+
+    etDBDriverDisConnect( &dbDriver );
+
+
+
+/*
+    PGresult *PQexec(PGconn *conn, const char *command);
+    ExecStatusType PQresultStatus(const PGresult *res);
+    PGRES_COMMAND_OK PGRES_TUPLES_OK
+    char *PQresultErrorMessage(const PGresult *res);
+    PQclear(PGresult *res);
+*/
 
 
 
 }
+
+
+
+
+
+
+
+
+
+
+

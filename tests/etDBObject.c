@@ -17,31 +17,10 @@
 */
 
 
-#include "evillib_defines.h"
-#include "evillib_depends.h"
-#include "evillib-extra_depends.h"
-
-#include "core/etDebug.h"
-#include "core/etDebug.c"
-
-#include "memory/etMemoryBlock.h"
-#include "memory/etMemoryBlock.c"
-#include "memory/etMemoryBlockList.h"
-#include "memory/etMemoryBlockList.c"
-#include "memory/etMemory.h"
-#include "memory/etMemory.c"
-
-#include "core/etVersion.h"
-#include "core/etVersion.c"
-#include "core/etInit.h"
-#include "core/etInit.c"
-
 #include "app/etApicheck.h"
 #include "app/etApicheck.c"
 
-#include "string/etString.c"
-#include "string/etStringChar.c"
-
+#include "core/etInit.c"
 #include "db/etDBObject.c"
 #include "db/etDBObjectTable.c"
 #include "db/etDBObjectTableColumn.c"
@@ -68,7 +47,7 @@ etID_STATE              etDBObjectTableApiCheck(){
     etDBObjectTableAdd( table, "table1" );
     etDBObjectTableAdd( table, "table2" );
     etDBObjectTableAdd( table, "table3" );
-    
+
 // dump it
     etDBObjectDump( table );
 
@@ -139,6 +118,8 @@ etID_STATE              etDBObjectTableApiCheck(){
 
     etDBObjectDump( table );
     etDBObjectFree( table );
+
+    return etID_YES;
 }
 
 
@@ -148,7 +129,7 @@ etID_STATE              etDBObjectTableColumnApiCheck(){
 // alloc the dbobject
     etDBObject      *dbObject;
     const char      *column = NULL;
-    
+
     etDBObjectAlloc( dbObject );
 
 // add some tables
@@ -166,7 +147,7 @@ etID_STATE              etDBObjectTableColumnApiCheck(){
     etDBObjectTableColumnAdd( dbObject, "column2", etDBCOLUMN_TYPE_INT, etDBCOLUMN_OPTION_NOTHING );
     etDBObjectTableColumnAdd( dbObject, "column3", etDBCOLUMN_TYPE_FLOAT, etDBCOLUMN_OPTION_NOTHING );
 
-    
+
     etDBObjectTablePick( dbObject, "table1" );
     etDBObjectIterationReset( dbObject );
     if( etDBObjectTableColumnNext( dbObject, column ) == etID_YES ){

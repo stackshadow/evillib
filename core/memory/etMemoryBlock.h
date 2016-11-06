@@ -25,6 +25,9 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
+#include <stdlib.h>
+
 /** @ingroup grMemoryBlock
 @~english
 
@@ -32,10 +35,12 @@ extern "C" {
 */
 typedef struct etMemoryBlock_s etMemoryBlock;
 struct         etMemoryBlock_s {
-    unsigned char       type;               /**< This indicates normaly the header */
+    unsigned char       type;               /**< This indicates normaly the header ( not used yet ) */
 
     unsigned char       state;              /**< State of the memory-block @see grMemoryBlockStates */
     size_t              size;               /**< The size in bytes */
+
+    unsigned char       refCount;           /**< The reference counter. 256 is enough, but the boundry will be checked */
 
     void                *data;              /**< userdata */
 
@@ -60,7 +65,7 @@ struct         etMemoryBlock_s {
 void                        __etMemoryBlockAlloc( etMemoryBlock **p_etMemoryBlock, size_t size );
 
 
-void                        etMemoryBlockRelease( etMemoryBlock *etMemoryBlockActual, etID_BOOL releaseIt );
+void                        etMemoryBlockSetReleaseState( etMemoryBlock *etMemoryBlockActual, etID_BOOL releaseIt );
 
 
 void                        etMemoryBlockFree( etMemoryBlock *etMemoryBlockActual );

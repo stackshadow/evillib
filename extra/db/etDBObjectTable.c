@@ -99,6 +99,9 @@ etID_STATE      etDBObjectTableAdd( etDBObject *dbObject, const char *tableName 
     dbObject->jsonColumns = NULL;
     dbObject->jsonColumn = NULL;
 
+    snprintf( etDebugTempMessage, etDebugTempMessageLen, "append table '%s'", tableName );
+    etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+
 // return
     return etID_YES;
 }
@@ -170,7 +173,8 @@ etID_STATE      __etDBObjectTableNext( etDBObject *dbObject, const char **p_tabl
 
 This function \n
  - set the actual table
- - do a etDBObjectTableReset()
+ - unset the selected column
+ - do a etDBObjectIterationReset()
 
 @param[in] dbObject The pointer to an etDBObject
 @param[in] tableName The table to pick
@@ -191,7 +195,16 @@ etID_STATE      etDBObjectTablePick( etDBObject *dbObject, const char *tableName
 
 // pick table
     dbObject->jsonTable = json_object_get( jsonTables, tableName );
-    if( dbObject->jsonTable == NULL ) return etID_STATE_NODATA;
+    if( dbObject->jsonTable == NULL ) {
+
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "table '%s' not found in etDBObject", tableName );
+        etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
+
+        return etID_STATE_NODATA;
+    }
+
+    snprintf( etDebugTempMessage, etDebugTempMessageLen, "pick table '%s'", tableName );
+    etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
 
 // reset the actual stuff
     dbObject->jsonColumns = NULL;

@@ -35,30 +35,54 @@ int                     main( int argc, const char* argv[] ){
     int testValueInt = 1024;
     char testValueString[] = "test\0";
     char* tempString = testValueString;
+    void*   iterator = NULL;
+    void*   iteratorData = NULL;
+
+// test a single element
+    etListAppend( listEnd, &testValueString );
+    etListIterate( listEnd, iterator );
+    etListIterateNext( iterator, iteratorData );
+
+
+
+
 
 // append
+    etListAppend( listEnd, &testValueInt );
     etListAppend( listEnd, &testValueInt );
     etListAppend( listEnd, &testValueString );
     etListAppend( listEnd, &testValueInt );
     etListAppend( listEnd, &testValueInt );
     etListAppend( listEnd, &testValueInt );
-    etListAppend( listEnd, &testValueInt );
-
-// iterate
-    void*   iterator = NULL;
-    void*   iteratorData = NULL;
 
     etListIterate( listEnd, iterator );
     etListIterateNext( iterator, iteratorData );
     testValueInt = *(int*)iteratorData;
+    etListIterateNext( iterator, iteratorData );
     etListIterateNext( iterator, iteratorData );
     tempString = (char*)iteratorData;
     etListIterateNext( iterator, iteratorData );
 
     etListDump( listStart );
 // test the remove
-    etListRemoveElement( &listStart->next );
+
+// remove in the middle
+    etListElementRemove( listStart->next );
     etListDump( listStart );
+
+// remove the start
+    etListElementRemove( listStart );
+    etListDump( listStart );
+
+// remove the end
+    etListElementRemove( listEnd );
+    etListDump( listStart );
+
+// remove the string from the list
+    etListDataRemove( listStart, &testValueString, etID_FALSE );
+    etListDump( listStart );
+
+    etListFree( listStart );
 
 }
 

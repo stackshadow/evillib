@@ -16,15 +16,19 @@
     along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef _C_etMemory
+#define _C_etMemory
+
+
 #include "evillib_depends.h"
 #include "evillib_version.h"
 
 #include "memory/etMemory.h"
 
-
+// binarys we need
 #include "core/etObject.h"
 #include "core/etDebug.h"
-#include "memory/etMemoryBlockList.h"
+#include "memory/etMemoryBlockList.c"
 
 
 #ifdef __cplusplus
@@ -118,10 +122,10 @@ etID_STATE                  etMemoryInit(){
 
 //    etDebugMessage( etID_LEVEL_DETAIL_MEM, NULL );
 //    fprintf( stdout, "Standart Frame size:%li First Frame:%p \n", etMemoryGlobal->StadartFrameSize, etMemoryGlobal->FrameFirst );
-
+#ifndef ET_MEMEXITCLEAN_OFF
 // Register the atexit function
     atexit(etMemoryExit);
-
+#endif
 
     etDebugMessage( etID_LEVEL_INFO, "Memory System initialised.." );
 
@@ -138,6 +142,11 @@ etID_STATE                  etMemoryInit(){
 DONT USE THE MEMORY SYSTEM ANYMORE. If you would like to use the etMemory-System again, use etMemoryInit()
 */
 void                        etMemoryExit(){
+
+// we need to set the debug message to our internal message
+// this fix the problem if you use QT to show your debug-message
+// QT will crash then
+    etDebugEvillib->printMessage = etDebugPrintMessageDefault;
 
 
     etMemoryBlockListDump( etMemoryList );
@@ -208,7 +217,7 @@ etID_STATE                  __etMemoryRequest( void **p_data, size_t size ){
 // Vars
     etMemoryBlock       *etMemoryBlockActual = NULL;
     void                *data = NULL;
-    
+
 // Get a free Block (if possible) from the list
     etMemoryBlockListRequest( etMemoryList, etMemoryBlockActual, size );
 
@@ -220,9 +229,9 @@ etID_STATE                  __etMemoryRequest( void **p_data, size_t size ){
         snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p has %li bytes, enough for %li bytes", etMemoryBlockActual, etMemoryBlockActual->size, size );
         etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
         #endif
-        
+
         // this will set the block to used !
-        etMemoryBlockRelease( etMemoryBlockActual, etID_FALSE );
+        etMemoryBlockSetReleaseState( etMemoryBlockActual, etID_FALSE );
         etMemoryBlockDataGet( etMemoryBlockActual, data );
     } else {
         etMemoryAlloc( data, size );
@@ -245,7 +254,7 @@ etID_STATE                  __etMemoryRequest( void **p_data, size_t size ){
 
 If you release an etMemoryBlock it will be ready for future use and can be returned by etMemoryRequest(). \n
 This reduce the amount of allocs.
- * 
+ *
 @param[out] data Pointer to memory which was allocated with etMemoryRequest() or etMemoryAlloc()
 @return If the etMemoryBlock object was released \n
 *- @ref etID_YES - etMemoryBlock object was released
@@ -265,7 +274,7 @@ void                        __etMemoryRelease( void **p_data ){
         return;
     }
 
-    etMemoryBlockRelease( memoryBlock, etID_TRUE );
+    etMemoryBlockSetReleaseState( memoryBlock, etID_TRUE );
     *p_data = NULL;
 }
 
@@ -280,11 +289,11 @@ etID_STATE                  etMemoryClean( void *data ){
     if( etMemoryBlockListBlockGet( etMemoryList, data, memoryBlock ) != etID_YES ){
         return etDebugState( etID_STATE_ERR_INTERR );
     }
-    
+
     if( etMemoryBlockClean( memoryBlock ) != etID_YES ){
         return etDebugState( etID_STATE_ERR_INTERR );
     }
-    
+
     return etID_YES;
 }
 
@@ -329,9 +338,9 @@ etID_STATE                  __etMemorySet( void **p_dest, void *source, size_t s
 
 // Not enough size
     if( etMemoryBlockHasSpace(etMemoryBlockActual,size) != etID_YES ){
-        
+
     // Release the old one
-        etMemoryBlockRelease( etMemoryBlockActual, etID_TRUE );
+        etMemoryBlockSetReleaseState( etMemoryBlockActual, etID_TRUE );
 
     // Request new memory
         etMemoryRequest( etMemoryBlockData, size );
@@ -377,9 +386,9 @@ etID_STATE                  __etMemorySetOffset( void **p_data, void *dataSource
 // Vars
     etMemoryBlock       *etMemoryBlockActual = NULL;
     void                *etMemoryBlockData = *p_data;
-    
-    
-    
+
+
+
 // get the memory block from the data
     etMemoryBlockListBlockGet( etMemoryList, etMemoryBlockData, etMemoryBlockActual );
 
@@ -403,10 +412,10 @@ etID_STATE                  __etMemorySetOffset( void **p_data, void *dataSource
 
     // Copy
         memcpy( etMemoryBlockDataNew, etMemoryBlockData, bytesToCopy );
-    
+
     // Release the old one
-        etMemoryBlockRelease( etMemoryBlockActual, etID_TRUE );
-        
+        etMemoryBlockSetReleaseState( etMemoryBlockActual, etID_TRUE );
+
     //
         etMemoryBlockData = etMemoryBlockDataNew;
     }
@@ -481,4 +490,4 @@ etID_STATE                  etMemoryDump( void *Userdata, void (*IteratorFunctio
 
 
 
-
+#endif // _C_etMemory

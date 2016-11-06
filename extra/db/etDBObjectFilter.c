@@ -26,7 +26,6 @@ etID_STATE      etDBObjectFilterClear( etDBObject *dbObject ){
 
 // vars
     json_t      *jsonFilterArray;
-    json_t      *jsonFilter;
 
 
 // reset the index stuff
@@ -80,7 +79,7 @@ etID_STATE      etDBObjectFilterAdd( etDBObject *dbObject, int filterGroup, etDB
     json_array_append_new( jsonFilterArray, jsonFilter );
 
 
-
+    return etID_YES;
 }
 
 
@@ -114,7 +113,6 @@ etID_STATE      etDBObjectFilterNext( etDBObject *dbObject, int *filterGroup, et
     etDebugCheckNull( dbObject );
 
 // vars
-    json_t      *jsonFilterArray;
     json_t      *jsonFilter;
 
 // get the array which holds the filter
@@ -156,7 +154,7 @@ etID_STATE      etDBObjectFilterNext( etDBObject *dbObject, int *filterGroup, et
     } else {
         *filterColumn = '\0';
     }
-    
+
     jsonValue = json_object_get( jsonFilter, "type" );
     if( jsonValue != NULL ){
         *filterType = (etDBFILTER_TYPE)json_integer_value(jsonValue);
@@ -170,7 +168,7 @@ etID_STATE      etDBObjectFilterNext( etDBObject *dbObject, int *filterGroup, et
     } else {
         *filterString = '\0';
     }
-    
+
 
 // iterate the index
     dbObject->jsonIteratorIndex = dbObject->jsonIteratorIndex + 1;

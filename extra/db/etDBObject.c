@@ -19,6 +19,12 @@
 
 #include "evillib-extra_depends.h"
 
+#include "core/etDebug.c"
+#include "memory/etMemory.c"
+#include "memory/etMemoryBlock.c"
+
+#include "memory/etList.c"
+
 #include "core/etDebug.h"
 #include "core/etObject.h"
 #include "memory/etMemory.h"

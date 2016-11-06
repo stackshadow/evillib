@@ -29,12 +29,14 @@ extern "C" {
 
 
 typedef struct etDBObject {
-   
+
 // root element
     json_t          *jsonRootObject;        // the json root-object
 
 
 // tables
+    etList*         tables;
+    void*           tableIterator;
     json_t          *jsonTables;
     json_t          *jsonTable;
 

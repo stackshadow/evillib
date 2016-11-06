@@ -16,12 +16,20 @@
     along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef _C_etMemoryBlock
+#define _C_etMemoryBlock
+
+
 #include "evillib_defines.h"
 #include "evillib_depends.h"
 
-#include "core/etObject.h"
-#include "core/etDebug.h"
 #include "memory/etMemoryBlock.h"
+
+// binarys we need
+#include "core/etDebug.c"
+
+
+#include "core/etObject.h"
 
 
 /** @internal
@@ -52,7 +60,7 @@ extern "C" {
 @~english
 @brief Allocate a single etMemoryBlock
 @param[out] etMemoryBlockActual The etMemoryBlock which will be allocated ( this pointer change its address !!! )
-@param[in] size The amount of bytes to allocate 
+@param[in] size The amount of bytes to allocate
 @return If the etMemoryBlock was correctly allocated \n
 *- @ref etID_YES
 *- @ref etID_STATE_NOMEMORY
@@ -60,7 +68,7 @@ extern "C" {
 void                        __etMemoryBlockAlloc( etMemoryBlock **p_etMemoryBlock, size_t size ){
 // Check
     etDebugCheckNullVoid( p_etMemoryBlock );
-    
+
 // Allocate new memory
     etMemoryBlock *etMemoryBlockNew = (etMemoryBlock*)malloc( sizeof(etMemoryBlock) );
     if( etMemoryBlockNew == NULL ){
@@ -101,14 +109,14 @@ void                        __etMemoryBlockAlloc( etMemoryBlock **p_etMemoryBloc
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
 @~english
-@brief Release a etMemoryBlock for future use
+@brief Release / Set as Used of an etMemoryBlock
 
-If you release an etMemoryBlock it will be ready for future use and can be returned by etMemoryRequest(). \n
+If releaseIt is etID_TRUE you release an etMemoryBlock and it will be ready for future use and can be returned by etMemoryRequest(). \n
 If ET_SECURE_MEMORY_OFF is not defined, the memory-block will be cleaned.
 
 @param[in] etMemoryBlockActual The pointer to an etMemoryBlock object \n
 */
-void                        etMemoryBlockRelease( etMemoryBlock *etMemoryBlockActual, etID_BOOL releaseIt ){
+void                        etMemoryBlockSetReleaseState( etMemoryBlock *etMemoryBlockActual, etID_BOOL releaseIt ){
 // Check
     etDebugCheckNullVoid( etMemoryBlockActual );
 
@@ -134,7 +142,7 @@ void                        etMemoryBlockRelease( etMemoryBlock *etMemoryBlockAc
 
     } else {
         etMemoryBlockActual->state &= ~etID_MEM_STATE_FREE;
-        etMemoryBlockActual->state |= etID_MEM_STATE_USED;        
+        etMemoryBlockActual->state |= etID_MEM_STATE_USED;
 
     // Debug
         #ifndef ET_DEBUG_OFF
@@ -176,7 +184,7 @@ void                        etMemoryBlockFree( etMemoryBlock *etMemoryBlockActua
         free( etMemoryBlockActual->data );
     }
 
-    
+
     free(etMemoryBlockActual);
 
 // Debug
@@ -297,7 +305,7 @@ etID_STATE                  etMemoryBlockHasSpace( etMemoryBlock *etMemoryBlockA
 etID_STATE                  __etMemoryBlockDataGetOffset( etMemoryBlock *etMemoryBlockActual, size_t offset, void **data ){
 // Check
     etDebugCheckNull( data );
-    
+
     if( etMemoryBlockActual == NULL ){
         *data = NULL;
         return etID_STATE_NODATA;
@@ -336,7 +344,7 @@ etID_STATE                  __etMemoryBlockDataGet( etMemoryBlock *etMemoryBlock
 // Check
     etDebugCheckNull( etMemoryBlockActual );
     etDebugCheckNull( data );
-    
+
     *data = etMemoryBlockActual->data;
 
     return etID_YES;
@@ -427,7 +435,7 @@ etID_STATE                  etMemoryBlockCopy( etMemoryBlock *etMemoryBlockDest,
     // Data
         void *etMemoryBlockDstPointer = NULL;
         void *etMemoryBlockSrcPointer = NULL;
-        
+
         etMemoryBlockDataGet( etMemoryBlockDest, etMemoryBlockDstPointer );
         etMemoryBlockDataGet( etMemoryBlockSource, etMemoryBlockSrcPointer );
 
@@ -482,3 +490,4 @@ etID_STATE                  etMemoryBlockCopy( etMemoryBlock *etMemoryBlockDest,
 
 
 
+#endif // _C_etMemoryBlock

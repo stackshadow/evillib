@@ -167,3 +167,6 @@ $(shareDir)/pkgconfig/evillib.pc:
 
 
 clean: dev-clean library-clean
+
+touch:
+	find . ! -wholename "*.git/*" ! -wholename "*ide/*" -print -exec touch --no-create {} \;

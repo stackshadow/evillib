@@ -531,7 +531,7 @@ etID_STATE          etDBPSQLDataNext( etDBDriver *dbDriver, etDBObject *dbObject
             const char* columnName = PQfname( psqlDriver->result, columnIndex );
             const char* columnValue = PQgetvalue( psqlDriver->result, psqlDriver->resultRowIndex, columnIndex );
 
-            if( columnValue == NULL ) columnValue = ""; // the "NULL" char inside sqlite
+            if( columnValue == NULL ) columnValue = "";
 
             etDBObjectValueSet( dbObject, columnName, columnValue );
 

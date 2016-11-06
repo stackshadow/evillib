@@ -21,7 +21,7 @@ ifneq ($(VARS),1)
 	include make/vars.make
 endif
 
-include evillib-version.make
+#include evillib-version.make
 
 .DEFAULT:
 	@sleep 0
@@ -40,6 +40,6 @@ evillib-doc: $(docDir)/evillib/$(Version)
 
 $(docDir)/evillib/$(Version):
 	mkdir -p $(docDir)/evillib/$(Version)
-	cd documentation && SOURCEDIR=.. OUTPUTDIR="$(docDir)/evillib/$(Version)" doxygen 
+	cd documentation && SOURCEDIR=.. OUTPUTDIR="$(docDir)/evillib/$(Version)" doxygen
 
 .PHONY: $(docDir)/evillib/$(Version)

@@ -45,7 +45,9 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
 // add table name
     const char *tableName = NULL;
     etDBObjectTableNameGet( dbObject, tableName );
+    etStringCharAdd( sqlquery, "\"" );
     etStringCharAdd( sqlquery, tableName );
+    etStringCharAdd( sqlquery, "\"" );
 
 // columns
     etID_BOOL           firstColumn = etID_TRUE;
@@ -53,7 +55,7 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
     etDBColumnType      columnType;
     int                 columnOption = etDBCOLUMN_OPTION_NOTHING;
 
-    etStringCharAdd( sqlquery, "( " );
+    etStringCharAdd( sqlquery, " ( " );
     etDBObjectIterationReset(dbObject);
     while( etDBObjectTableColumnNext(dbObject,columnName) == etID_YES ){
 
@@ -141,7 +143,9 @@ etID_STATE          etDBSQLColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject
 // add table name
     const char *tableName = NULL;
     etDBObjectTableNameGet( dbObject, tableName );
+    etStringCharAdd( sqlquery, "\"" );
     etStringCharAdd( sqlquery, tableName );
+    etStringCharAdd( sqlquery, "\"" );
 
     etStringCharAdd( sqlquery, " ADD COLUMN " );
 
@@ -210,10 +214,12 @@ etID_STATE          etDBSQLDataAdd( etDBDriver *dbDriver, etDBObject *dbObject, 
 
 // add table name
     etDBObjectTableNameGet( dbObject, tableName );
+    etStringCharAdd( sqlquery, "\"" );
     etStringCharAdd( sqlquery, tableName );
+    etStringCharAdd( sqlquery, "\"" );
 
 // columns
-    etStringCharAdd( sqlquery, "(" );
+    etStringCharAdd( sqlquery, " (" );
     etDBObjectIterationReset(dbObject);
     while( etDBObjectValueNext(dbObject,columnName,columnValue) == etID_YES ){
 
@@ -282,7 +288,9 @@ etID_STATE          etDBSQLDataChange( etDBDriver *dbDriver, etDBObject *dbObjec
 
 // add table name
     etDBObjectTableNameGet( dbObject, tableName );
+    etStringCharAdd( sqlquery, "\"" );
     etStringCharAdd( sqlquery, tableName );
+    etStringCharAdd( sqlquery, "\"" );
 
 // columns
     etStringCharAdd( sqlquery, " SET " );
@@ -360,7 +368,9 @@ etID_STATE          etDBSQLDataRemove( etDBDriver *dbDriver, etDBObject *dbObjec
 
 // add table name
     etDBObjectTableNameGet( dbObject, tableName );
+    etStringCharAdd( sqlquery, "\"" );
     etStringCharAdd( sqlquery, tableName );
+    etStringCharAdd( sqlquery, "\"" );
 
 
 // get the primary key-column
@@ -428,7 +438,9 @@ etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, e
 // FROM
     etDBObjectTableNameGet( dbObject, tableName );
     etStringCharAdd( sqlquery, " FROM " );
+    etStringCharAdd( sqlquery, "\"" );
     etStringCharAdd( sqlquery, tableName );
+    etStringCharAdd( sqlquery, "\"" );
 
 
 // WHERE
@@ -483,7 +495,7 @@ etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, e
         }
 
         if( filterType == etDBFILTER_TYPE_EQUAL ){
-            etStringCharAdd( sqlquery, " IS '" );
+            etStringCharAdd( sqlquery, " = '" );
             etStringCharAdd( sqlquery, filterString );
             etStringCharAdd( sqlquery, "'" );
         }

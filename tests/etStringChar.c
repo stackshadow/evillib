@@ -45,6 +45,8 @@
 #include "string/etStringChar.h"
 #include "string/etStringChar.c"
 
+
+
 etID_STATE              etStringCharTest(){
     etApicheckTimer( "etStringChar: Start test.." );
 
@@ -131,11 +133,23 @@ etID_STATE              etStringCharTest(){
     return etID_YES;
 }
 
+etID_STATE              etStringWCharTest(){
+    etApicheckTimer( "etStringChar: Start test.." );
+
+
+// End Timer
+    etApicheckTimer( "OK" );
+    return etID_YES;
+}
+
 
 int                     main( int argc, const char* argv[] ){
     etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
 
-    return etStringCharTest();
+    etStringCharTest();
+    etStringWCharTest();
+    
+    
 }
 

@@ -19,6 +19,7 @@
 #ifndef _C_etList
 #define _C_etList
 
+
 #include "memory/etMemory.c"
 #include "memory/etMemoryBlock.c"
 
@@ -57,6 +58,39 @@ etID_STATE      __etListAlloc( etList** p_list ){
     return etID_YES;
 }
 
+
+etID_STATE      __etListFree( etList** p_list ){
+// Object okay ?
+    etDebugCheckNull( p_list );
+    etDebugCheckNull( *p_list );
+
+// vars
+    etList*     etListElement = *p_list;
+    etList*     etListElementToFree = NULL;
+
+// go to start
+    if( etListElement->prev != NULL ) etListElement = etListElement->prev;
+
+// release all elements
+    etListElement = etListElement->next;
+    while( etListElement != NULL ){
+
+        etListElementToFree = etListElement;
+        etListElement = etListElement->next;
+
+        etMemoryRelease( etListElementToFree );
+    }
+
+// release the list
+    etListElement = *p_list;
+    etMemoryRelease( etListElement );
+
+// return
+    *p_list = NULL;
+    return etID_YES;
+}
+
+
 etID_STATE      __etListAppend( etList** p_list, void *data ){
 // Object okay ?
     etDebugCheckNull( p_list );
@@ -76,12 +110,13 @@ etID_STATE      __etListAppend( etList** p_list, void *data ){
     }
 
     newListElement->prev = list;
+    newListElement->data = data;
     list->next = newListElement;
-    list->data = data;
 
     *p_list = newListElement;
     return etID_YES;
 }
+
 
 etID_STATE      __etListIterate( etList* list, void** iterator ){
 // Object okay ?
@@ -95,10 +130,11 @@ etID_STATE      __etListIterate( etList* list, void** iterator ){
     while( etListElement->prev != NULL ) etListElement = etListElement->prev;
 
 // return as iterator
-    *iterator = (void*)etListElement;
+    *iterator = (void*)etListElement->next;
 
     return etID_YES;
 }
+
 
 etID_STATE      __etListIterateNext( void** iterator, void** data ){
 // Object okay ?
@@ -121,35 +157,77 @@ etID_STATE      __etListIterateNext( void** iterator, void** data ){
 }
 
 
-etID_STATE      etListRemoveElement( etList** p_elementToRemove ){
+etID_STATE      etListIterateNextAviable( void* iterator ){
+// Object okay ?
+    if( iterator == NULL ) return etID_NO;
 
 // vars
-    etList*     etListElement = *p_elementToRemove;
+    etList*     etListElement = (etList*)iterator;
 
-// if the element is the first one
-    if( etListElement->prev == NULL ){
-        etListElement->data = NULL;
-        etListElement->next->prev = NULL;
-
-    // return the next element
-        *p_elementToRemove = *etListElement->next;
-
-    // release the memory
-        etMemoryRelease( etListElement );
-
+// get data
+    if( etListElement->next != NULL ){
         return etID_YES;
     }
 
-    etListElement->data = NULL;
+    return etID_NO;
+}
+
+
+etID_STATE      etListElementRemove( etList* elementToRemove ){
+
+// vars
+    etList*     etListElement = elementToRemove;
+
+// unlink
+    if( etListElement->prev == NULL ){
+        // we get the first element, so we can not remove
+        return etID_NO;
+    }
+
     etListElement->prev->next = etListElement->next;
-    etListElement->next->prev = etListElement->prev;
+
+    if( etListElement->next != NULL ){
+        etListElement->next->prev = etListElement->prev;
+    }
+
+// remove data
+    etListElement->data = NULL;
 
 // release the memory
     etMemoryRelease( etListElement );
 
-
-
     return etID_YES;
+}
+
+
+etID_STATE      etListDataRemove( etList* list, void* data, etID_BOOL removeAll ){
+// Object okay ?
+    etDebugCheckNull( list );
+    etDebugCheckNull( data );
+
+// vars
+    etList*     etListElement = list;
+
+// go to start
+    if( etListElement->prev != NULL ) etListElement = etListElement->prev;
+
+// try to find the data
+    etListElement = etListElement->next;
+    while( etListElement != NULL ){
+
+        if( etListElement->data == data ){
+
+        // remove the element
+            etListElementRemove( etListElement );
+
+            if( removeAll == etID_FALSE ){
+                return etID_YES;
+            }
+        }
+
+        etListElement = etListElement->next;
+    }
+
 }
 
 
@@ -165,10 +243,10 @@ etID_STATE      etListDump( etList* list ){
 
     while( etListIterator != NULL ){
 
+            fprintf( stdout, "[ %p<- ]", etListIterator->prev );
             fprintf( stdout, "[ %p ]", etListIterator );
-            fprintf( stdout, "[ %p ]", etListIterator->data );
             fprintf( stdout, "[ ->%p ]", etListIterator->next );
-
+            fprintf( stdout, "[ %p ]", etListIterator->data );
 
             fprintf( stdout, "\n" );
 

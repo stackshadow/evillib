@@ -19,6 +19,8 @@
 #ifndef _H_etList
 #define _H_etList
 
+#include "evillib_depends.h"
+#include "evillib_defines.h"
 #include "core/etIDState.h"
 
 #ifdef __cplusplus
@@ -43,19 +45,25 @@ struct etList_s {
 #define         etListAlloc( list ) __etListAlloc( &list )
 etID_STATE      __etListAlloc( etList** p_list );
 
+#define         etListFree( list ) __etListFree( &list )
+etID_STATE      __etListFree( etList** p_list );
+
 #define         etListAppend( list, data ) __etListAppend( &list, data )
 etID_STATE      __etListAppend( etList** p_list, void *data );
 
 #define         etListIterate( list, iterator ) __etListIterate( list, &iterator )
 etID_STATE      __etListIterate( etList* list, void** iterator );
 
-#define         etListIterateNext( iterator, data ) __etListIterateNext( &iterator, &data )
+#define         etListIterateNext( iterator, data ) __etListIterateNext( &iterator, (void**)&data )
 etID_STATE      __etListIterateNext( void** iterator, void** data );
 
 
+etID_STATE      etListIterateNextAviable( void* iterator );
 
 
-etID_STATE      etListRemoveData( etList* list, void *dataToRemove );
+
+
+etID_STATE      etListDataRemove( etList* list, void* data, etID_BOOL removeAll );
 
 
 

@@ -4,22 +4,27 @@
   <Environment>
     <![CDATA[]]>
   </Environment>
+  <Project Name="radio" Path="../../radio/ide/radio.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="app - debug" Selected="yes">
       <Environment/>
       <Project Name="evillib" ConfigName="app - debug"/>
+      <Project Name="radio" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="evillib-extra" Selected="no">
+    <WorkspaceConfiguration Name="evillib-extra" Selected="yes">
       <Environment/>
       <Project Name="evillib" ConfigName="evillib-extra"/>
+      <Project Name="radio" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="headers" Selected="no">
+    <WorkspaceConfiguration Name="headers" Selected="yes">
       <Environment/>
       <Project Name="evillib" ConfigName="headers"/>
+      <Project Name="radio" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="documentation" Selected="no">
+    <WorkspaceConfiguration Name="documentation" Selected="yes">
       <Environment/>
       <Project Name="evillib" ConfigName="docu"/>
+      <Project Name="radio" ConfigName="Debug"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

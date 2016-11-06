@@ -1,0 +1,894 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="evillib" />
+		<Option makefile="./make/Makefile" />
+		<Option makefile_is_custom="1" />
+		<Option execution_dir="../../evillib" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Option virtualFolders="tests/;make/;extra/;extra/db/;extra/dbdriver/;extra/specialheaders/;core/;core/core/;core/core/string/;core/memory/;" />
+		<Build>
+			<Target title="evillib-app">
+				<Option output="/tmp/evillib/build/tests/etList" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="/tmp/evillib/build/tests" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<MakeCommands>
+					<Build command="$make -f $makefile $target" />
+					<CompileFile command="$make -f $makefile $file" />
+					<Clean command="$make -f $makefile clean" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="$make -q -f $makefile $target" />
+					<SilentBuild command="$make -f $makefile $target &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="../LICENSE" />
+		<Unit filename="../README.md" />
+		<Unit filename="../app/etApicheck.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../app/etApicheck.h" />
+		<Unit filename="../app/evillib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../app/evillib.h" />
+		<Unit filename="../configure" />
+		<Unit filename="../core/core/etDebug.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="core/core/" />
+		</Unit>
+		<Unit filename="../core/core/etDebug.dox" />
+		<Unit filename="../core/core/etDebug.h">
+			<Option virtualFolder="core/core/" />
+		</Unit>
+		<Unit filename="../core/core/etIDState.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="core/core/" />
+		</Unit>
+		<Unit filename="../core/core/etIDState.h">
+			<Option virtualFolder="core/core/" />
+		</Unit>
+		<Unit filename="../core/core/etInit.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="core/core/" />
+		</Unit>
+		<Unit filename="../core/core/etInit.h">
+			<Option virtualFolder="core/core/" />
+		</Unit>
+		<Unit filename="../core/core/etObject.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="core/core/" />
+		</Unit>
+		<Unit filename="../core/core/etObject.h">
+			<Option virtualFolder="core/core/" />
+		</Unit>
+		<Unit filename="../core/core/etVersion.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="core/core/" />
+		</Unit>
+		<Unit filename="../core/core/etVersion.h">
+			<Option virtualFolder="core/core/" />
+		</Unit>
+		<Unit filename="../core/evillib_defines.h" />
+		<Unit filename="../core/evillib_depends.h" />
+		<Unit filename="../core/evillib_version.h" />
+		<Unit filename="../core/memory/etList.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="core/memory/" />
+		</Unit>
+		<Unit filename="../core/memory/etList.h">
+			<Option virtualFolder="core/memory/" />
+		</Unit>
+		<Unit filename="../core/memory/etMemory.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="core/memory/" />
+		</Unit>
+		<Unit filename="../core/memory/etMemory.h">
+			<Option virtualFolder="core/memory/" />
+		</Unit>
+		<Unit filename="../core/memory/etMemoryBlock.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="core/memory/" />
+		</Unit>
+		<Unit filename="../core/memory/etMemoryBlock.h">
+			<Option virtualFolder="core/memory/" />
+		</Unit>
+		<Unit filename="../core/memory/etMemoryBlockList.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="core/memory/" />
+		</Unit>
+		<Unit filename="../core/memory/etMemoryBlockList.dox" />
+		<Unit filename="../core/memory/etMemoryBlockList.h">
+			<Option virtualFolder="core/memory/" />
+		</Unit>
+		<Unit filename="../core/specialheaders/copyright.h" />
+		<Unit filename="../core/specialheaders/evillib_end.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../core/specialheaders/evillib_end.h" />
+		<Unit filename="../core/specialheaders/evillib_start.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../core/specialheaders/evillib_start.h" />
+		<Unit filename="../core/string/etString.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="core/core/string/" />
+		</Unit>
+		<Unit filename="../core/string/etString.dox" />
+		<Unit filename="../core/string/etString.h">
+			<Option virtualFolder="core/core/string/" />
+		</Unit>
+		<Unit filename="../core/string/etStringChar.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="core/core/string/" />
+		</Unit>
+		<Unit filename="../core/string/etStringChar.dox" />
+		<Unit filename="../core/string/etStringChar.h">
+			<Option virtualFolder="core/core/string/" />
+		</Unit>
+		<Unit filename="../core/string/etStringWChar.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="core/core/string/" />
+		</Unit>
+		<Unit filename="../core/system/etFile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../core/system/etFile.h" />
+		<Unit filename="../core/system/etFile.h.orig" />
+		<Unit filename="../core/system/etThread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../core/system/etThread.h" />
+		<Unit filename="../core/system/etThreadUsage.dot" />
+		<Unit filename="../debian/changelog" />
+		<Unit filename="../debian/compat" />
+		<Unit filename="../debian/conffiles" />
+		<Unit filename="../debian/control" />
+		<Unit filename="../debian/copyright" />
+		<Unit filename="../debian/libevillib-core-dev.changelog" />
+		<Unit filename="../debian/libevillib-core-dev.copyright" />
+		<Unit filename="../debian/libevillib-core.changelog" />
+		<Unit filename="../debian/libevillib-core.copyright" />
+		<Unit filename="../debian/rules" />
+		<Unit filename="../develop/File/etFile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/File/etFile.h" />
+		<Unit filename="../develop/File/etSettingXML.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/File/etSettingXML.h" />
+		<Unit filename="../develop/Other/etAction.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/Other/etAction.h" />
+		<Unit filename="../develop/Other/etActionlist.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/Other/etActionlist.h" />
+		<Unit filename="../develop/Other/etAttribute.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/Other/etAttribute.h" />
+		<Unit filename="../develop/Other/etLog.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/Other/etLog.h" />
+		<Unit filename="../develop/Other/etSetting.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/Other/etSettings.h" />
+		<Unit filename="../develop/analyses/ReturnPointer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/Makefile" />
+		<Unit filename="../develop/apicheck/dBus.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etBlkDevice.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etChannel.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etDB.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etDateTime.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etEvent.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etFolder.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etLock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etLog.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etPlugin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etProcess.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etSetting.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etString.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etStringChar.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etTable.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/etThread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/apicheck/evillib-test.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/benchmark/etBenchmark.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/benchmark/etBenchmark.h" />
+		<Unit filename="../develop/benchmark/etMemory.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/db/CMakeLists.txt" />
+		<Unit filename="../develop/db/etDB.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/db/etDB.h" />
+		<Unit filename="../develop/db/etDBColumn.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/db/etDBColumn.h" />
+		<Unit filename="../develop/db/etDBFilter.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/db/etDBFilter.h" />
+		<Unit filename="../develop/db/etDBQuery.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/db/etDBQuery.h" />
+		<Unit filename="../develop/db/etDBRelations.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/db/etDBRelations.h" />
+		<Unit filename="../develop/db/etDBSQLite.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/db/etDBSQLite.h" />
+		<Unit filename="../develop/db/etDBTable.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/db/etDBTable.h" />
+		<Unit filename="../develop/db/etDBValue.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/db/etDBValue.h" />
+		<Unit filename="../develop/db/evillib-db.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/db/evillib-db.cmake.pc" />
+		<Unit filename="../develop/db/evillib-db.h" />
+		<Unit filename="../develop/db/evillib-db_defines.h" />
+		<Unit filename="../develop/db/evillib-db_depends.h" />
+		<Unit filename="../develop/db/evillib-db_end.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/db/evillib-db_end.h" />
+		<Unit filename="../develop/db/evillib-db_start.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/db/evillib-db_start.h" />
+		<Unit filename="../develop/debian/CMakeLists.txt" />
+		<Unit filename="../develop/debian/source/debian/CMakeLists.txt" />
+		<Unit filename="../develop/debian/source/debian/README.Debian" />
+		<Unit filename="../develop/debian/source/debian/README.source" />
+		<Unit filename="../develop/debian/source/debian/changelog" />
+		<Unit filename="../develop/debian/source/debian/changelog.cmake" />
+		<Unit filename="../develop/debian/source/debian/compat" />
+		<Unit filename="../develop/debian/source/debian/control" />
+		<Unit filename="../develop/debian/source/debian/control.cmake" />
+		<Unit filename="../develop/debian/source/debian/copyright" />
+		<Unit filename="../develop/debian/source/debian/docs" />
+		<Unit filename="../develop/debian/source/debian/files" />
+		<Unit filename="../develop/debian/source/debian/files.cmake" />
+		<Unit filename="../develop/debian/source/debian/libevillib-core-dev.debhelper.log" />
+		<Unit filename="../develop/debian/source/debian/libevillib-core-dev.dirs" />
+		<Unit filename="../develop/debian/source/debian/libevillib-core-dev.substvars" />
+		<Unit filename="../develop/debian/source/debian/libevillib-core-dev/DEBIAN/control" />
+		<Unit filename="../develop/debian/source/debian/libevillib-core.debhelper.log" />
+		<Unit filename="../develop/debian/source/debian/libevillib-core.dirs" />
+		<Unit filename="../develop/debian/source/debian/libevillib-core.substvars" />
+		<Unit filename="../develop/debian/source/debian/libevillib-core/DEBIAN/control" />
+		<Unit filename="../develop/debian/source/debian/libevillib.debhelper.log" />
+		<Unit filename="../develop/debian/source/debian/libevillib.substvars" />
+		<Unit filename="../develop/debian/source/debian/libevillib/DEBIAN/control" />
+		<Unit filename="../develop/debian/source/debian/rules" />
+		<Unit filename="../develop/debian/source/debian/shlibs.local" />
+		<Unit filename="../develop/debian/source/debian/source/format" />
+		<Unit filename="../develop/develop/GUI_XCB/Core/etGUI.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Core/etGUI.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Core/etLoop.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Core/etLoop.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Types/etAction.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Types/etAction.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Types/etColour.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Types/etColour.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Types/etDrawSet.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Types/etDrawSet.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Types/etEvent.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Types/etEvent.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Types/etPos.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Types/etPos.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Types/etWidget.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Types/etWidget.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Types/etWidgetID.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGButton.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGButton.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGContainer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGContainer.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGPanelBook.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGPanelBook.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGPoly.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGPoly.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGPolyButton.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGPolyButton.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGRectangle.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGRectangle.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGText.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGText.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGTextInput.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGTextInput.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGWindow.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etGWindow.h" />
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etLayout.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/GUI_XCB/Widgets/etLayout.h" />
+		<Unit filename="../develop/develop/etChannel.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/etChannel.h" />
+		<Unit filename="../develop/develop/etCommand.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/etCommand.h" />
+		<Unit filename="../develop/develop/etDevAccessible.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/etDevAccessible.h" />
+		<Unit filename="../develop/develop/etDevMount.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/etDevMount.h" />
+		<Unit filename="../develop/develop/etDevSize.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/etDevSize.h" />
+		<Unit filename="../develop/develop/etDevUUID.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/etDevUUID.h" />
+		<Unit filename="../develop/develop/etFile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/etFile.h" />
+		<Unit filename="../develop/develop/etPTY.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/etPTY.h" />
+		<Unit filename="../develop/develop/etPlugin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/etPlugin.h" />
+		<Unit filename="../develop/develop/etPty.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/etPty.h" />
+		<Unit filename="../develop/develop/etThread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/etThread.h" />
+		<Unit filename="../develop/develop/etXML.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/develop/etXML.h" />
+		<Unit filename="../develop/device/etBlkDevice.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/device/etBlkDevice.h" />
+		<Unit filename="../develop/device/etBlkDevice_cryptsetup.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/device/etBlkDevice_cryptsetup.h" />
+		<Unit filename="../develop/device/etBlkDevice_loop.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/device/etBlkDevice_loop.h" />
+		<Unit filename="../develop/device/etBlkDevice_mount.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/device/etBlkDevice_mount.h" />
+		<Unit filename="../develop/etChannel.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etChannel.h" />
+		<Unit filename="../develop/etEvent/etEvent.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etEvent/etEvent.h" />
+		<Unit filename="../develop/etEvent/etEventFunction.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etEvent/etEventFunction.h" />
+		<Unit filename="../develop/etEvent/etEventList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etEvent/etEventList.h" />
+		<Unit filename="../develop/etEvent/etEventQueue.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etEvent/etEventQueue.h" />
+		<Unit filename="../develop/etFIFO.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etFIFO.h" />
+		<Unit filename="../develop/etID.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etID.h" />
+		<Unit filename="../develop/etLink.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etLink.h" />
+		<Unit filename="../develop/etList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etList.h" />
+		<Unit filename="../develop/etLock.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etLock.h" />
+		<Unit filename="../develop/etNamedPipe.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etNamedPipe.h" />
+		<Unit filename="../develop/etObject.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etObject.h" />
+		<Unit filename="../develop/etPTY.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etPTY.h" />
+		<Unit filename="../develop/etPlugin.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etPlugin.h" />
+		<Unit filename="../develop/etSharedMemory.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etSharedMemory.h" />
+		<Unit filename="../develop/etString_int.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etString_int.h" />
+		<Unit filename="../develop/etString_string.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etString_string.h" />
+		<Unit filename="../develop/etString_wchar.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etString_wchar.h" />
+		<Unit filename="../develop/etTree.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/etTree.h" />
+		<Unit filename="../develop/examples/etArray.cpp" />
+		<Unit filename="../develop/examples/etChannel.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/examples/etCommand.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/examples/etConfig.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/examples/etDB.cpp" />
+		<Unit filename="../develop/examples/etDBTable.cpp" />
+		<Unit filename="../develop/examples/etDateTime.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/examples/etDevice.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/examples/etFile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/examples/etFile.cpp" />
+		<Unit filename="../develop/examples/etLink.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/examples/etList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/examples/etMultiArray.cpp" />
+		<Unit filename="../develop/examples/etProcess.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/examples/etPty.cpp" />
+		<Unit filename="../develop/examples/etSharedMemory.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/examples/etTable.cpp" />
+		<Unit filename="../develop/examples/etTerm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/examples/etThread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/examples/etX.cpp" />
+		<Unit filename="../develop/examples/etXML.cpp" />
+		<Unit filename="../develop/examples/evillib.cpp" />
+		<Unit filename="../develop/gui/apicheck/etG.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/gui/etG.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/gui/etG.h" />
+		<Unit filename="../develop/gui/etGButton.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/gui/etGButton.h" />
+		<Unit filename="../develop/gui/etGFont.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/gui/etGFont.h" />
+		<Unit filename="../develop/gui/etGWidget.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/gui/etGWidget.h" />
+		<Unit filename="../develop/gui/etGWindow.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/gui/etGWindow.h" />
+		<Unit filename="../develop/gui/evillib-gui.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/gui/evillib-gui.h" />
+		<Unit filename="../develop/gui/evillib-gui_defines.h" />
+		<Unit filename="../develop/gui/evillib-gui_depends.h" />
+		<Unit filename="../develop/gui/evillib-gui_end.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/gui/evillib-gui_end.h" />
+		<Unit filename="../develop/gui/evillib-gui_start.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/gui/evillib-gui_start.h" />
+		<Unit filename="../develop/gui/opengl.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/net/etComm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/net/etComm.h" />
+		<Unit filename="../develop/net/etCommTCP.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/net/etCommTCP.h" />
+		<Unit filename="../develop/system/etDateTime.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/system/etDateTime.h" />
+		<Unit filename="../develop/system/etFile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/system/etFile.dox" />
+		<Unit filename="../develop/system/etFile.h" />
+		<Unit filename="../develop/system/etFolder.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/system/etFolder.h" />
+		<Unit filename="../develop/system/etProcess.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/system/etProcess.h" />
+		<Unit filename="../develop/system/etProcessList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/system/etProcessList.h" />
+		<Unit filename="../develop/system/etUser.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/system/etUser.h" />
+		<Unit filename="../develop/tests/etComm.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/tests/etJsonDB.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/xcb/etX.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/xcb/etX.h" />
+		<Unit filename="../develop/xcb/etXColour.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/xcb/etXColour.h" />
+		<Unit filename="../develop/xcb/etXDimension.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/xcb/etXDimension.h" />
+		<Unit filename="../develop/xcb/etXWidget.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/xcb/etXWidget.h" />
+		<Unit filename="../develop/xcb/evillib-xcb.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/xcb/evillib-xcb.h" />
+		<Unit filename="../develop/xcb/evillib-xcb_depends.h" />
+		<Unit filename="../develop/xcb/evillib-xcb_start.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/xcb/evillib-xcb_start.h" />
+		<Unit filename="../develop/xcb_old/etX.h" />
+		<Unit filename="../develop/xcb_old/etXColour.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/xcb_old/etXColour.h" />
+		<Unit filename="../develop/xcb_old/etXInit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/xcb_old/etXInit.h" />
+		<Unit filename="../develop/xcb_old/etXMainLoop.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/xcb_old/etXMainLoop.h" />
+		<Unit filename="../develop/xcb_old/etXWidget.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/xcb_old/etXWidget.h" />
+		<Unit filename="../develop/xcb_old/etXWindow.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/xcb_old/etXWindow.h" />
+		<Unit filename="../develop/xcb_old/etXgc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../develop/xcb_old/etXgc.h" />
+		<Unit filename="../documentation/LibraryStandard.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../documentation/MainPage.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../documentation/Makefile" />
+		<Unit filename="../documentation/Versioning.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../documentation/compileOptions.dox" />
+		<Unit filename="../documentation/doxyfile" />
+		<Unit filename="../documentation/etDB.dox" />
+		<Unit filename="../documentation/images/Tux-G2.png" />
+		<Unit filename="../documentation/images/Win-like-userbox.png" />
+		<Unit filename="../documentation/images/evillib-logo.png" />
+		<Unit filename="../documentation/images/lgplv3-147x51.png" />
+		<Unit filename="../documentation/images/lgplv3-88x31.png" />
+		<Unit filename="../extra/db/etDBObject.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="extra/db/" />
+		</Unit>
+		<Unit filename="../extra/db/etDBObject.dox" />
+		<Unit filename="../extra/db/etDBObject.h">
+			<Option virtualFolder="extra/db/" />
+		</Unit>
+		<Unit filename="../extra/db/etDBObjectFilter.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="extra/db/" />
+		</Unit>
+		<Unit filename="../extra/db/etDBObjectFilter.h">
+			<Option virtualFolder="extra/db/" />
+		</Unit>
+		<Unit filename="../extra/db/etDBObjectTable.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="extra/db/" />
+		</Unit>
+		<Unit filename="../extra/db/etDBObjectTable.dox" />
+		<Unit filename="../extra/db/etDBObjectTable.h">
+			<Option virtualFolder="extra/db/" />
+		</Unit>
+		<Unit filename="../extra/db/etDBObjectTableColumn.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="extra/db/" />
+		</Unit>
+		<Unit filename="../extra/db/etDBObjectTableColumn.h">
+			<Option virtualFolder="extra/db/" />
+		</Unit>
+		<Unit filename="../extra/db/etDBObjectValue.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="extra/db/" />
+		</Unit>
+		<Unit filename="../extra/db/etDBObjectValue.dox" />
+		<Unit filename="../extra/db/etDBObjectValue.h">
+			<Option virtualFolder="extra/db/" />
+		</Unit>
+		<Unit filename="../extra/dbdriver/etDBDriver.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="extra/dbdriver/" />
+		</Unit>
+		<Unit filename="../extra/dbdriver/etDBDriver.h">
+			<Option virtualFolder="extra/dbdriver/" />
+		</Unit>
+		<Unit filename="../extra/dbdriver/etDBPSQL.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="extra/dbdriver/" />
+		</Unit>
+		<Unit filename="../extra/dbdriver/etDBPSQL.h">
+			<Option virtualFolder="extra/dbdriver/" />
+		</Unit>
+		<Unit filename="../extra/dbdriver/etDBSQL.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="extra/dbdriver/" />
+		</Unit>
+		<Unit filename="../extra/dbdriver/etDBSQL.h">
+			<Option virtualFolder="extra/dbdriver/" />
+		</Unit>
+		<Unit filename="../extra/dbdriver/etDBSQLite.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="extra/dbdriver/" />
+		</Unit>
+		<Unit filename="../extra/dbdriver/etDBSQLite.h">
+			<Option virtualFolder="extra/dbdriver/" />
+		</Unit>
+		<Unit filename="../extra/evillib-extra_depends.h">
+			<Option virtualFolder="extra/" />
+		</Unit>
+		<Unit filename="../extra/specialheaders/evillib_end.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="extra/specialheaders/" />
+		</Unit>
+		<Unit filename="../extra/specialheaders/evillib_end.h">
+			<Option virtualFolder="extra/specialheaders/" />
+		</Unit>
+		<Unit filename="../extra/specialheaders/evillib_start.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="extra/specialheaders/" />
+		</Unit>
+		<Unit filename="../extra/specialheaders/evillib_start.h">
+			<Option virtualFolder="extra/specialheaders/" />
+		</Unit>
+		<Unit filename="../lgpl-3.0.txt" />
+		<Unit filename="../make/Makefile">
+			<Option virtualFolder="make/" />
+		</Unit>
+		<Unit filename="../make/evillib-app.make">
+			<Option virtualFolder="make/" />
+		</Unit>
+		<Unit filename="../make/evillib-core.make">
+			<Option virtualFolder="make/" />
+		</Unit>
+		<Unit filename="../make/evillib-doc.make">
+			<Option virtualFolder="make/" />
+		</Unit>
+		<Unit filename="../make/evillib-extra.make">
+			<Option virtualFolder="make/" />
+		</Unit>
+		<Unit filename="../make/vars.make">
+			<Option virtualFolder="make/" />
+		</Unit>
+		<Unit filename="../templates/copyright.h" />
+		<Unit filename="../tests/etDBObject.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="tests/" />
+		</Unit>
+		<Unit filename="../tests/etDBObject.c.orig">
+			<Option virtualFolder="tests/" />
+		</Unit>
+		<Unit filename="../tests/etDBSQL.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="tests/" />
+		</Unit>
+		<Unit filename="../tests/etFile.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="tests/" />
+		</Unit>
+		<Unit filename="../tests/etList.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="tests/" />
+		</Unit>
+		<Unit filename="../tests/etMemory.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="tests/" />
+		</Unit>
+		<Unit filename="../tests/etMemoryBlock.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="tests/" />
+		</Unit>
+		<Unit filename="../tests/etString.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="tests/" />
+		</Unit>
+		<Unit filename="../tests/etStringChar.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="tests/" />
+		</Unit>
+		<Unit filename="../tests/etThread.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="tests/" />
+		</Unit>
+		<Unit filename="../tests/valgrind.supp">
+			<Option virtualFolder="tests/" />
+		</Unit>
+		<Unit filename="evillib.project" />
+		<Unit filename="evillib.workspace" />
+		<Extensions>
+			<code_completion>
+				<search_path add="../../evillib" />
+				<search_path add="../extra" />
+				<search_path add="../core" />
+			</code_completion>
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

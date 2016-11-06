@@ -49,17 +49,20 @@ CFLAGS+=-I ./
 CFLAGS+=-I ./core
 CFLAGS+=-I ./extra
 CFLAGS+=-I ./extra/db
+CFLAGS+=-I/usr/include/postgresql
+CFLAGS+=-Wall
 CFLAGS+=-g
 
 CLIBS+=-lpthread
 CLIBS+=-ldl
 CLIBS+=-ljansson
 CLIBS+=-lsqlite3
-CLIBS+=-lssl
-CLIBS+=-lcrypto 
-CLIBS+=-L$(buildPath)/obj 
+CLIBS+=-lpq
+#CLIBS+=-lssl
+#CLIBS+=-lcrypto
 #CLIBS+=-levillib.$(Version)
 #CLIBS+=-levillib-extra.$(Version)
+CLIBS+=-L$(buildPath)/obj
 
 .EXPORT_ALL_VARIABLES:
 

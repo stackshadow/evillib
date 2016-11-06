@@ -16,6 +16,9 @@
     along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef _C_etVersion
+#define _C_etVersion
+
 #include "evillib_depends.h"
 #include "evillib_version.h"
 
@@ -68,4 +71,8 @@ etID_STATE      etVersionCheck( int Main, int Minor, int Patch ){
 }
 #endif
 
+
+
+
+#endif // _C_etVersion
 

@@ -20,7 +20,7 @@
 #define _H_evillib_etInit
 
 
-
+#include "evillib_depends.h"
 #include "core/etIDState.h"
 
 #ifdef __cplusplus

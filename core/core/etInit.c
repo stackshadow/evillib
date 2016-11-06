@@ -16,16 +16,19 @@
     along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef _C_etInit
+#define _C_etInit
 
-#include "evillib_depends.h"
+
+
 #include "evillib_version.h"
 
 #include "core/etInit.h"
 
-#include "core/etDebug.h"
-#include "core/etVersion.h"
-#include "memory/etMemoryBlock.h"
-#include "memory/etMemory.h"
+// binarys we need
+#include "core/etDebug.c"
+#include "core/etVersion.c"
+#include "memory/etMemory.c"
 
 #ifdef __cplusplus
 extern "C" {
@@ -105,7 +108,7 @@ etID_STATE        etInit( int argc, const char* argv[] ){
                         fprintf( stdout, "evillib version %s\n", ET_VERSIONSTRING );
                         fprintf( stdout, "Copyleft by Martin Langlotz aka stackshadow\n" );
                         fprintf( stdout, "www.evilbrain.de\n\n" );
-                        
+
 
                 // Feature List
                         fprintf( stdout, "Features:" );
@@ -159,3 +162,7 @@ etID_STATE        etInit( int argc, const char* argv[] ){
 #ifdef __cplusplus
 }
 #endif
+
+
+#endif // _C_etInit
+

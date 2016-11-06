@@ -16,6 +16,9 @@
     along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef _C_etDebug
+#define _C_etDebug
+
 /**@defgroup etDebug Debugging
 @ingroup grCore
 
@@ -35,7 +38,7 @@ This disable the debugging function during compile time, which results in a smal
 
 
 #include "core/etDebug.h"
-
+typedef struct _IO_FILE _IO_FILE;
 
 
 etDebug                 etDebugEvillib[1] = {
@@ -344,3 +347,4 @@ etID_STATE              etDebugLevelSet( etID_LEVEL debugLevels ){
 
 
 
+#endif

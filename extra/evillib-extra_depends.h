@@ -22,8 +22,7 @@
 #include <string.h>     // for strncmp
 
 #include <jansson.h>
-#include <openssl/sha.h>
-#include <openssl/md5.h>
+
 
 
 #endif

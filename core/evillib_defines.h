@@ -223,6 +223,18 @@ typedef enum {
 }
 etID_TRIGGER;
 
+
+typedef enum {
+    etID_OS_NOTHING,
+
+// the classic ones
+    etID_OS_UNIX,
+    etID_OS_MAC,
+    etID_OS_WIN
+
+}
+etID_OS;
+
 //bit_fld |= (1 << n)
 
 // Options

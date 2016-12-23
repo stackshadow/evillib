@@ -152,7 +152,7 @@ int                     main( int argc, const char* argv[] ){
 
     //etMemoryTestNULL();
     //etMemoryTestAlloc();
-    etMemoryTestData();
+    //etMemoryTestData();
 
     return 0;
 }

@@ -24,56 +24,90 @@ extern "C" {
 #endif
 
 #include "string/etString.h"
+#include "db/etDBTable.h"
+#include "db/etDBColumn.h"
+
+enum etDBDriverType_e {
+    etDB_DRIVER_NONE = 0,
+    etDB_DRIVER_SQLITE,
+    etDB_DRIVER_PGSQL
+};
+typedef enum etDBDriverType_e etDBDriverType;
+
 
 typedef struct etDBDriver_s etDBDriver;
-typedef struct etDBDriver_s {
+struct etDBDriver_s {
+
+    etDBDriverType      type;
+
 // stuff to create querys
-    etID_STATE      (*queryColumnTypeAdd)( etString *sqlquery, etDBColumnType columnType );
-    etID_STATE      (*queryColumnOptionAdd)( etString *sqlquery, int option );
+    etID_STATE          (*queryColumnTypeAdd)( etString *sqlquery, etDBColumnType columnType );
+    etID_STATE          (*queryColumnOptionAdd)( etString *sqlquery, int option );
 
 // optional callback-functions
     // this function is called before the query is executed, if the
     // callback function return etID_NO the query will not be executed
-    etID_STATE      (*queryAcknowledge)( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );
+    etID_STATE          (*queryAcknowledge)( etDBDriver *dbDriver, etDBTable* dbTable, etString *sqlquery );
 
 // connection handling
-    etID_STATE      (*connect)( etDBDriver *dbDriver );
-    etID_STATE      (*isConnected)( etDBDriver *dbDriver );
-    etID_STATE      (*disconnect)( etDBDriver *dbDriver );
+    etID_STATE          (*connect)( etDBDriver* dbDriver );
+    etID_STATE          (*isConnected)( etDBDriver* dbDriver );
+    etID_STATE          (*disconnect)( etDBDriver* dbDriver );
 
 // handle table
-    etID_STATE      (*tableAdd)( etDBDriver *dbDriver, etDBObject *dbObject );
-    etID_STATE      (*tableRemove)( etDBDriver *dbDriver, etDBObject *dbObject );
+    etID_STATE          (*tableAdd)( etDBDriver* dbDriver, etDBTable* dbTable );
+    etID_STATE          (*tableRemove)( etDBDriver* dbDriver, etDBTable* dbTable );
 // handle columns
-    etID_STATE      (*columnAdd)( etDBDriver *dbDriver, etDBObject *dbObject );
-    etID_STATE      (*columnRemove)( etDBDriver *dbDriver, etDBObject *dbObject );
+    etID_STATE          (*columnAdd)( etDBDriver* dbDriver, etDBTable* dbTable, const char* columnName );
+    etID_STATE          (*columnRemove)( etDBDriver* dbDriver, etDBTable* dbTable, const char* columnName );
 // handle table data
-    etID_STATE      (*dataAdd)( etDBDriver *dbDriver, etDBObject *dbObject );
-    etID_STATE      (*dataChange)( etDBDriver *dbDriver, etDBObject *dbObject );
-    etID_STATE      (*dataRemove)( etDBDriver *dbDriver, etDBObject *dbObject );
-    etID_STATE      (*dataGet)( etDBDriver *dbDriver, etDBObject *dbObject );
-    etID_STATE      (*dataNext)( etDBDriver *dbDriver, etDBObject *dbObject );
+    etID_STATE          (*dataAdd)( etDBDriver* dbDriver, etDBTable* dbTable );
+    etID_STATE          (*dataChange)( etDBDriver* dbDriver, etDBTable* dbTable );
+    etID_STATE          (*dataRemove)( etDBDriver* dbDriver, etDBTable* dbTable );
+    etID_STATE          (*dataGet)( etDBDriver* dbDriver, etDBTable* dbTable, etDBFilter* dbFilter );
+    etID_STATE          (*dataGetWithLimit)( etDBDriver* dbDriver, etDBTable* dbTable, int start, int amount, etDBFilter* dbFilter );
+    etID_STATE          (*dataNext)( etDBDriver* dbDriver, etDBTable* dbTable );
 
 
-    void            *dbDriverData;
-} etDBDriver;
-
-
-
-etID_STATE          etDBDriverConnect( etDBDriver *dbDriver );
-
-
-etID_STATE          etDBDriverIsConnect( etDBDriver *dbDriver );
+    void                *dbDriverData;
+};
 
 
 
+#define             etDBDriverAlloc( dbDriver ) __etDBDriverAlloc( &dbDriver )
+etID_STATE          __etDBDriverAlloc( etDBDriver** p_dbDriver );
 
-etID_STATE          etDBDriverTableAdd( etDBDriver *dbDriver, etDBObject *dbObject );
+#define             etDBDriverFree( dbDriver ) __etDBDriverFree( &dbDriver )
+etID_STATE          __etDBDriverFree( etDBDriver** p_dbDriver );
 
 
-etID_STATE          etDBDriverTableRemove( etDBDriver *dbDriver, etDBObject *dbObject );
+
+#define             etDBDriverName( name ) __etDBDriverName( &name )
+etID_STATE          __etDBDriverName( const char** p_name );
 
 
+
+
+
+etID_STATE          etDBDriverConnect( etDBDriver* dbDriver );
+
+
+etID_STATE          etDBDriverIsConnect( etDBDriver* dbDriver );
+
+
+etID_STATE          etDBDriverDisConnect( etDBDriver* dbDriver );
+
+
+
+etID_STATE          etDBDriverTableAdd( etDBDriver* dbDriver, etDBTable* dbTable );
+
+
+etID_STATE          etDBDriverTableRemove( etDBDriver* dbDriver, etDBTable* dbTable );
+
+
+
+etID_STATE          etDBDriverDataAdd( etDBDriver* dbDriver, etDBTable* dbTable );
+/*
 
 
 etID_STATE          etDBDriverColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject );
@@ -91,12 +125,15 @@ etID_STATE          etDBDriverDataChange( etDBDriver *dbDriver, etDBObject *dbOb
 
 
 etID_STATE          etDBDriverDataRemove( etDBDriver *dbDriver, etDBObject *dbObject );
+*/
+
+etID_STATE          etDBDriverDataGet( etDBDriver* dbDriver, etDBTable* dbTable, etDBFilter* dbFilter );
 
 
-etID_STATE          etDBDriverDataGet( etDBDriver *dbDriver, etDBObject *dbObject );
+etID_STATE          etDBDriverDataGetWithLimits( etDBDriver* dbDriver, etDBTable* dbTable, int start, int amount, etDBFilter* dbFilter );
 
 
-etID_STATE          etDBDriverDataNext( etDBDriver *dbDriver, etDBObject *dbObject );
+etID_STATE          etDBDriverDataNext( etDBDriver* dbDriver, etDBTable* dbTable );
 
 
 

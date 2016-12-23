@@ -23,7 +23,7 @@
 #include "dbdriver/etDBDriver.h"
 #include "dbdriver/etDBSQL.h"
 #include "dbdriver/etDBPSQL.h"
-#include "db/etDBObjectTableColumn.h"
+#include "db/etDBColumn.h"
 #include "db/etDBObjectValue.h"
 
 

@@ -24,25 +24,29 @@ extern "C" {
 #endif
 
 
-etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery, const char *columnEnclose );
+etID_STATE          etDBSQLAddTable( etDBDriver* dbDriver, etDBTable* dbTable, etString* sqlquery, const char* columnEnclose );
 
 
-etID_STATE          etDBSQLTableRemove( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );
+etID_STATE          etDBSQLRemoveTable( etDBDriver* dbDriver, etDBTable* dbTable, etString* sqlquery );
 
 
-etID_STATE          etDBSQLColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery, const char *columnEnclose );
 
 
-etID_STATE          etDBSQLDataAdd( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );
+etID_STATE          etDBSQLAddColumn( etDBDriver* dbDriver, etDBTable* dbTable, const char* columnName, etString* sqlquery, const char* columnEnclose );
 
 
-etID_STATE          etDBSQLDataChange( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );
 
 
-etID_STATE          etDBSQLDataRemove( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery, const char *columnEnclose );
+etID_STATE          etDBSQLAddData( etDBDriver* dbDriver, etDBTable* dbTable, etString* sqlquery );
 
 
-etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery );
+etID_STATE          etDBSQLChangeData( etDBDriver* dbDriver, etDBTable* dbTable, etString* sqlquery );
+
+
+etID_STATE          etDBSQLRemoveData( etDBDriver* dbDriver, etDBTable* dbTable, etString* sqlquery, const char* columnEnclose );
+
+
+etID_STATE          etDBSQLGetData( etDBDriver* dbDriver, etDBTable* dbTable, etDBFilter* dbFilter, etString* sqlquery );
 
 
 

@@ -26,17 +26,17 @@ extern "C" {
 #include "sqlite3.h"
 
 typedef struct etDBSQLiteDriver_s {
-    etString        *sqlquery;
-    
+    etString*       sqlquery;
+
     int             sqliteState;
-    sqlite3         *sqliteHandle;
-    sqlite3_stmt    *sqliteStatement;
+    sqlite3*        sqliteHandle;
+    sqlite3_stmt*   sqliteStatement;
 
 } etDBSQLiteDriver;
 
 
 
-etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *filename );
+etID_STATE          etDBSQLiteDriverInit( etDBDriver* dbDriver, const char* filename );
 
 
 

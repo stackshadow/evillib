@@ -24,8 +24,8 @@
 #include "core/etObject.h"
 #include "memory/etMemory.h"
 #include "db/etDBObject.h"
-#include "db/etDBObjectTable.h"
-#include "db/etDBObjectTableColumn.h"
+#include "db/etDBTable.h"
+#include "db/etDBColumn.h"
 #include "db/etDBObjectValue.h"
 
 

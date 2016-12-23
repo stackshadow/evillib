@@ -43,8 +43,8 @@
 #include "string/etStringChar.c"
 
 #include "db/etDBObject.c"
-#include "db/etDBObjectTable.c"
-#include "db/etDBObjectTableColumn.c"
+#include "db/etDBTable.c"
+#include "db/etDBColumn.c"
 #include "db/etDBObjectFilter.c"
 #include "db/etDBObjectValue.c"
 #include "dbdriver/etDBSQL.c"

@@ -16,25 +16,31 @@
     along with evillib.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "evillib_depends.h"
+#include "evillib-extra_depends.h"
+
+#ifndef etDBSQL_C
+#define etDBSQL_C
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 #include "dbdriver/etDBDriver.h"
 #include "db/etDBObject.h"
-#include "db/etDBObjectTable.h"
-#include "db/etDBObjectTableColumn.h"
+#include "db/etDBTable.h"
+#include "db/etDBColumn.h"
 
 
 
+// Table
 
-etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery, const char *columnEnclose ){
+etID_STATE          etDBSQLAddTable( etDBDriver* dbDriver, etDBTable* dbTable, etString* sqlquery, const char* columnEnclose ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( sqlquery );
-
-// check if an table is selected
-    if( dbObject->jsonTable == NULL ){
-        etDebugMessage( etID_LEVEL_WARNING, "You did not select a table" );
-        return etID_STATE_WARN_SEQERR;
-    }
 
 // clear
     etStringClean( sqlquery );
@@ -44,28 +50,31 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
 
 // add table name
     const char *tableName = NULL;
-    etDBObjectTableNameGet( dbObject, tableName );
+    etDBTableGetName( dbTable, tableName );
     etStringCharAdd( sqlquery, "\"" );
     etStringCharAdd( sqlquery, tableName );
     etStringCharAdd( sqlquery, "\"" );
 
 // columns
+    void*               dbColumnIterator = NULL;
+    etDBColumn*         dbColumn = NULL;
     etID_BOOL           firstColumn = etID_TRUE;
     const char          *columnName = NULL;
     etDBColumnType      columnType;
-    int                 columnOption = etDBCOLUMN_OPTION_NOTHING;
+    unsigned int        columnOption = etDBCOLUMN_OPTION_NOTHING;
 
     etStringCharAdd( sqlquery, " ( " );
-    etDBObjectIterationReset(dbObject);
-    while( etDBObjectTableColumnNext(dbObject,columnName) == etID_YES ){
+
+
+    while( etDBTableIterateColumn( dbTable, dbColumnIterator, dbColumn ) == etID_YES ){
 
     // comma
         if( firstColumn == etID_FALSE ){
             etStringCharAdd( sqlquery, "," );
         }
 
-    char test[strlen(columnName)+1];
-    memcpy( test, columnName, strlen(columnName) );
+    // get column name
+        etDBColumnGet( dbColumn, columnName, columnType, columnOption );
 
     // column name
         etStringCharAdd( sqlquery, columnEnclose );
@@ -74,13 +83,11 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
         etStringCharAdd( sqlquery, " " );
 
     // column type
-        etDBObjectTableColumnTypeGet( dbObject, columnType );
         if( dbDriver->queryColumnTypeAdd != NULL ){
             dbDriver->queryColumnTypeAdd( sqlquery, columnType );
         }
 
     // get column specials ( like primary key )
-        etDBObjectTableColumnOptionGet( dbObject, columnOption );
         if( dbDriver->queryColumnOptionAdd != NULL ){
             dbDriver->queryColumnOptionAdd( sqlquery, columnOption );
         }
@@ -95,17 +102,12 @@ etID_STATE          etDBSQLTableCreate( etDBDriver *dbDriver, etDBObject *dbObje
 }
 
 
-etID_STATE          etDBSQLTableRemove( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
+etID_STATE          etDBSQLRemoveTable( etDBDriver* dbDriver, etDBTable* dbTable, etString* sqlquery ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( sqlquery );
 
-// check if an table is selected
-    if( dbObject->jsonTable == NULL ){
-        etDebugMessage( etID_LEVEL_WARNING, "You did not select a table" );
-        return etID_STATE_WARN_SEQERR;
-    }
 
 // clear
     etStringClean( sqlquery );
@@ -115,7 +117,7 @@ etID_STATE          etDBSQLTableRemove( etDBDriver *dbDriver, etDBObject *dbObje
 
 // add table name
     const char *tableName = NULL;
-    etDBObjectTableNameGet( dbObject, tableName );
+    etDBTableGetName( dbTable, tableName );
     etStringCharAdd( sqlquery, tableName );
     etStringCharAdd( sqlquery, ";" );
 
@@ -124,15 +126,14 @@ etID_STATE          etDBSQLTableRemove( etDBDriver *dbDriver, etDBObject *dbObje
 }
 
 
-etID_STATE          etDBSQLColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery, const char *columnEnclose ){
+// Column
+
+etID_STATE          etDBSQLAddColumn( etDBDriver* dbDriver, etDBTable* dbTable, const char* columnName, etString* sqlquery, const char* columnEnclose ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
+    etDebugCheckNull( columnName );
     etDebugCheckNull( sqlquery );
-
-// check if an table and column is selected
-    etDBObjectTableCheck( dbObject );
-    etDBObjectColumnCheck( dbObject );
 
 // clear
     etStringClean( sqlquery );
@@ -142,7 +143,7 @@ etID_STATE          etDBSQLColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject
 
 // add table name
     const char *tableName = NULL;
-    etDBObjectTableNameGet( dbObject, tableName );
+    etDBTableGetName( dbTable, tableName );
     etStringCharAdd( sqlquery, "\"" );
     etStringCharAdd( sqlquery, tableName );
     etStringCharAdd( sqlquery, "\"" );
@@ -150,12 +151,14 @@ etID_STATE          etDBSQLColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject
     etStringCharAdd( sqlquery, " ADD COLUMN " );
 
 // columns
-    const char          *columnName = NULL;
-    etDBColumnType      columnType;
-    int                 columnOption = etDBCOLUMN_OPTION_NOTHING;
+    etDBColumn*         dbColumn;
+    etDBColumnType      dbColumnType;
+    int                 dbColumnOption = etDBCOLUMN_OPTION_NOTHING;
 
-
-    etDBObjectTableColumnNameGet( dbObject, columnName );
+// find the column
+    if( etDBTableGetColumn( dbTable, columnName, dbColumn ) != etID_YES ) return etID_STATE_ERR_INTERR;
+    dbColumnType = dbColumn->type;
+    dbColumnOption = dbColumn->option;
 
 // column name
     etStringCharAdd( sqlquery, columnEnclose );
@@ -164,15 +167,13 @@ etID_STATE          etDBSQLColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject
     etStringCharAdd( sqlquery, " " );
 
 // column type
-    etDBObjectTableColumnTypeGet( dbObject, columnType );
     if( dbDriver->queryColumnTypeAdd != NULL ){
-        dbDriver->queryColumnTypeAdd( sqlquery, columnType );
+        dbDriver->queryColumnTypeAdd( sqlquery, dbColumnType );
     }
 
 // get column specials ( like primary key )
-    etDBObjectTableColumnOptionGet( dbObject, columnOption );
     if( dbDriver->queryColumnOptionAdd != NULL ){
-        dbDriver->queryColumnOptionAdd( sqlquery, columnOption );
+        dbDriver->queryColumnOptionAdd( sqlquery, dbColumnOption );
     }
 
 
@@ -183,20 +184,18 @@ etID_STATE          etDBSQLColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject
 }
 
 
-etID_STATE          etDBSQLDataAdd( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
+// Data
+
+etID_STATE          etDBSQLAddData( etDBDriver* dbDriver, etDBTable* dbTable, etString* sqlquery ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( sqlquery );
 
 
-// check if an table is selected
-    if( dbObject->jsonTable == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
-        return etID_STATE_WARN_SEQERR;
-    }
-
 // vars
+    etDBColumn*         dbColumn = NULL;
+    void*               dbColumnIterator = NULL;
     etID_BOOL           firstColumn = etID_TRUE;
     const char          *tableName = NULL;
     const char          *columnName = NULL;
@@ -213,15 +212,18 @@ etID_STATE          etDBSQLDataAdd( etDBDriver *dbDriver, etDBObject *dbObject, 
     etStringCharSet( sqlquery, "INSERT INTO ", 12 );
 
 // add table name
-    etDBObjectTableNameGet( dbObject, tableName );
+    etDBTableGetName( dbTable, tableName );
     etStringCharAdd( sqlquery, "\"" );
     etStringCharAdd( sqlquery, tableName );
     etStringCharAdd( sqlquery, "\"" );
 
 // columns
     etStringCharAdd( sqlquery, " (" );
-    etDBObjectIterationReset(dbObject);
-    while( etDBObjectValueNext(dbObject,columnName,columnValue) == etID_YES ){
+    while( etDBTableIterateColumn( dbTable, dbColumnIterator, dbColumn ) == etID_YES ){
+
+    // get the value
+        __etDBColumnGet( dbColumn, &columnName, NULL, NULL );
+        etDBColumnGetValue( dbColumn, columnValue );
 
     // comma
         if( firstColumn == etID_FALSE ){
@@ -250,6 +252,7 @@ etID_STATE          etDBSQLDataAdd( etDBDriver *dbDriver, etDBObject *dbObject, 
 
 // free
     etStringFree( valueString );
+
 /*
 INSERT INTO table_name (column1,column2,column3,...)
 VALUES (value1,value2,value3,...);
@@ -258,13 +261,13 @@ VALUES (value1,value2,value3,...);
 }
 
 
-etID_STATE          etDBSQLDataChange( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
+etID_STATE          etDBSQLChangeData( etDBDriver* dbDriver, etDBTable* dbTable, etString* sqlquery ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( sqlquery );
 
-
+/*
 // check if an table is selected
     if( dbObject->jsonTable == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a table" );
@@ -332,7 +335,7 @@ etID_STATE          etDBSQLDataChange( etDBDriver *dbDriver, etDBObject *dbObjec
     etStringCharAdd( sqlquery, "'" );
 
 
-
+*/
 /*
 UPDATE `doDB` SET `value`=? WHERE `_rowid_`='2';
 */
@@ -340,13 +343,13 @@ UPDATE `doDB` SET `value`=? WHERE `_rowid_`='2';
 }
 
 
-etID_STATE          etDBSQLDataRemove( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery, const char *columnEnclose ){
+etID_STATE          etDBSQLRemoveData( etDBDriver* dbDriver, etDBTable* dbTable, etString* sqlquery, const char* columnEnclose ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( sqlquery );
 
-
+/*
 // check if an table is selected
     if( dbObject->jsonTable == NULL ){
         etDebugMessage( etID_STATE_WARN, "You did not select a table" );
@@ -390,25 +393,20 @@ etID_STATE          etDBSQLDataRemove( etDBDriver *dbDriver, etDBObject *dbObjec
     etStringCharAdd( sqlquery, " = '" );
     etStringCharAdd( sqlquery, primaryColumnValue );
     etStringCharAdd( sqlquery, "'" );
-
+*/
     return etID_YES;
 }
 
 
-etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, etString *sqlquery ){
+etID_STATE          etDBSQLGetData( etDBDriver* dbDriver, etDBTable* dbTable, etDBFilter* dbFilter, etString* sqlquery ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( sqlquery );
 
-
-// check if an table is selected
-    if( dbObject->jsonTable == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
-        return etID_STATE_WARN_SEQERR;
-    }
-
 // vars
+    etDBColumn*         dbColumn = NULL;
+    void*               dbColumnIterator = NULL;
     etID_BOOL           firstColumn = etID_TRUE;
     const char          *tableName = NULL;
     const char          *columnName = NULL;
@@ -419,8 +417,10 @@ etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, e
 // create table
     etStringCharSet( sqlquery, "SELECT ", 7 );
 
-    etDBObjectIterationReset(dbObject);
-    while( etDBObjectTableColumnNext(dbObject,columnName) == etID_YES ){
+    while( etDBTableIterateColumn( dbTable, dbColumnIterator, dbColumn ) == etID_YES ){
+
+    // get
+        __etDBColumnGet( dbColumn, &columnName, NULL, NULL );
 
     // comma
         if( firstColumn == etID_FALSE ){
@@ -436,26 +436,32 @@ etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, e
     }
 
 // FROM
-    etDBObjectTableNameGet( dbObject, tableName );
+    etDBTableGetName( dbTable, tableName );
     etStringCharAdd( sqlquery, " FROM " );
     etStringCharAdd( sqlquery, "\"" );
     etStringCharAdd( sqlquery, tableName );
     etStringCharAdd( sqlquery, "\"" );
 
+// if we dont have a filter, we return
+    if( dbFilter == NULL ) return etID_YES;
 
 // WHERE
+    etDBFilterElement*  dbFilterElement = NULL;
+    void*               dbFilterIterator = NULL;
     etID_STATE          isWHERE = etID_NO;
     etID_STATE          isFirstOperation = etID_YES;
     int                 actualFilterGroup = -1;
     int                 filterGroup;
     etDBFILTER_OP       filterOperation;
-    const char          *filterColumn;
+    const char*         filterColumn;
     etDBFILTER_TYPE     filterType;
-    const char          *filterString;
+    const char*         filterString;
 
 
-    etDBObjectIterationReset( dbObject );
-    while( etDBObjectFilterNext( dbObject, &filterGroup, &filterOperation, &filterColumn, &filterType, &filterString ) == etID_YES ){
+    while( etDBFilterIterate( dbFilter, dbFilterIterator, dbFilterElement ) == etID_YES ){
+
+    // get
+        etDBFilterElementGet( dbFilterElement, filterGroup, filterOperation, filterColumn, filterType, filterString );
 
     // add WHERE
         if( isWHERE == etID_NO ){
@@ -541,6 +547,46 @@ etID_STATE          etDBSQLSelect( etDBDriver *dbDriver, etDBObject *dbObject, e
 }
 
 
+etID_STATE          etDBSQLGetDataWithOffset( etDBDriver* dbDriver, etDBTable* dbTable, int offset, int amount, etDBFilter* dbFilter, etString* sqlquery ){
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbTable );
+    etDebugCheckNull( sqlquery );
+
+    if( etDBSQLGetData(dbDriver,dbTable,dbFilter,sqlquery) != etID_YES ){
+        return etID_STATE_ERR_INTERR;
+    }
+
+// temp
+    // UINT_MAX 	4294967295 = 10 digits
+    char numberString[11];
+    memset( numberString, 0, 11 );
+
+// append the limit to the end of the query
+    etStringCharAdd( sqlquery, " LIMIT " );
+
+    snprintf( numberString, 10, "%i", amount );
+    etStringCharAdd( sqlquery, numberString );
+
+    etStringCharAdd( sqlquery, " OFFSET " );
+
+    snprintf( numberString, 10, "%i", offset );
+    etStringCharAdd( sqlquery, numberString );
+
+    return etID_YES;
+}
+
+
+
+
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif
 
 
 

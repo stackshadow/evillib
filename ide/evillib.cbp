@@ -11,7 +11,7 @@
 		<Option virtualFolders="tests/;make/;extra/;extra/db/;extra/dbdriver/;extra/specialheaders/;core/;core/core/;core/core/string/;core/memory/;" />
 		<Build>
 			<Target title="evillib-app">
-				<Option output="/tmp/evillib/build/tests/etList" prefix_auto="0" extension_auto="0" />
+				<Option output="../../../../../tmp/evillib/build/tests/etDBObject" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="/tmp/evillib/build/tests" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
@@ -734,6 +734,20 @@
 		<Unit filename="../documentation/images/evillib-logo.png" />
 		<Unit filename="../documentation/images/lgplv3-147x51.png" />
 		<Unit filename="../documentation/images/lgplv3-88x31.png" />
+		<Unit filename="../extra/db/etDBColumn.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="extra/db/" />
+		</Unit>
+		<Unit filename="../extra/db/etDBColumn.h">
+			<Option virtualFolder="extra/db/" />
+		</Unit>
+		<Unit filename="../extra/db/etDBFilter.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="extra/db/" />
+		</Unit>
+		<Unit filename="../extra/db/etDBFilter.h">
+			<Option virtualFolder="extra/db/" />
+		</Unit>
 		<Unit filename="../extra/db/etDBObject.c">
 			<Option compilerVar="CC" />
 			<Option virtualFolder="extra/db/" />
@@ -742,34 +756,20 @@
 		<Unit filename="../extra/db/etDBObject.h">
 			<Option virtualFolder="extra/db/" />
 		</Unit>
-		<Unit filename="../extra/db/etDBObjectFilter.c">
-			<Option compilerVar="CC" />
-			<Option virtualFolder="extra/db/" />
-		</Unit>
-		<Unit filename="../extra/db/etDBObjectFilter.h">
-			<Option virtualFolder="extra/db/" />
-		</Unit>
-		<Unit filename="../extra/db/etDBObjectTable.c">
-			<Option compilerVar="CC" />
-			<Option virtualFolder="extra/db/" />
-		</Unit>
 		<Unit filename="../extra/db/etDBObjectTable.dox" />
-		<Unit filename="../extra/db/etDBObjectTable.h">
-			<Option virtualFolder="extra/db/" />
-		</Unit>
-		<Unit filename="../extra/db/etDBObjectTableColumn.c">
-			<Option compilerVar="CC" />
-			<Option virtualFolder="extra/db/" />
-		</Unit>
-		<Unit filename="../extra/db/etDBObjectTableColumn.h">
-			<Option virtualFolder="extra/db/" />
-		</Unit>
 		<Unit filename="../extra/db/etDBObjectValue.c">
 			<Option compilerVar="CC" />
 			<Option virtualFolder="extra/db/" />
 		</Unit>
 		<Unit filename="../extra/db/etDBObjectValue.dox" />
 		<Unit filename="../extra/db/etDBObjectValue.h">
+			<Option virtualFolder="extra/db/" />
+		</Unit>
+		<Unit filename="../extra/db/etDBTable.c">
+			<Option compilerVar="CC" />
+			<Option virtualFolder="extra/db/" />
+		</Unit>
+		<Unit filename="../extra/db/etDBTable.h">
 			<Option virtualFolder="extra/db/" />
 		</Unit>
 		<Unit filename="../extra/dbdriver/etDBDriver.c">

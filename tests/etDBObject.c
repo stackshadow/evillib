@@ -17,252 +17,199 @@
 */
 
 
-#include "app/etApicheck.h"
-#include "app/etApicheck.c"
+#include "evillib_defines.h"
+#include "evillib_depends.h"
+
 
 #include "core/etInit.c"
-#include "db/etDBObject.c"
-#include "db/etDBObjectTable.c"
-#include "db/etDBObjectTableColumn.c"
-#include "db/etDBObjectValue.c"
+#include "db/etDBTable.c"
+#include "db/etDBColumn.c"
+#include "db/etDBFilter.c"
+#include "dbdriver/etDBDriver.c"
+#include "dbdriver/etDBSQL.c"
+
+#include "dbdriver/etDBSQLite.c"
+//#include "db/etDBObjectTableColumn.c"
+//#include "db/etDBObjectValue.c"
+
+
+#include "app/etApicheck.h"
+#include "app/etApicheck.c"
 
 
 
 etID_STATE              etDBObjectTableApiCheck(){
     etApicheckTimer( "etDB: check table" );
 
-// vars
-    etDBObject      *table;
+    etDBTable*      dbTable = NULL;
+    const char*     tempChar = NULL;
 
-// alloc
-    etDBObjectAlloc( table );
 
-// this should not ! work
-    const char *testTableName = NULL;
-    if( etDBObjectTableNameGet( table, testTableName ) == etID_YES ){
-        exit(-1);
+    etDBTableAlloc( dbTable );
+
+
+// table name
+    etDBTableSetName( dbTable, "привет мир" );
+    etDBTableGetName( dbTable, tempChar );
+    etDebugMessage( etID_STATE_WARN, tempChar );
+    int length = strlen(tempChar);
+    if( strncmp(tempChar,"привет мир",19) != 0 ){
+        etDebugMessage( etID_STATE_CRIT, "Error in etDBObjectTableSetName" );
     }
 
-// append two tables
-    etDBObjectTableAdd( table, "table1" );
-    etDBObjectTableAdd( table, "table2" );
-    etDBObjectTableAdd( table, "table3" );
-
-// dump it
-    etDBObjectDump( table );
-
-// we go to every table
-    etDBObjectIterationReset( table );
-    int tableCounter = 0;
-    while( etDBObjectTableNext( table, testTableName ) == etID_YES ){
-        tableCounter++;
-    }
-    if( tableCounter != 3 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table counter is not correct" );
-        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        exit(-1);
+// table display name
+    etDBTableSetDisplayName( dbTable, "A Table with testdata" );
+    etDBTableGetDisplayName( dbTable, tempChar );
+    if( strncmp(tempChar,"A Table with testdata",21) != 0 ){
+        etDebugMessage( etID_STATE_CRIT, "Error in etDBObjectTableGetDisplayName" );
     }
 
-
-// pick a table
-    etDBObjectTablePick( table, "table2" );
-    etDBObjectTableNameGet( table, testTableName );
-    if( strncmp(testTableName,"table2",6) != 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table %s != table2", testTableName );
-        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        exit(-1);
-    }
-
-
-// this return just the table name
-    const char *displayName = NULL;
-    etDBObjectTableDisplayNameGet( table, "", displayName );
-    if( strncmp(displayName,"table2",6) != 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table 'table2' don't return the correct display-name" );
-        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        exit(-1);
-    }
-
-// set some display names
-    etDBObjectTableDisplayNameSet( table, "de", "Tabelle 2" );
-    etDBObjectTableDisplayNameSet( table, "en", "table 2" );
-    etDBObjectTableDisplayNameSet( table, "", "default" );
-
-// check if display name work correct
-    displayName = NULL;
-    etDBObjectTableDisplayNameGet( table, "", displayName );
-    if( strncmp(displayName,"default",7) != 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table 'table2' don't return the correct display-name" );
-        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        exit(-1);
-    }
-
-    displayName = NULL;
-    etDBObjectTableDisplayNameGet( table, "an", displayName );
-    if( strncmp(displayName,"default",7) != 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table 'table2' don't return the correct display-name" );
-        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        return -1;
-    }
-
-    displayName = NULL;
-    etDBObjectTableDisplayNameGet( table, "de", displayName );
-    if( strncmp(displayName,"Tabelle 2",9) != 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Table 'table2' don't return the correct display-name" );
-        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        return -1;
-    }
-
-
-
-
-    etDBObjectDump( table );
-    etDBObjectFree( table );
-
+    etDBTableFree( dbTable );
+    etMemoryDump( NULL, NULL );
     return etID_YES;
 }
 
+etID_STATE              etDBColumnTest(){
 
-etID_STATE              etDBObjectTableColumnApiCheck(){
-    etApicheckTimer( "etDB: check column" );
+    etDBColumn*     dbColumn = NULL;
 
-// alloc the dbobject
-    etDBObject      *dbObject;
-    const char      *column = NULL;
+    etDBColumnAlloc( dbColumn );
+    etDBColumnSet( dbColumn, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_NOTNULL | etDBCOLUMN_OPTION_UNIQUE );
+    etDBColumnFree( dbColumn );
 
-    etDBObjectAlloc( dbObject );
-
-// add some tables
-    etDBObjectTableAdd( dbObject, "table1" );
-    etDBObjectTableAdd( dbObject, "table2" );
-    etDBObjectTableAdd( dbObject, "table3" );
-    etDBObjectTableAdd( dbObject, "table4" );
-
-
-// pick table2
-    etDBObjectTablePick( dbObject, "table2" );
-
-// add some columns to table2
-    etDBObjectTableColumnAdd( dbObject, "column1", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
-    etDBObjectTableColumnAdd( dbObject, "column2", etDBCOLUMN_TYPE_INT, etDBCOLUMN_OPTION_NOTHING );
-    etDBObjectTableColumnAdd( dbObject, "column3", etDBCOLUMN_TYPE_FLOAT, etDBCOLUMN_OPTION_NOTHING );
-
-
-    etDBObjectTablePick( dbObject, "table1" );
-    etDBObjectIterationReset( dbObject );
-    if( etDBObjectTableColumnNext( dbObject, column ) == etID_YES ){
-        exit(-1);
-    }
-
-    etDBObjectTablePick( dbObject, "table2" );
-    etDBObjectIterationReset( dbObject );
-    if( etDBObjectTableColumnNext( dbObject, column ) != etID_YES ){
-        exit(-1);
-    }
-
-// count if we have three columns
-    const char *columnName = NULL;
-    int columnCounter = 0;
-    etDBObjectIterationReset( dbObject );
-    while( etDBObjectTableColumnNext( dbObject, columnName ) == etID_YES ){
-        columnCounter++;
-    }
-    if( columnCounter != 3 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Column counter is not 3" );
-        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        exit(-1);
-    }
-
-
-// check main column
-    const char *mainColumnName = NULL;
-    etDBObjectTableColumnMainSet( dbObject, "column1" );
-    etDBObjectTableColumnMainGet( dbObject, mainColumnName );
-    if( strncmp(mainColumnName,"column1",7) != 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "mainColumnName %s != column1", mainColumnName );
-        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        return -1;
-    }
-
-
-
-
-    etDBObjectDump( dbObject );
-
-
-// End Timer
-    etApicheckTimer( "OK" );
+    etMemoryDump( NULL, NULL );
     return etID_YES;
 }
 
+etID_STATE              etDBTableColumnTest(){
+    etApicheckTimer( "etDB: check table" );
 
-etID_STATE              etDBObjectValueApiCheck(){
-    etApicheckTimer( "etDB: check value" );
-
-// get the first value
-    etDBObject *dbObject;
-    const char *columnName = NULL;
-    const char *columnValue = NULL;
-
-// alloc the dbobject
-    etDBObjectAlloc( dbObject );
-
-// set some values
-    etDBObjectValueSet( dbObject, "column1", "value1" );
-    etDBObjectValueSet( dbObject, "column2", "value2" );
-    etDBObjectValueSet( dbObject, "column3", "value3" );
-    etDBObjectValueSet( dbObject, "column4", "value5" );
-    etDBObjectValueSet( dbObject, "column5", "value5" );
-
-// get value
-    etDBObjectValueGet( dbObject, "column3", columnValue );
-    if( strncmp(columnValue,"value3",6) != 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "value of 'column3' is '%s', should be 'value3'", columnValue );
-        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        return etID_NO;
-    }
-
-// reset
-    int columnValueCount = 0;
-    etDBObjectIterationReset( dbObject );
-    while( etDBObjectValueNext(dbObject,columnName,columnValue) == etID_YES ){
-        columnValueCount++;
-    }
-    if( columnValueCount != 5 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "count of columns is '%i' and not 5", columnValueCount );
-        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        return etID_NO;
-    }
-
-// dump the values
-    const char *dumpValues = NULL;
-    etDBObjectValueExport( dbObject, dumpValues );
-
-// inject the values
-    etDBObjectValueImport( dbObject, "{ \"name\": { \"value\":\"max\" }, \"familyname\": { \"value\":\"mustermann\" } }" );
-// get value
-    etDBObjectValueGet( dbObject, "name", columnValue );
-    if( strncmp(columnValue,"max",3) != 0 ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "value of 'column3' is '%s', should be 'max'", columnValue );
-        etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-        return etID_NO;
-    }
+    etDBTable*      dbTable = NULL;
+    etDBColumn*     dbColumn = NULL;
+    const char*     tempChar = NULL;
 
 
 
-// End Timer
-    etApicheckTimer( "OK" );
+
+    etDBTableAlloc( dbTable );
+    etDBTableSetName( dbTable, "Test" );
+    etDBTableSetDisplayName( dbTable, "A Table with testdata" );
+
+    etDBColumnAlloc( dbColumn );
+    etDBColumnSet( dbColumn, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_NOTNULL | etDBCOLUMN_OPTION_UNIQUE );
+    etDBTableAppendColumn( dbTable, dbColumn );
+
+    etDBColumnAlloc( dbColumn );
+    etDBColumnSet( dbColumn, "name", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
+    etDBTableAppendColumn( dbTable, dbColumn );
+
+    etDBColumnAlloc( dbColumn );
+    etDBColumnSet( dbColumn, "prename", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
+    etDBTableAppendColumn( dbTable, dbColumn );
+
+// values
+    etDBTableGetColumn( dbTable, "uuid", dbColumn );
+    etDBColumnSetValue( dbColumn, "1203713-091273901273" );
+
+    etDBTableGetColumn( dbTable, "name", dbColumn );
+    etDBColumnSetValue( dbColumn, "Musterman" );
+
+    etDBTableGetColumn( dbTable, "prename", dbColumn );
+    etDBColumnSetValue( dbColumn, "Max" );
+
+    etDBTableDumpColumn( dbTable );
+
+    etDBTableFree( dbTable );
+    etMemoryDump( NULL, NULL );
     return etID_YES;
 }
 
+etID_STATE              etDBDriverTestSQLite(){
+    etApicheckTimer( "etDB: check table" );
+
+    etDBDriver*     dbDriver = NULL;
+    etDBTable*      dbTable = NULL;
+    etDBColumn*     dbColumn = NULL;
+    const char*     tempChar = NULL;
 
 
-etID_STATE              etDBObjectApiCheck(){
-    etApicheckTimer( "etString: check" );
+// we need a driver
+    etDBDriverAlloc( dbDriver );
+    etDBSQLiteDriverInit( dbDriver, "/tmp/test.sqlite" );
 
 
-    etApicheckTimer( "OK" );
-    return etID_YES;
+// we build the table
+    etDBTableAlloc( dbTable );
+    etDBTableSetName( dbTable, "Test" );
+    etDBTableSetDisplayName( dbTable, "A Table with testdata" );
+
+    etDBColumnAlloc( dbColumn );
+    etDBColumnSet( dbColumn, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_NOTNULL | etDBCOLUMN_OPTION_UNIQUE );
+    etDBTableAppendColumn( dbTable, dbColumn );
+
+    etDBColumnAlloc( dbColumn );
+    etDBColumnSet( dbColumn, "name", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
+    etDBTableAppendColumn( dbTable, dbColumn );
+
+    etDBColumnAlloc( dbColumn );
+    etDBColumnSet( dbColumn, "prename", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
+    etDBTableAppendColumn( dbTable, dbColumn );
+
+// add the table
+    etDBDriverTableAdd( dbDriver, dbTable );
+
+
+// we add a bunch of data
+    int index, len = 10;
+    for( index = 0; index <= len; index++ ){
+
+        char tempString[101];
+
+    // uuid
+        memset( tempString, 0, 101 );
+        snprintf( tempString, 100, "%s_%i", "uuid", index );
+        etDBTableGetColumn( dbTable, "uuid", dbColumn );
+        etDBColumnSetValue( dbColumn, tempString );
+
+    // prename
+        memset( tempString, 0, 101 );
+        snprintf( tempString, 100, "%s_%i", "Max", index );
+        etDBTableGetColumn( dbTable, "prename", dbColumn );
+        etDBColumnSetValue( dbColumn, tempString );
+
+    // name
+        memset( tempString, 0, 101 );
+        snprintf( tempString, 100, "%s_%i", "Mustermann", index );
+        etDBTableGetColumn( dbTable, "name", dbColumn );
+        etDBColumnSetValue( dbColumn, tempString );
+
+    // add it to the db
+        etDBDriverDataAdd( dbDriver, dbTable );
+    }
+
+
+// get data
+    etDBDriverDataGet( dbDriver, dbTable, NULL );
+    etDBDriverDataNext( dbDriver, dbTable );
+    etDBTableDumpColumn( dbTable );
+
+// get data
+    etDBDriverDataGetWithLimits( dbDriver, dbTable, 5, 1, NULL );
+    etDBDriverDataNext( dbDriver, dbTable );
+    etDBTableDumpColumn( dbTable );
+
+// with filter
+    etDBFilter*     dbFilter = NULL;
+
+    etDBFilterAlloc( dbFilter );
+    etDBFilterAppend( dbFilter, 0, etDBFILTER_OP_NOTHING, "prename", etDBFILTER_TYPE_EQUAL, "Max2" );
+
+    etDBDriverDataGet( dbDriver, dbTable, dbFilter );
+    etDBDriverDataNext( dbDriver, dbTable );
+    etDBTableDumpColumn( dbTable );
+
+
+    etDBDriverDisConnect( dbDriver );
 }
 
 
@@ -272,9 +219,13 @@ int                     main( int argc, const char* argv[] ){
     etDebugLevelSet( etID_LEVEL_ALL );
 
 
-    etDBObjectTableApiCheck();
-    etDBObjectTableColumnApiCheck();
-    etDBObjectValueApiCheck();
+    //etDBObjectTableApiCheck();
+    //etDBColumnTest();
+    //etDBTableColumnTest();
+    etDBDriverTestSQLite();
+
+//    etDBObjectTableColumnApiCheck();
+//    etDBObjectValueApiCheck();
 
 
 }

@@ -21,82 +21,13 @@
 #include "dbdriver/etDBDriver.h"
 #include "dbdriver/etDBSQL.h"
 #include "dbdriver/etDBSQLite.h"
-#include "db/etDBObjectTableColumn.h"
+#include "db/etDBColumn.h"
 #include "db/etDBObjectValue.h"
 
 
 
 // intarnal function definitions
-etID_STATE          etDBSQLiteColumnTypeAdd( etString *sqlquery, etDBColumnType columnType );
-etID_STATE          etDBSQLiteColumnOptionAdd( etString *sqlquery, int option );
 
-
-etID_STATE          etDBSQLiteIsConnected( etDBDriver *dbDriver );
-etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject );
-etID_STATE          etDBSQLiteTableAdd( etDBDriver *dbDriver, etDBObject *dbObject );
-etID_STATE          etDBSQLiteTableRemove( etDBDriver *dbDriver, etDBObject *dbObject );
-etID_STATE          etDBSQLiteColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject );
-etID_STATE          etDBSQLiteColumnRemove( etDBDriver *dbDriver, etDBObject *dbObject );
-etID_STATE          etDBSQLiteDataAdd( etDBDriver *dbDriver, etDBObject *dbObject );
-etID_STATE          etDBSQLiteDataChange( etDBDriver *dbDriver, etDBObject *dbObject );
-etID_STATE          etDBSQLiteDataRemove( etDBDriver *dbDriver, etDBObject *dbObject );
-etID_STATE          etDBSQLiteDataGet( etDBDriver *dbDriver, etDBObject *dbObject );
-etID_STATE          etDBSQLiteDataNext( etDBDriver *dbDriver, etDBObject *dbObject );
-
-
-
-
-// userspace
-etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *filename ){
-// check
-    etDebugCheckNull(dbDriver);
-    etDebugCheckNull(filename);
-
-// clean the driver
-    memset( dbDriver, 0, sizeof(etDBDriver) );
-
-// setup function pointer
-    dbDriver->queryColumnTypeAdd = etDBSQLiteColumnTypeAdd;
-    dbDriver->queryColumnOptionAdd = etDBSQLiteColumnOptionAdd;
-    dbDriver->connect = NULL;
-    dbDriver->isConnected = etDBSQLiteIsConnected;
-
-    dbDriver->tableAdd = etDBSQLiteTableAdd;
-    dbDriver->tableRemove = etDBSQLiteTableRemove;
-
-    dbDriver->columnAdd = etDBSQLiteColumnAdd;
-    dbDriver->columnRemove = NULL;
-
-    dbDriver->dataAdd = etDBSQLiteDataAdd;
-    dbDriver->dataChange = etDBSQLiteDataChange;
-    dbDriver->dataRemove = etDBSQLiteDataRemove;
-    dbDriver->dataGet = etDBSQLiteDataGet;
-    dbDriver->dataNext = etDBSQLiteDataNext;
-
-// alloc data for driver
-    etMemoryAlloc( dbDriver->dbDriverData, sizeof(etDBSQLiteDriver) );
-    etDBSQLiteDriver *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
-
-// alloc query
-    etStringAllocLen( sqliteDriver->sqlquery, 128 );
-
-// try to open the sqlite connection
-    int sqliteResult = sqlite3_open( filename, &sqliteDriver->sqliteHandle );
-    if( sqliteResult == SQLITE_OK ) return etID_YES;
-
-
-// print error
-    const char *sqliteErrorMessage = sqlite3_errmsg( sqliteDriver->sqliteHandle );
-    snprintf( etDebugTempMessage, etDebugTempMessageLen, "%s", sqliteErrorMessage );
-    etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
-
-// close handle
-    sqlite3_close(sqliteDriver->sqliteHandle);
-    sqliteDriver->sqliteHandle = NULL;
-
-// return
-    return etID_STATE_ERR;
-}
 
 
 
@@ -167,10 +98,9 @@ etID_STATE          etDBSQLiteIsConnected( etDBDriver *dbDriver ){
 
 
 
-etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBSQLiteRun( etDBDriver* dbDriver, etDBTable* dbTable ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
     etDebugCheckNull( dbDriver->dbDriverData );
 
 
@@ -179,7 +109,7 @@ etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject ){
 
 // call callback
     if( dbDriver->queryAcknowledge != NULL ){
-        if( dbDriver->queryAcknowledge( dbDriver, dbObject, sqliteDriver->sqlquery ) != etID_YES ){
+        if( dbDriver->queryAcknowledge( dbDriver, dbTable, sqliteDriver->sqlquery ) != etID_YES ){
 
         // show rejected query
             const char *query;
@@ -233,10 +163,10 @@ etID_STATE          etDBSQLiteRun( etDBDriver *dbDriver, etDBObject *dbObject ){
 
 
 
-etID_STATE          etDBSQLiteTableAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBSQLiteTableAdd( etDBDriver* dbDriver, etDBTable* dbTable ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( dbDriver->dbDriverData );
 
 //
@@ -244,10 +174,10 @@ etID_STATE          etDBSQLiteTableAdd( etDBDriver *dbDriver, etDBObject *dbObje
     etID_STATE          returnState = etID_STATE_NOTHING;
 
 // create the query
-    if( etDBSQLTableCreate( dbDriver, dbObject, sqliteDriver->sqlquery, "'" ) != etID_YES ) return etID_STATE_ERR_INTERR;
+    if( etDBSQLAddTable( dbDriver, dbTable, sqliteDriver->sqlquery, "'" ) != etID_YES ) return etID_STATE_ERR_INTERR;
 
 // run the query
-    returnState = etDBSQLiteRun( dbDriver, dbObject );
+    returnState = etDBSQLiteRun( dbDriver, dbTable );
     if( returnState == etID_YES ){
         return etID_YES;
     }
@@ -257,10 +187,10 @@ etID_STATE          etDBSQLiteTableAdd( etDBDriver *dbDriver, etDBObject *dbObje
 }
 
 
-etID_STATE          etDBSQLiteTableRemove( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBSQLiteTableRemove( etDBDriver* dbDriver, etDBTable* dbTable ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( dbDriver->dbDriverData );
 
 //
@@ -268,10 +198,10 @@ etID_STATE          etDBSQLiteTableRemove( etDBDriver *dbDriver, etDBObject *dbO
     etID_STATE          returnState = etID_STATE_NOTHING;
 
 // create the query
-    if( etDBSQLTableRemove( dbDriver, dbObject, sqliteDriver->sqlquery ) != etID_YES ) return etID_STATE_ERR_INTERR;
+    if( etDBSQLRemoveTable( dbDriver, dbTable, sqliteDriver->sqlquery ) != etID_YES ) return etID_STATE_ERR_INTERR;
 
 // run the query
-    returnState = etDBSQLiteRun( dbDriver, dbObject );
+    returnState = etDBSQLiteRun( dbDriver, dbTable );
     if( returnState == etID_YES ){
         return etID_YES;
     }
@@ -283,11 +213,11 @@ etID_STATE          etDBSQLiteTableRemove( etDBDriver *dbDriver, etDBObject *dbO
 
 
 
-etID_STATE          etDBSQLiteColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBSQLiteColumnAdd( etDBDriver* dbDriver, etDBTable* dbTable, const char* columnName ){
 
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( dbDriver->dbDriverData );
 
 //
@@ -295,10 +225,10 @@ etID_STATE          etDBSQLiteColumnAdd( etDBDriver *dbDriver, etDBObject *dbObj
     etID_STATE          returnState = etID_STATE_NOTHING;
 
 // create the query
-    if( etDBSQLColumnAdd( dbDriver, dbObject, sqliteDriver->sqlquery, "'" ) != etID_YES ) return etID_STATE_ERR_INTERR;
+    if( etDBSQLAddColumn( dbDriver, dbTable, columnName, sqliteDriver->sqlquery, "'" ) != etID_YES ) return etID_STATE_ERR_INTERR;
 
 // run the query
-    returnState = etDBSQLiteRun( dbDriver, dbObject );
+    returnState = etDBSQLiteRun( dbDriver, dbTable );
     if( returnState == etID_YES ){
         return etID_YES;
     }
@@ -308,7 +238,7 @@ etID_STATE          etDBSQLiteColumnAdd( etDBDriver *dbDriver, etDBObject *dbObj
 }
 
 
-etID_STATE          etDBSQLiteColumnRemove( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBSQLiteColumnRemove( etDBDriver *dbDriver, etDBObject *dbObject, const char* columnName ){
 // check
     etDebugCheckNull( dbDriver );
     etDebugCheckNull( dbObject );
@@ -342,10 +272,10 @@ ALTER TABLE t1_backup RENAME TO city
 
 
 
-etID_STATE          etDBSQLiteDataAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBSQLiteDataAdd( etDBDriver* dbDriver, etDBTable* dbTable ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( dbDriver->dbDriverData );
 
 //
@@ -354,12 +284,12 @@ etID_STATE          etDBSQLiteDataAdd( etDBDriver *dbDriver, etDBObject *dbObjec
 
 
 // create the query
-    if( etDBSQLDataAdd( dbDriver, dbObject, sqliteDriver->sqlquery ) != etID_YES ){
+    if( etDBSQLAddData( dbDriver, dbTable, sqliteDriver->sqlquery ) != etID_YES ){
         return etID_STATE_ERR_INTERR;
     }
 
 // run the query
-    returnState = etDBSQLiteRun( dbDriver, dbObject );
+    returnState = etDBSQLiteRun( dbDriver, dbTable );
     if( returnState == etID_YES ){
         return etID_YES;
     }
@@ -369,10 +299,10 @@ etID_STATE          etDBSQLiteDataAdd( etDBDriver *dbDriver, etDBObject *dbObjec
 }
 
 
-etID_STATE          etDBSQLiteDataChange( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBSQLiteDataChange( etDBDriver* dbDriver, etDBTable* dbTable ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( dbDriver->dbDriverData );
 
 //
@@ -381,12 +311,12 @@ etID_STATE          etDBSQLiteDataChange( etDBDriver *dbDriver, etDBObject *dbOb
 
 
 // create the query
-    if( etDBSQLDataChange( dbDriver, dbObject, sqliteDriver->sqlquery ) != etID_YES ){
+    if( etDBSQLChangeData( dbDriver, dbTable, sqliteDriver->sqlquery ) != etID_YES ){
         return etID_STATE_ERR_INTERR;
     }
 
 // run the query
-    returnState = etDBSQLiteRun( dbDriver, dbObject );
+    returnState = etDBSQLiteRun( dbDriver, dbTable );
     if( returnState == etID_YES ){
         return etID_YES;
     }
@@ -396,10 +326,10 @@ etID_STATE          etDBSQLiteDataChange( etDBDriver *dbDriver, etDBObject *dbOb
 }
 
 
-etID_STATE          etDBSQLiteDataRemove( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBSQLiteDataRemove( etDBDriver* dbDriver, etDBTable* dbTable ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( dbDriver->dbDriverData );
 
 //
@@ -408,12 +338,12 @@ etID_STATE          etDBSQLiteDataRemove( etDBDriver *dbDriver, etDBObject *dbOb
 
 
 // create the query
-    if( etDBSQLDataRemove( dbDriver, dbObject, sqliteDriver->sqlquery, "\"" ) != etID_YES ){
+    if( etDBSQLRemoveData( dbDriver, dbTable, sqliteDriver->sqlquery, "\"" ) != etID_YES ){
         return etID_STATE_ERR_INTERR;
     }
 
 // run the query
-    returnState = etDBSQLiteRun( dbDriver, dbObject );
+    returnState = etDBSQLiteRun( dbDriver, dbTable );
     if( returnState == etID_YES ){
         return etID_YES;
     }
@@ -423,10 +353,10 @@ etID_STATE          etDBSQLiteDataRemove( etDBDriver *dbDriver, etDBObject *dbOb
 }
 
 
-etID_STATE          etDBSQLiteDataGet( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBSQLiteDataGet( etDBDriver* dbDriver, etDBTable* dbTable, etDBFilter* dbFilter ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( dbDriver->dbDriverData );
 
 // vars
@@ -435,10 +365,10 @@ etID_STATE          etDBSQLiteDataGet( etDBDriver *dbDriver, etDBObject *dbObjec
 
 
 // create the query
-    etDBSQLSelect( dbDriver, dbObject, sqliteDriver->sqlquery );
+    etDBSQLGetData( dbDriver, dbTable, dbFilter, sqliteDriver->sqlquery );
 
 // run the query
-    returnState = etDBSQLiteRun( dbDriver, dbObject );
+    returnState = etDBSQLiteRun( dbDriver, dbTable );
     if( returnState != etID_YES ){
         return etID_STATE_ERR_INTERR;
     }
@@ -452,17 +382,48 @@ etID_STATE          etDBSQLiteDataGet( etDBDriver *dbDriver, etDBObject *dbObjec
 }
 
 
-etID_STATE          etDBSQLiteDataNext( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBSQLiteDataGetWithLimit( etDBDriver* dbDriver, etDBTable* dbTable, int start, int amount, etDBFilter* dbFilter ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( dbDriver->dbDriverData );
 
 // vars
     etDBSQLiteDriver    *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+    etID_STATE          returnState = etID_STATE_NOTHING;
 
-// clean calues
-    etDBObjectValueClean( dbObject );
+
+// create the query
+    etDBSQLGetDataWithOffset( dbDriver, dbTable, start, amount, dbFilter, sqliteDriver->sqlquery );
+
+// run the query
+    returnState = etDBSQLiteRun( dbDriver, dbTable );
+    if( returnState != etID_YES ){
+        return etID_STATE_ERR_INTERR;
+    }
+
+// is there a row ?
+    if( sqliteDriver->sqliteState == SQLITE_ROW ){
+        return etID_YES;
+    }
+
+    return etID_NO;
+}
+
+
+
+
+
+etID_STATE          etDBSQLiteDataNext( etDBDriver* dbDriver, etDBTable* dbTable ){
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbTable );
+    etDebugCheckNull( dbDriver->dbDriverData );
+
+// vars
+    etDBSQLiteDriver*   sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+    etDBColumn*         dbColumn = NULL;
+
 
 // iterate
     if( sqliteDriver->sqliteState == SQLITE_ROW ){
@@ -476,7 +437,9 @@ etID_STATE          etDBSQLiteDataNext( etDBDriver *dbDriver, etDBObject *dbObje
 
             if( columnValue == NULL ) columnValue = ""; // the "NULL" char inside sqlite
 
-            etDBObjectValueSet( dbObject, columnName, columnValue );
+        // get the column and set the value
+            etDBTableGetColumn( dbTable, columnName, dbColumn );
+            etDBColumnSetValue( dbColumn, columnValue );
 
         }
 
@@ -488,5 +451,60 @@ etID_STATE          etDBSQLiteDataNext( etDBDriver *dbDriver, etDBObject *dbObje
     return etID_NO;
 }
 
+
+
+// userspace
+etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *filename ){
+// check
+    etDebugCheckNull(dbDriver);
+    etDebugCheckNull(filename);
+
+// clean the driver
+    memset( dbDriver, 0, sizeof(etDBDriver) );
+
+// setup function pointer
+    dbDriver->queryColumnTypeAdd = etDBSQLiteColumnTypeAdd;
+    dbDriver->queryColumnOptionAdd = etDBSQLiteColumnOptionAdd;
+
+    dbDriver->connect = NULL;
+    dbDriver->isConnected = etDBSQLiteIsConnected;
+
+    dbDriver->tableAdd = etDBSQLiteTableAdd;
+    dbDriver->tableRemove = etDBSQLiteTableRemove;
+
+    dbDriver->columnAdd = etDBSQLiteColumnAdd;
+    dbDriver->columnRemove = NULL;
+
+    dbDriver->dataAdd = etDBSQLiteDataAdd;
+    dbDriver->dataChange = etDBSQLiteDataChange;
+    dbDriver->dataRemove = etDBSQLiteDataRemove;
+    dbDriver->dataGet = etDBSQLiteDataGet;
+    dbDriver->dataGetWithLimit = etDBSQLiteDataGetWithLimit;
+    dbDriver->dataNext = etDBSQLiteDataNext;
+
+// alloc data for driver
+    etMemoryAlloc( dbDriver->dbDriverData, sizeof(etDBSQLiteDriver) );
+    etDBSQLiteDriver *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+
+// alloc query
+    etStringAllocLen( sqliteDriver->sqlquery, 128 );
+
+// try to open the sqlite connection
+    int sqliteResult = sqlite3_open( filename, &sqliteDriver->sqliteHandle );
+    if( sqliteResult == SQLITE_OK ) return etID_YES;
+
+
+// print error
+    const char *sqliteErrorMessage = sqlite3_errmsg( sqliteDriver->sqliteHandle );
+    snprintf( etDebugTempMessage, etDebugTempMessageLen, "%s", sqliteErrorMessage );
+    etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
+
+// close handle
+    sqlite3_close(sqliteDriver->sqliteHandle);
+    sqliteDriver->sqliteHandle = NULL;
+
+// return
+    return etID_STATE_ERR;
+}
 
 

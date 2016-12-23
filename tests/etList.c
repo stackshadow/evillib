@@ -25,8 +25,40 @@ int                     main( int argc, const char* argv[] ){
     etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
 
-    etList*     listStart;
-    etList*     listEnd;
+    etList*         listStart;
+    etList*         listEnd;
+
+    const char*     dataFirst = "First Data";
+    const char*     dataSecond = "Second Data";
+    const char*     dataThird = "Third Data";
+    const char*     dataFourth = "Fourth Data";
+
+    etListAlloc( listStart );
+    etListAppend( listStart, dataFirst );
+    etListAppend( listStart, dataSecond );
+    etListAppend( listStart, dataThird );
+    etListAppend( listStart, dataFourth );
+    etListDump( listStart );
+
+    void* listIterator = NULL;
+    etListIterate( listStart, listIterator );
+    while( etListIterateNext( listIterator, dataFirst ) == etID_YES ){
+        dataSecond = dataFirst;
+    }
+
+    etListDataRemove( listStart, dataSecond, etID_TRUE );
+    etListDump( listStart );
+
+    etListDataRemove( listStart, dataFirst, etID_TRUE );
+    etListDump( listStart );
+
+    etListDataRemove( listStart, dataFourth, etID_TRUE );
+    etListDump( listStart );
+
+
+
+
+/*
 
 // allocate
     etListAlloc( listStart );
@@ -83,6 +115,6 @@ int                     main( int argc, const char* argv[] ){
     etListDump( listStart );
 
     etListFree( listStart );
-
+*/
 }
 

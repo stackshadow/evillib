@@ -106,11 +106,41 @@ etID_STATE              etApichecketMemoryBlock(){
 }
 
 
+etID_STATE              etMemoryBlockTestRef(){
+    etApicheckTimer( "etMemory: Test alloc" );
+
+// Prealloc Blocks
+    etMemoryBlock       *etMemoryBlockA = NULL;
+    etMemoryBlock       *etMemoryBlockB = NULL;
+    etMemoryBlock       *etMemoryBlockC = NULL;
+
+// We allocate an Block
+    etMemoryBlockAlloc( etMemoryBlockA, 10 );
+    etMemoryBlockAlloc( etMemoryBlockB, 10 );
+    etMemoryBlockAlloc( etMemoryBlockC, 10 );
+
+// own
+    etMemoryBlockOwn( etMemoryBlockA, etMemoryBlockB );
+    etMemoryBlockOwn( etMemoryBlockA, etMemoryBlockC );
+
+// release a owned block
+    etMemoryBlockSetReleaseState( etMemoryBlockC, etID_YES );
+    etMemoryBlockIsFree( etMemoryBlockA );
+    etMemoryBlockIsFree( etMemoryBlockC );
+
+// release the parent
+    etMemoryBlockSetReleaseState( etMemoryBlockA, etID_YES );
+
+// missed block
+    etMemoryBlockIsFree( etMemoryBlockB );
+
+}
 
 
 int                     main( int argc, const char* argv[] ){
     //etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
 
-    return etApichecketMemoryBlock();
+    //etApichecketMemoryBlock();
+    etMemoryBlockTestRef();
 }

@@ -19,9 +19,41 @@
 #include "dbdriver/etDBDriver.h"
 
 
+etID_STATE          __etDBDriverAlloc( etDBDriver** p_dbDriver ){
+// check
+    etDebugCheckNull(p_dbDriver);
+
+// vars
+    etDBDriver*         dbDriver = NULL;
+
+// allocate memory
+    etMemoryAlloc( dbDriver, sizeof(etDBDriver) );
+
+// set to none driver
+    dbDriver->type = etDB_DRIVER_NONE;
+
+// return
+    *p_dbDriver = dbDriver;
+    return etID_YES;
+}
 
 
-etID_STATE          etDBDriverConnect( etDBDriver *dbDriver ){
+etID_STATE          __etDBDriverFree( etDBDriver** p_dbDriver ){
+// check
+    etDebugCheckNull(p_dbDriver);
+
+// release memory
+    __etMemoryRelease( (void**)p_dbDriver );
+
+    return etID_YES;
+}
+
+
+
+
+
+
+etID_STATE          etDBDriverConnect( etDBDriver* dbDriver ){
 // check
     etDebugCheckNull(dbDriver);
 
@@ -36,7 +68,7 @@ etID_STATE          etDBDriverConnect( etDBDriver *dbDriver ){
 }
 
 
-etID_STATE          etDBDriverIsConnect( etDBDriver *dbDriver ){
+etID_STATE          etDBDriverIsConnect( etDBDriver* dbDriver ){
 // check
     etDebugCheckNull(dbDriver);
 
@@ -51,7 +83,7 @@ etID_STATE          etDBDriverIsConnect( etDBDriver *dbDriver ){
 }
 
 
-etID_STATE          etDBDriverDisConnect( etDBDriver *dbDriver ){
+etID_STATE          etDBDriverDisConnect( etDBDriver* dbDriver ){
 // check
     etDebugCheckNull(dbDriver);
 
@@ -68,33 +100,33 @@ etID_STATE          etDBDriverDisConnect( etDBDriver *dbDriver ){
 
 
 
-etID_STATE          etDBDriverTableAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBDriverTableAdd( etDBDriver* dbDriver, etDBTable* dbTable ){
 // check
-    etDebugCheckNull(dbDriver);
+    etDebugCheckNull(dbTable);
 
 // call function
     if( dbDriver->tableAdd != NULL ){
-        return dbDriver->tableAdd( dbDriver, dbObject );
+        return dbDriver->tableAdd( dbDriver, dbTable );
     }
 
     return etID_STATE_ERR;
 }
 
 
-etID_STATE          etDBDriverTableRemove( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBDriverTableRemove( etDBDriver* dbDriver, etDBTable* dbTable ){
 // check
-    etDebugCheckNull(dbDriver);
+    etDebugCheckNull(dbTable);
 
 // call function
     if( dbDriver->tableRemove != NULL ){
-        return dbDriver->tableRemove( dbDriver, dbObject );
+        return dbDriver->tableRemove( dbDriver, dbTable );
     }
 
     return etID_STATE_ERR;
 }
 
 
-
+/*
 
 etID_STATE          etDBDriverColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
 // check
@@ -120,23 +152,23 @@ etID_STATE          etDBDriverColumnRemove( etDBDriver *dbDriver, etDBObject *db
 
     return etID_STATE_ERR;
 }
+*/
 
 
 
-
-etID_STATE          etDBDriverDataAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBDriverDataAdd( etDBDriver* dbDriver, etDBTable* dbTable ){
 // check
     etDebugCheckNull(dbDriver);
 
 // call function
     if( dbDriver->dataAdd != NULL ){
-        return dbDriver->dataAdd( dbDriver, dbObject );
+        return dbDriver->dataAdd( dbDriver, dbTable );
     }
 
     return etID_STATE_ERR;
 }
 
-
+/*
 etID_STATE          etDBDriverDataChange( etDBDriver *dbDriver, etDBObject *dbObject ){
 // check
     etDebugCheckNull(dbDriver);
@@ -161,35 +193,58 @@ etID_STATE          etDBDriverDataRemove( etDBDriver *dbDriver, etDBObject *dbOb
 
     return etID_STATE_ERR;
 }
+*/
 
-
-etID_STATE          etDBDriverDataGet( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBDriverDataGet( etDBDriver* dbDriver, etDBTable* dbTable, etDBFilter* dbFilter ){
 // check
     etDebugCheckNull(dbDriver);
 
 // clean values
-    etDBObjectValueClean( dbObject );
+    etDBTableCleanColumnValues( dbTable );
 
 // call function
     if( dbDriver->dataGet != NULL ){
-        return dbDriver->dataGet( dbDriver, dbObject );
+        return dbDriver->dataGet( dbDriver, dbTable, dbFilter );
     }
 
     return etID_STATE_ERR;
 }
 
 
-etID_STATE          etDBDriverDataNext( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBDriverDataGetWithLimits( etDBDriver* dbDriver, etDBTable* dbTable, int start, int amount, etDBFilter* dbFilter ){
 // check
     etDebugCheckNull(dbDriver);
 
+// clean values
+    etDBTableCleanColumnValues( dbTable );
+
 // call function
-    if( dbDriver->dataNext != NULL ){
-        return dbDriver->dataNext( dbDriver, dbObject );
+    if( dbDriver->dataGetWithLimit != NULL ){
+        return dbDriver->dataGetWithLimit( dbDriver, dbTable, start, amount, dbFilter );
     }
 
     return etID_STATE_ERR;
 }
+
+
+etID_STATE          etDBDriverDataNext( etDBDriver* dbDriver, etDBTable* dbTable ){
+// check
+    etDebugCheckNull(dbDriver);
+
+// clean values
+    etDBTableCleanColumnValues( dbTable );
+
+// call function
+    if( dbDriver->dataNext != NULL ){
+        return dbDriver->dataNext( dbDriver, dbTable );
+    }
+
+    return etID_STATE_ERR;
+}
+
+
+
+
 
 
 

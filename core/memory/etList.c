@@ -48,10 +48,8 @@ etID_STATE      __etListAlloc( etList** p_list ){
     }
 
 // String properties
-    newList->prev = NULL;
-    newList->next = NULL;
-    newList->data = NULL;
-
+    newList->start = NULL;
+    newList->end = NULL;
 
 // Return
     *p_list = newList;
@@ -65,25 +63,13 @@ etID_STATE      __etListFree( etList** p_list ){
     etDebugCheckNull( *p_list );
 
 // vars
-    etList*     etListElement = *p_list;
-    etList*     etListElementToFree = NULL;
+    etList*             list = *p_list;
 
-// go to start
-    if( etListElement->prev != NULL ) etListElement = etListElement->prev;
-
-// release all elements
-    etListElement = etListElement->next;
-    while( etListElement != NULL ){
-
-        etListElementToFree = etListElement;
-        etListElement = etListElement->next;
-
-        etMemoryRelease( etListElementToFree );
-    }
+// clean the list
+    etListClean( list );
 
 // release the list
-    etListElement = *p_list;
-    etMemoryRelease( etListElement );
+    etMemoryRelease( list );
 
 // return
     *p_list = NULL;
@@ -91,29 +77,72 @@ etID_STATE      __etListFree( etList** p_list ){
 }
 
 
-etID_STATE      __etListAppend( etList** p_list, void *data ){
+etID_STATE      etListClean( etList* list ){
 // Object okay ?
-    etDebugCheckNull( p_list );
+    etDebugCheckNull( list );
 
-// Vars
-    etList*     list = *p_list;
-    etList*     newListElement = NULL;
+// vars
+    etListElement*      listElement = list->start;
+    etListElement*      listElementNext = NULL;
+    int                 etListCounter = 0;
 
-// go to the end
-    while( list->next != NULL ) list = list->next;
+// release all elements
+    while( listElement != NULL ){
+        listElementNext = listElement->next;
 
-// Allocate
-    etMemoryRequest( newListElement, sizeof(etList) );
-    if( newListElement == NULL ){
-        *p_list = NULL;
-        return etDebugState(etID_STATE_CRIT_NOMEMORY);
+        etMemoryRelease( listElement );
+
+        listElement = listElementNext;
+        etListCounter++;
     }
 
-    newListElement->prev = list;
-    newListElement->data = data;
-    list->next = newListElement;
+    list->start = NULL;
+    list->end = NULL;
 
-    *p_list = newListElement;
+// Debug
+    #ifndef ET_DEBUG_OFF
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p cleaned %i elements", list, etListCounter );
+        etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
+    #endif
+
+    return etID_YES;
+}
+
+
+etID_STATE      etListAppend( etList* list, void *data ){
+// Object okay ?
+    etDebugCheckNull( list );
+
+// Vars
+    etListElement*      listElement = NULL;
+
+// Allocate
+    etMemoryRequest( listElement, sizeof(etListElement) );
+    if( listElement == NULL ){
+        return etDebugState(etID_STATE_CRIT_NOMEMORY);
+    }
+    listElement->data = data;
+
+// refresh the end
+    if( list->end != NULL ){
+        while( list->end->next != NULL ) list->end = list->end->next;
+    }
+
+    if( list->end == NULL ){
+        list->start = listElement;
+        list->end = listElement;
+    } else {
+        list->end->next = listElement;
+        listElement->prev = list->end;
+        list->end = listElement;
+    }
+
+// Debug
+    #ifndef ET_DEBUG_OFF
+        snprintf( etDebugTempMessage, etDebugTempMessageLen, "append %p to list %p", listElement, list );
+        etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
+    #endif
+
     return etID_YES;
 }
 
@@ -124,13 +153,10 @@ etID_STATE      __etListIterate( etList* list, void** iterator ){
     etDebugCheckNull( iterator );
 
 // vars
-    etList*     etListElement = list;
-
-// go to start
-    while( etListElement->prev != NULL ) etListElement = etListElement->prev;
+    etListElement*      listElement = list->start;
 
 // return as iterator
-    *iterator = (void*)etListElement->next;
+    *iterator = (void*)listElement;
 
     return etID_YES;
 }
@@ -141,17 +167,21 @@ etID_STATE      __etListIterateNext( void** iterator, void** data ){
     etDebugCheckNull( iterator );
     etDebugCheckNull( data );
 
-// the end of the list ?
-    if( *iterator == NULL ) return etID_STATE_NODATA;
 
 // vars
-    etList*     etListElement = (etList*)*iterator;
+    etListElement*      listElement = (etListElement*)*iterator;
+
+// the end of the list ?
+    if( listElement == NULL ) return etID_STATE_NODATA;
 
 // get data
-    *data = etListElement->data;
+    *data = listElement->data;
+
+// next
+    listElement = listElement->next;
 
 // return the next element
-    *iterator = (void*)etListElement->next;
+    *iterator = (void*)listElement;
 
     return etID_YES;
 }
@@ -162,41 +192,14 @@ etID_STATE      etListIterateNextAviable( void* iterator ){
     if( iterator == NULL ) return etID_NO;
 
 // vars
-    etList*     etListElement = (etList*)iterator;
+    etListElement*      listElement = (etList*)iterator;
 
 // get data
-    if( etListElement->next != NULL ){
+    if( listElement->next != NULL ){
         return etID_YES;
     }
 
     return etID_NO;
-}
-
-
-etID_STATE      etListElementRemove( etList* elementToRemove ){
-
-// vars
-    etList*     etListElement = elementToRemove;
-
-// unlink
-    if( etListElement->prev == NULL ){
-        // we get the first element, so we can not remove
-        return etID_NO;
-    }
-
-    etListElement->prev->next = etListElement->next;
-
-    if( etListElement->next != NULL ){
-        etListElement->next->prev = etListElement->prev;
-    }
-
-// remove data
-    etListElement->data = NULL;
-
-// release the memory
-    etMemoryRelease( etListElement );
-
-    return etID_YES;
 }
 
 
@@ -205,28 +208,52 @@ etID_STATE      etListDataRemove( etList* list, void* data, etID_BOOL removeAll 
     etDebugCheckNull( list );
     etDebugCheckNull( data );
 
+
+
 // vars
-    etList*     etListElement = list;
+    etListElement*      listElement = list->start;
+    etListElement*      listElementToFree = NULL;
 
-// go to start
-    if( etListElement->prev != NULL ) etListElement = etListElement->prev;
 
-// try to find the data
-    etListElement = etListElement->next;
-    while( etListElement != NULL ){
 
-        if( etListElement->data == data ){
+    while( listElement != NULL ){
 
-        // remove the element
-            etListElementRemove( etListElement );
 
-            if( removeAll == etID_FALSE ){
-                return etID_YES;
+
+        if( listElement->data == data ){
+
+        // if the element is the start
+            if( listElement == list->start ){
+                list->start = listElement->next;
             }
+
+        // if the element is the end
+            if( listElement == list->end ){
+                list->end = listElement->prev;
+            }
+
+        // unlink from the prev element
+            if( listElement->prev != NULL ){
+                listElement->prev->next = listElement->next;
+            }
+
+        // unlink the next
+            if( listElement->next != NULL ){
+                listElement->next->prev = listElement->prev;
+            }
+
+            listElementToFree = listElement;
+            listElement = listElement->next;
+            etMemoryRelease( listElementToFree );
+
+            return etID_YES;
         }
 
-        etListElement = etListElement->next;
+
+
+        listElement = listElement->next;
     }
+
 
 }
 
@@ -236,21 +263,21 @@ etID_STATE      etListDump( etList* list ){
     etDebugCheckNull( list );
 
 // Vars
-    etList*     etListIterator = list;
+    etListElement*      listIterator = list->start;
 
 
 #ifndef ET_DEBUG_OFF
 
-    while( etListIterator != NULL ){
+    while( listIterator != NULL ){
 
-            fprintf( stdout, "[ %p<- ]", etListIterator->prev );
-            fprintf( stdout, "[ %p ]", etListIterator );
-            fprintf( stdout, "[ ->%p ]", etListIterator->next );
-            fprintf( stdout, "[ %p ]", etListIterator->data );
+            fprintf( stdout, "[ %p<- ]", listIterator->prev );
+            fprintf( stdout, "[ %p ]", listIterator );
+            fprintf( stdout, "[ ->%p ]", listIterator->next );
+            fprintf( stdout, "[ %p ]", listIterator->data );
 
             fprintf( stdout, "\n" );
 
-        etListIterator = etListIterator->next;
+        listIterator = listIterator->next;
     }
 
 #endif

@@ -32,12 +32,17 @@ extern "C" {
 @~english
 
 */
-typedef struct etList_s etList;
+typedef struct etListElement_s etListElement;
+struct etListElement_s {
+    etListElement*      prev;
+    etListElement*      next;
+    void*               data;
+};
 
+typedef struct etList_s etList;
 struct etList_s {
-    etList*     prev;
-    etList*     next;
-    void*       data;
+    etListElement*      start;
+    etListElement*      end;
 };
 
 
@@ -48,8 +53,11 @@ etID_STATE      __etListAlloc( etList** p_list );
 #define         etListFree( list ) __etListFree( &list )
 etID_STATE      __etListFree( etList** p_list );
 
-#define         etListAppend( list, data ) __etListAppend( &list, data )
-etID_STATE      __etListAppend( etList** p_list, void *data );
+
+etID_STATE      etListClean( etList* list );
+
+
+etID_STATE      etListAppend( etList* list, void *data );
 
 #define         etListIterate( list, iterator ) __etListIterate( list, &iterator )
 etID_STATE      __etListIterate( etList* list, void** iterator );
@@ -63,10 +71,11 @@ etID_STATE      etListIterateNextAviable( void* iterator );
 
 
 
+
 etID_STATE      etListDataRemove( etList* list, void* data, etID_BOOL removeAll );
 
 
-
+etID_STATE      etListDump( etList* list );
 
 
 #ifdef __cplusplus

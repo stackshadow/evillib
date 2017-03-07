@@ -19,16 +19,11 @@
 
 #include "evillib-extra_depends.h"
 
-#include "core/etDebug.c"
-#include "memory/etMemory.c"
-#include "memory/etMemoryBlock.c"
 
-#include "memory/etList.c"
 
-#include "core/etDebug.h"
-#include "core/etObject.h"
-#include "memory/etMemory.h"
-#include "db/etDBObject.h"
+#include "db/etDBTable.c"
+
+
 
 
 /** @defgroup etDB Database support
@@ -69,6 +64,9 @@ etID_STATE          __etDBObjectAlloc( etDBObject **p_dbObject ){
 // allocate memory
     etMemoryAlloc( tempDBObject, sizeof(etDBObject) );
 
+// allocate list for tables
+    etListAlloc( tempDBObject->tables );
+
 // set
     tempDBObject->jsonRootObject = json_object();
 
@@ -93,18 +91,27 @@ etID_STATE          __etDBObjectFree( etDBObject **p_dbObject ){
     etDebugCheckNull( p_dbObject );
 
 // vars
-    etDBObject *tempDBObject = *p_dbObject;
+    etDBObject*     dbObject = *p_dbObject;
+    etDBTable*      dbTable = NULL;
+    void*           etListIterator = NULL;
 
 // free temporary string
-    if( tempDBObject->dumpString != NULL ){
-        free((void*)tempDBObject->dumpString);
-        tempDBObject->dumpString = NULL;
+    if( dbObject->dumpString != NULL ){
+        free((void*)dbObject->dumpString);
+        dbObject->dumpString = NULL;
     }
 
 // release json stuff
-    json_decref( tempDBObject->jsonRootObject );
-    etMemoryRelease( tempDBObject );
-    
+    json_decref( dbObject->jsonRootObject );
+    etMemoryRelease( dbObject );
+
+// release etList
+    etListIterate( dbObject->tables, etListIterator );
+    while( etListIterateNext(etListIterator,dbTable) ){
+        etDBObjectTableFree( dbTable );
+    }
+    etListFree( dbObject->tables );
+
 // return
     *p_dbObject = NULL;
     return etID_YES;

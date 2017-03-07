@@ -107,6 +107,12 @@ etID_STATE          etDBDriverTableRemove( etDBDriver* dbDriver, etDBTable* dbTa
 
 
 etID_STATE          etDBDriverDataAdd( etDBDriver* dbDriver, etDBTable* dbTable );
+
+
+etID_STATE          etDBDriverDataChange( etDBDriver* dbDriver, etDBTable* dbTable );
+
+
+etID_STATE          etDBDriverDataRemove( etDBDriver *dbDriver, etDBTable* dbTable );
 /*
 
 

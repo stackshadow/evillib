@@ -22,6 +22,8 @@
 #include "evillib_defines.h"
 #include "core/etIDState.h"
 
+#include "db/etDBTable.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

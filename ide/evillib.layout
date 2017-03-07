@@ -2,92 +2,44 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="evillib-app" />
-	<File name="../extra/db/etDBColumn.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../tests/etStringChar.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1169" topLine="4" />
+			<Cursor1 position="0" topLine="96" />
 		</Cursor>
 		<Folding>
-			<Collapse line="0" />
-			<Collapse line="32" />
-		</Folding>
-	</File>
-	<File name="../make/evillib-app.make" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="952" topLine="12" />
-		</Cursor>
-	</File>
-	<File name="../extra/dbdriver/etDBDriver.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2694" topLine="27" />
-		</Cursor>
-		<Folding>
-			<Collapse line="0" />
-			<Collapse line="109" />
-		</Folding>
-	</File>
-	<File name="../extra/db/etDBColumn.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3047" topLine="24" />
-		</Cursor>
-		<Folding>
-			<Collapse line="0" />
-			<Collapse line="35" />
-			<Collapse line="50" />
-			<Collapse line="74" />
-			<Collapse line="84" />
-			<Collapse line="97" />
-			<Collapse line="113" />
+			<Collapse line="108" />
 			<Collapse line="118" />
-			<Collapse line="122" />
-			<Collapse line="126" />
-			<Collapse line="134" />
-			<Collapse line="144" />
-			<Collapse line="149" />
-			<Collapse line="160" />
-			<Collapse line="165" />
-			<Collapse line="177" />
-			<Collapse line="182" />
+			<Collapse line="135" />
+			<Collapse line="145" />
 		</Folding>
 	</File>
-	<File name="../core/core/etIDState.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../tests/etString.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="766" topLine="0" />
+			<Cursor1 position="1703" topLine="29" />
 		</Cursor>
 		<Folding>
 			<Collapse line="0" />
 		</Folding>
 	</File>
-	<File name="../core/core/etInit.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../core/memory/etMemoryBlockList.c" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="816" topLine="0" />
+			<Cursor1 position="7960" topLine="2" />
 		</Cursor>
 		<Folding>
-			<Collapse line="0" />
-		</Folding>
-	</File>
-	<File name="../make/vars.make" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="2" />
-		</Cursor>
-	</File>
-	<File name="../tests/etMemoryBlock.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4478" topLine="31" />
-		</Cursor>
-		<Folding>
-			<Collapse line="28" />
-			<Collapse line="42" />
-			<Collapse line="49" />
-			<Collapse line="53" />
-			<Collapse line="69" />
-			<Collapse line="78" />
-			<Collapse line="84" />
-			<Collapse line="93" />
+			<Collapse line="33" />
+			<Collapse line="133" />
+			<Collapse line="137" />
+			<Collapse line="249" />
+			<Collapse line="250" />
+			<Collapse line="269" />
+			<Collapse line="278" />
+			<Collapse line="289" />
+			<Collapse line="295" />
 		</Folding>
 	</File>
 	<File name="../extra/dbdriver/etDBDriver.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="4795" topLine="20" />
+			<Cursor1 position="4016" topLine="27" />
 		</Cursor>
 		<Folding>
 			<Collapse line="0" />
@@ -106,11 +58,41 @@
 			<Collapse line="128" />
 			<Collapse line="158" />
 			<Collapse line="163" />
-			<Collapse line="170" />
+			<Collapse line="171" />
+			<Collapse line="176" />
 			<Collapse line="197" />
 			<Collapse line="205" />
+			<Collapse line="213" />
+			<Collapse line="221" />
 			<Collapse line="229" />
 			<Collapse line="237" />
+		</Folding>
+	</File>
+	<File name="../core/memory/etMemoryBlockList.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="915" topLine="9" />
+		</Cursor>
+	</File>
+	<File name="../core/string/etString.h" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1028" topLine="24" />
+		</Cursor>
+	</File>
+	<File name="../core/core/etIDState.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="766" topLine="0" />
+		</Cursor>
+		<Folding>
+			<Collapse line="0" />
+		</Folding>
+	</File>
+	<File name="../core/core/etDebug.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="9426" topLine="24" />
+		</Cursor>
+		<Folding>
+			<Collapse line="57" />
+			<Collapse line="339" />
 		</Folding>
 	</File>
 	<File name="../extra/dbdriver/etDBSQLite.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -118,58 +100,68 @@
 			<Cursor1 position="1024" topLine="9" />
 		</Cursor>
 	</File>
-	<File name="../core/evillib_defines.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../core/core/etIDState.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1591" topLine="48" />
-		</Cursor>
-		<Folding>
-			<Collapse line="91" />
-			<Collapse line="226" />
-		</Folding>
-	</File>
-	<File name="../extra/dbdriver/etDBSQL.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="15434" topLine="23" />
+			<Cursor1 position="857" topLine="0" />
 		</Cursor>
 		<Folding>
 			<Collapse line="0" />
+			<Collapse line="37" />
+		</Folding>
+	</File>
+	<File name="../make/evillib-core.make" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="114" />
+		</Cursor>
+	</File>
+	<File name="../core/string/etString.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="7393" topLine="22" />
+		</Cursor>
+		<Folding>
+			<Collapse line="0" />
+			<Collapse line="32" />
+			<Collapse line="40" />
+			<Collapse line="53" />
+			<Collapse line="57" />
+			<Collapse line="73" />
+			<Collapse line="108" />
+			<Collapse line="120" />
+			<Collapse line="138" />
+			<Collapse line="153" />
+			<Collapse line="175" />
+			<Collapse line="187" />
+			<Collapse line="212" />
+		</Folding>
+	</File>
+	<File name="../extra/dbdriver/etDBDriver.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3930" topLine="54" />
+		</Cursor>
+		<Folding>
+			<Collapse line="29" />
 			<Collapse line="38" />
-			<Collapse line="68" />
-			<Collapse line="71" />
-			<Collapse line="85" />
-			<Collapse line="90" />
-			<Collapse line="104" />
-			<Collapse line="130" />
-			<Collapse line="169" />
-			<Collapse line="174" />
-			<Collapse line="188" />
-			<Collapse line="221" />
-			<Collapse line="228" />
-			<Collapse line="255" />
-			<Collapse line="263" />
-			<Collapse line="269" />
-			<Collapse line="338" />
-			<Collapse line="345" />
-			<Collapse line="351" />
-			<Collapse line="400" />
-			<Collapse line="419" />
-			<Collapse line="425" />
-			<Collapse line="460" />
-			<Collapse line="466" />
-			<Collapse line="472" />
-			<Collapse line="474" />
-			<Collapse line="477" />
-			<Collapse line="480" />
-			<Collapse line="488" />
-			<Collapse line="498" />
-			<Collapse line="502" />
-			<Collapse line="508" />
-			<Collapse line="512" />
-			<Collapse line="518" />
-			<Collapse line="524" />
-			<Collapse line="531" />
-			<Collapse line="536" />
-			<Collapse line="549" />
+			<Collapse line="115" />
+		</Folding>
+	</File>
+	<File name="../tests/etMemory.c" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2952" topLine="23" />
+		</Cursor>
+		<Folding>
+			<Collapse line="0" />
+			<Collapse line="43" />
+			<Collapse line="61" />
+			<Collapse line="100" />
+			<Collapse line="112" />
+		</Folding>
+	</File>
+	<File name="../extra/dbdriver/etDBSQL.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1213" topLine="15" />
+		</Cursor>
+		<Folding>
+			<Collapse line="0" />
 		</Folding>
 	</File>
 	<File name="../tests/etFile.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -181,45 +173,151 @@
 			<Collapse line="33" />
 		</Folding>
 	</File>
-	<File name="../extra/db/etDBTable.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../tests/etDBSQL.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3080" topLine="70" />
+			<Cursor1 position="1915" topLine="169" />
 		</Cursor>
 		<Folding>
-			<Collapse line="34" />
+			<Collapse line="61" />
+			<Collapse line="224" />
 		</Folding>
 	</File>
-	<File name="../core/memory/etMemoryBlock.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../core/evillib_defines.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2186" topLine="6" />
+			<Cursor1 position="1591" topLine="48" />
+		</Cursor>
+		<Folding>
+			<Collapse line="91" />
+			<Collapse line="226" />
+		</Folding>
+	</File>
+	<File name="../extra/db/etDBColumn.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="889" topLine="27" />
+		</Cursor>
+		<Folding>
+			<Collapse line="54" />
+		</Folding>
+	</File>
+	<File name="../core/core/etInit.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="801" topLine="0" />
+		</Cursor>
+		<Folding>
+			<Collapse line="33" />
+			<Collapse line="36" />
+			<Collapse line="53" />
+			<Collapse line="64" />
+			<Collapse line="86" />
+			<Collapse line="88" />
+			<Collapse line="92" />
+		</Folding>
+	</File>
+	<File name="../extra/dbdriver/etDBSQLite.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="9296" topLine="59" />
 		</Cursor>
 		<Folding>
 			<Collapse line="0" />
-			<Collapse line="30" />
+			<Collapse line="34" />
 			<Collapse line="36" />
-			<Collapse line="50" />
+			<Collapse line="61" />
+			<Collapse line="64" />
+			<Collapse line="68" />
+			<Collapse line="72" />
+			<Collapse line="82" />
+			<Collapse line="100" />
+			<Collapse line="110" />
+			<Collapse line="111" />
+			<Collapse line="125" />
+			<Collapse line="133" />
+			<Collapse line="149" />
+			<Collapse line="165" />
+			<Collapse line="180" />
+			<Collapse line="189" />
+			<Collapse line="204" />
+			<Collapse line="215" />
+			<Collapse line="231" />
+			<Collapse line="240" />
+			<Collapse line="259" />
+			<Collapse line="274" />
+			<Collapse line="286" />
+			<Collapse line="292" />
+			<Collapse line="301" />
+			<Collapse line="313" />
+			<Collapse line="319" />
+			<Collapse line="346" />
+			<Collapse line="355" />
+			<Collapse line="371" />
+			<Collapse line="376" />
+			<Collapse line="384" />
+			<Collapse line="400" />
+			<Collapse line="405" />
+			<Collapse line="416" />
+			<Collapse line="428" />
+			<Collapse line="432" />
 		</Folding>
 	</File>
-	<File name="../app/etApicheck.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../core/memory/etMemory.h" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1264" topLine="25" />
+			<Cursor1 position="1157" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="../core/memory/etMemory.c" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="../make/Makefile" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="13741" topLine="353" />
+			<Cursor1 position="0" topLine="8" />
+		</Cursor>
+	</File>
+	<File name="../extra/db/etDBTable.c" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6267" topLine="50" />
 		</Cursor>
 		<Folding>
-			<Collapse line="241" />
-			<Collapse line="262" />
-			<Collapse line="271" />
-			<Collapse line="288" />
-			<Collapse line="329" />
-			<Collapse line="334" />
-			<Collapse line="395" />
-			<Collapse line="400" />
-			<Collapse line="454" />
-			<Collapse line="468" />
+			<Collapse line="0" />
+			<Collapse line="41" />
+			<Collapse line="55" />
+			<Collapse line="79" />
+			<Collapse line="90" />
+			<Collapse line="96" />
+			<Collapse line="115" />
+			<Collapse line="129" />
+			<Collapse line="141" />
+			<Collapse line="159" />
+			<Collapse line="171" />
+			<Collapse line="185" />
+			<Collapse line="197" />
+			<Collapse line="212" />
+			<Collapse line="215" />
+			<Collapse line="226" />
+			<Collapse line="230" />
+			<Collapse line="274" />
+			<Collapse line="282" />
+			<Collapse line="286" />
+			<Collapse line="298" />
+			<Collapse line="310" />
+			<Collapse line="315" />
+			<Collapse line="338" />
+			<Collapse line="349" />
+			<Collapse line="362" />
+			<Collapse line="370" />
+			<Collapse line="374" />
+		</Folding>
+	</File>
+	<File name="../develop/File/etFile.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3194" topLine="19" />
+		</Cursor>
+		<Folding>
+			<Collapse line="0" />
+			<Collapse line="31" />
+		</Folding>
+	</File>
+	<File name="../core/core/etVersion.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1716" topLine="0" />
+		</Cursor>
+		<Folding>
+			<Collapse line="28" />
 		</Folding>
 	</File>
 	<File name="../core/memory/etMemoryBlock.c" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -262,76 +360,54 @@
 			<Collapse line="433" />
 		</Folding>
 	</File>
+	<File name="../make/vars.make" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="2" />
+		</Cursor>
+	</File>
+	<File name="../app/etApicheck.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1264" topLine="25" />
+		</Cursor>
+	</File>
+	<File name="../core/memory/etMemory.c" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="13741" topLine="353" />
+		</Cursor>
+		<Folding>
+			<Collapse line="241" />
+			<Collapse line="262" />
+			<Collapse line="271" />
+			<Collapse line="288" />
+			<Collapse line="329" />
+			<Collapse line="334" />
+			<Collapse line="395" />
+			<Collapse line="400" />
+			<Collapse line="454" />
+			<Collapse line="468" />
+		</Folding>
+	</File>
+	<File name="../tests/etDBObject.c" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6152" topLine="113" />
+		</Cursor>
+		<Folding>
+			<Collapse line="0" />
+			<Collapse line="55" />
+			<Collapse line="62" />
+			<Collapse line="83" />
+			<Collapse line="216" />
+		</Folding>
+	</File>
+	<File name="../make/evillib-app.make" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="952" topLine="12" />
+		</Cursor>
+	</File>
 	<File name="../make/evillib-doc.make" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="805" topLine="7" />
 		</Cursor>
-	</File>
-	<File name="../core/core/etIDState.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="857" topLine="0" />
-		</Cursor>
-		<Folding>
-			<Collapse line="0" />
-			<Collapse line="37" />
-		</Folding>
-	</File>
-	<File name="../extra/db/etDBTable.c" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="6849" topLine="51" />
-		</Cursor>
-		<Folding>
-			<Collapse line="0" />
-			<Collapse line="41" />
-			<Collapse line="55" />
-			<Collapse line="79" />
-			<Collapse line="90" />
-			<Collapse line="96" />
-			<Collapse line="115" />
-			<Collapse line="129" />
-			<Collapse line="141" />
-			<Collapse line="159" />
-			<Collapse line="171" />
-			<Collapse line="185" />
-			<Collapse line="197" />
-			<Collapse line="212" />
-			<Collapse line="215" />
-			<Collapse line="226" />
-			<Collapse line="230" />
-			<Collapse line="239" />
-			<Collapse line="271" />
-			<Collapse line="358" />
-			<Collapse line="366" />
-			<Collapse line="370" />
-		</Folding>
-	</File>
-	<File name="../core/memory/etMemoryBlockList.c" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="7960" topLine="2" />
-		</Cursor>
-		<Folding>
-			<Collapse line="33" />
-			<Collapse line="133" />
-			<Collapse line="137" />
-			<Collapse line="249" />
-			<Collapse line="250" />
-			<Collapse line="269" />
-			<Collapse line="278" />
-			<Collapse line="289" />
-			<Collapse line="295" />
-		</Folding>
-	</File>
-	<File name="../tests/etMemory.c" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2952" topLine="23" />
-		</Cursor>
-		<Folding>
-			<Collapse line="0" />
-			<Collapse line="43" />
-			<Collapse line="61" />
-			<Collapse line="100" />
-			<Collapse line="112" />
-		</Folding>
 	</File>
 	<File name="../core/string/etStringChar.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
@@ -359,29 +435,161 @@
 			<Collapse line="276" />
 		</Folding>
 	</File>
-	<File name="../core/string/etString.h" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1028" topLine="24" />
-		</Cursor>
-	</File>
-	<File name="../core/core/etDebug.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="9426" topLine="24" />
-		</Cursor>
-		<Folding>
-			<Collapse line="57" />
-			<Collapse line="339" />
-		</Folding>
-	</File>
-	<File name="../core/memory/etMemoryBlockList.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="915" topLine="9" />
-		</Cursor>
-	</File>
 	<File name="../core/memory/etList.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="1075" topLine="41" />
 		</Cursor>
+	</File>
+	<File name="../extra/dbdriver/etDBSQL.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="10398" topLine="336" />
+		</Cursor>
+		<Folding>
+			<Collapse line="296" />
+			<Collapse line="303" />
+			<Collapse line="322" />
+			<Collapse line="329" />
+			<Collapse line="341" />
+			<Collapse line="402" />
+			<Collapse line="427" />
+			<Collapse line="482" />
+			<Collapse line="490" />
+			<Collapse line="538" />
+			<Collapse line="551" />
+			<Collapse line="557" />
+		</Folding>
+	</File>
+	<File name="../core/memory/etMemoryBlock.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2186" topLine="6" />
+		</Cursor>
+		<Folding>
+			<Collapse line="0" />
+			<Collapse line="30" />
+			<Collapse line="36" />
+			<Collapse line="50" />
+		</Folding>
+	</File>
+	<File name="../core/core/etDebug.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3025" topLine="80" />
+		</Cursor>
+	</File>
+	<File name="../extra/db/etDBObject.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="0" topLine="12" />
+		</Cursor>
+		<Folding>
+			<Collapse line="0" />
+		</Folding>
+	</File>
+	<File name="../extra/db/etDBColumn.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1355" topLine="30" />
+		</Cursor>
+		<Folding>
+			<Collapse line="0" />
+			<Collapse line="35" />
+			<Collapse line="50" />
+			<Collapse line="74" />
+			<Collapse line="84" />
+			<Collapse line="97" />
+			<Collapse line="113" />
+			<Collapse line="118" />
+			<Collapse line="122" />
+			<Collapse line="126" />
+			<Collapse line="134" />
+			<Collapse line="144" />
+			<Collapse line="149" />
+			<Collapse line="160" />
+			<Collapse line="165" />
+			<Collapse line="177" />
+			<Collapse line="182" />
+		</Folding>
+	</File>
+	<File name="../extra/dbdriver/etDBPSQL.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="839" topLine="0" />
+		</Cursor>
+		<Folding>
+			<Collapse line="0" />
+			<Collapse line="22" />
+		</Folding>
+	</File>
+	<File name="../extra/db/etDBTable.h" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1028" topLine="63" />
+		</Cursor>
+		<Folding>
+			<Collapse line="0" />
+			<Collapse line="54" />
+		</Folding>
+	</File>
+	<File name="../extra/db/etDBFilter.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1586" topLine="20" />
+		</Cursor>
+		<Folding>
+			<Collapse line="39" />
+			<Collapse line="47" />
+		</Folding>
+	</File>
+	<File name="../core/memory/etList.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3539" topLine="64" />
+		</Cursor>
+		<Folding>
+			<Collapse line="0" />
+			<Collapse line="34" />
+			<Collapse line="59" />
+			<Collapse line="79" />
+			<Collapse line="189" />
+		</Folding>
+	</File>
+	<File name="../tests/etList.c" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1608" topLine="31" />
+		</Cursor>
+	</File>
+	<File name="../extra/db/etDBFilter.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1658" topLine="11" />
+		</Cursor>
+		<Folding>
+			<Collapse line="0" />
+			<Collapse line="36" />
+			<Collapse line="107" />
+			<Collapse line="110" />
+			<Collapse line="119" />
+			<Collapse line="123" />
+			<Collapse line="127" />
+			<Collapse line="131" />
+			<Collapse line="135" />
+			<Collapse line="139" />
+		</Folding>
+	</File>
+	<File name="../core/core/etInit.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="816" topLine="0" />
+		</Cursor>
+		<Folding>
+			<Collapse line="0" />
+		</Folding>
+	</File>
+	<File name="../tests/etMemoryBlock.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="4478" topLine="31" />
+		</Cursor>
+		<Folding>
+			<Collapse line="28" />
+			<Collapse line="42" />
+			<Collapse line="49" />
+			<Collapse line="53" />
+			<Collapse line="69" />
+			<Collapse line="78" />
+			<Collapse line="84" />
+			<Collapse line="93" />
+		</Folding>
 	</File>
 	<File name="../extra/dbdriver/etDBPSQL.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
@@ -427,231 +635,9 @@
 			<Collapse line="528" />
 		</Folding>
 	</File>
-	<File name="../tests/etDBSQL.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1915" topLine="169" />
-		</Cursor>
-		<Folding>
-			<Collapse line="61" />
-			<Collapse line="224" />
-		</Folding>
-	</File>
-	<File name="../extra/db/etDBObject.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="12" />
-		</Cursor>
-		<Folding>
-			<Collapse line="0" />
-		</Folding>
-	</File>
-	<File name="../core/core/etInit.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="801" topLine="0" />
-		</Cursor>
-		<Folding>
-			<Collapse line="33" />
-			<Collapse line="36" />
-			<Collapse line="53" />
-			<Collapse line="64" />
-			<Collapse line="86" />
-			<Collapse line="88" />
-			<Collapse line="92" />
-		</Folding>
-	</File>
-	<File name="../core/string/etString.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="7393" topLine="22" />
-		</Cursor>
-		<Folding>
-			<Collapse line="0" />
-			<Collapse line="32" />
-			<Collapse line="40" />
-			<Collapse line="53" />
-			<Collapse line="57" />
-			<Collapse line="73" />
-			<Collapse line="108" />
-			<Collapse line="120" />
-			<Collapse line="138" />
-			<Collapse line="153" />
-			<Collapse line="175" />
-			<Collapse line="187" />
-			<Collapse line="212" />
-		</Folding>
-	</File>
-	<File name="../extra/dbdriver/etDBSQL.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1213" topLine="15" />
-		</Cursor>
-		<Folding>
-			<Collapse line="0" />
-		</Folding>
-	</File>
-	<File name="../tests/etStringChar.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="96" />
-		</Cursor>
-		<Folding>
-			<Collapse line="108" />
-			<Collapse line="118" />
-			<Collapse line="135" />
-			<Collapse line="145" />
-		</Folding>
-	</File>
-	<File name="../core/memory/etMemory.h" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1157" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="../make/Makefile" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="8" />
-		</Cursor>
-	</File>
-	<File name="../make/evillib-core.make" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="0" topLine="114" />
-		</Cursor>
-	</File>
-	<File name="../core/memory/etList.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3539" topLine="64" />
-		</Cursor>
-		<Folding>
-			<Collapse line="0" />
-			<Collapse line="34" />
-			<Collapse line="59" />
-			<Collapse line="79" />
-			<Collapse line="189" />
-		</Folding>
-	</File>
 	<File name="../core/system/etFile.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="833" topLine="0" />
 		</Cursor>
-	</File>
-	<File name="../extra/dbdriver/etDBPSQL.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="839" topLine="0" />
-		</Cursor>
-		<Folding>
-			<Collapse line="0" />
-			<Collapse line="22" />
-		</Folding>
-	</File>
-	<File name="../tests/etList.c" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1608" topLine="31" />
-		</Cursor>
-	</File>
-	<File name="../tests/etString.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1703" topLine="29" />
-		</Cursor>
-		<Folding>
-			<Collapse line="0" />
-		</Folding>
-	</File>
-	<File name="../extra/dbdriver/etDBSQLite.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="13583" topLine="90" />
-		</Cursor>
-		<Folding>
-			<Collapse line="0" />
-			<Collapse line="34" />
-			<Collapse line="36" />
-			<Collapse line="61" />
-			<Collapse line="64" />
-			<Collapse line="68" />
-			<Collapse line="72" />
-			<Collapse line="82" />
-			<Collapse line="100" />
-			<Collapse line="110" />
-			<Collapse line="111" />
-			<Collapse line="125" />
-			<Collapse line="133" />
-			<Collapse line="149" />
-			<Collapse line="165" />
-			<Collapse line="180" />
-			<Collapse line="189" />
-			<Collapse line="204" />
-			<Collapse line="215" />
-			<Collapse line="231" />
-			<Collapse line="240" />
-			<Collapse line="259" />
-			<Collapse line="274" />
-			<Collapse line="286" />
-			<Collapse line="292" />
-			<Collapse line="301" />
-			<Collapse line="313" />
-			<Collapse line="319" />
-			<Collapse line="328" />
-			<Collapse line="340" />
-			<Collapse line="346" />
-			<Collapse line="355" />
-			<Collapse line="384" />
-			<Collapse line="416" />
-			<Collapse line="428" />
-			<Collapse line="432" />
-		</Folding>
-	</File>
-	<File name="../develop/File/etFile.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3194" topLine="19" />
-		</Cursor>
-		<Folding>
-			<Collapse line="0" />
-			<Collapse line="31" />
-		</Folding>
-	</File>
-	<File name="../extra/db/etDBFilter.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1586" topLine="20" />
-		</Cursor>
-		<Folding>
-			<Collapse line="39" />
-			<Collapse line="47" />
-		</Folding>
-	</File>
-	<File name="../tests/etDBObject.c" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="6152" topLine="113" />
-		</Cursor>
-		<Folding>
-			<Collapse line="0" />
-			<Collapse line="55" />
-			<Collapse line="62" />
-			<Collapse line="83" />
-			<Collapse line="216" />
-		</Folding>
-	</File>
-	<File name="../core/core/etVersion.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1716" topLine="0" />
-		</Cursor>
-		<Folding>
-			<Collapse line="28" />
-		</Folding>
-	</File>
-	<File name="../core/core/etDebug.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="3025" topLine="80" />
-		</Cursor>
-	</File>
-	<File name="../extra/db/etDBFilter.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1658" topLine="11" />
-		</Cursor>
-		<Folding>
-			<Collapse line="0" />
-			<Collapse line="36" />
-			<Collapse line="107" />
-			<Collapse line="110" />
-			<Collapse line="119" />
-			<Collapse line="123" />
-			<Collapse line="127" />
-			<Collapse line="131" />
-			<Collapse line="135" />
-			<Collapse line="139" />
-		</Folding>
 	</File>
 </CodeBlocks_layout_file>

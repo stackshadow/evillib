@@ -267,20 +267,17 @@ etID_STATE          etDBSQLChangeData( etDBDriver* dbDriver, etDBTable* dbTable,
     etDebugCheckNull( dbTable );
     etDebugCheckNull( sqlquery );
 
-/*
-// check if an table is selected
-    if( dbObject->jsonTable == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
-        return etID_STATE_WARN_SEQERR;
-    }
+
 
 // vars
     etID_BOOL           firstColumn = etID_TRUE;
-    const char          *tableName = NULL;
-    const char          *columnName = NULL;
-    const char          *columnValue = NULL;
-    const char          *primaryColumn = NULL;
-    const char          *primaryColumnValue = NULL;
+    const char*         tableName = NULL;
+    etDBColumn*         column = NULL;
+    void*               columnIterator = NULL;
+    const char*         columnName = NULL;
+    const char*         columnValue = NULL;
+    const char*         primaryColumnName = NULL;
+    const char*         primaryColumnValue = NULL;
 
 
 // clear
@@ -290,15 +287,18 @@ etID_STATE          etDBSQLChangeData( etDBDriver* dbDriver, etDBTable* dbTable,
     etStringCharSet( sqlquery, "UPDATE \0", 8 );
 
 // add table name
-    etDBObjectTableNameGet( dbObject, tableName );
+    etDBTableGetName( dbTable, tableName );
     etStringCharAdd( sqlquery, "\"" );
     etStringCharAdd( sqlquery, tableName );
     etStringCharAdd( sqlquery, "\"" );
 
 // columns
     etStringCharAdd( sqlquery, " SET " );
-    etDBObjectIterationReset(dbObject);
-    while( etDBObjectValueNext(dbObject,columnName,columnValue) == etID_YES ){
+    while( etDBTableIterateColumn( dbTable, columnIterator, column ) == etID_YES ){
+
+    // get the value
+        __etDBColumnGet( column, &columnName, NULL, NULL );
+        etDBColumnGetValue( column, columnValue );
 
     // comma
         if( firstColumn == etID_FALSE ){
@@ -318,24 +318,27 @@ etID_STATE          etDBSQLChangeData( etDBDriver* dbDriver, etDBTable* dbTable,
 
     }
 
+
 // get the primary key-column
-    if( etDBObjectTableColumnPrimaryGet( dbObject, primaryColumn ) != etID_YES ){
+    if( etDBTableGetColumnWithOption( dbTable, etDBCOLUMN_OPTION_PRIMARY, column ) != etID_YES ){
         return etID_STATE_ERR_INTERR;
     }
+
+    __etDBColumnGet( column, &primaryColumnName, NULL, NULL );
+
 // get the value of the primary column
-    if( etDBObjectValueGet( dbObject, primaryColumn, primaryColumnValue ) != etID_YES ){
+    if( etDBColumnGetValue( column, primaryColumnValue ) != etID_YES ){
         return etID_STATE_ERR_INTERR;
     }
 
 // WHERE
     etStringCharAdd( sqlquery, " WHERE \"" );
-    etStringCharAdd( sqlquery, primaryColumn );
+    etStringCharAdd( sqlquery, primaryColumnName );
     etStringCharAdd( sqlquery, "\" = '" );
     etStringCharAdd( sqlquery, primaryColumnValue );
     etStringCharAdd( sqlquery, "'" );
 
 
-*/
 /*
 UPDATE `doDB` SET `value`=? WHERE `_rowid_`='2';
 */
@@ -349,17 +352,12 @@ etID_STATE          etDBSQLRemoveData( etDBDriver* dbDriver, etDBTable* dbTable,
     etDebugCheckNull( dbTable );
     etDebugCheckNull( sqlquery );
 
-/*
-// check if an table is selected
-    if( dbObject->jsonTable == NULL ){
-        etDebugMessage( etID_STATE_WARN, "You did not select a table" );
-        return etID_STATE_WARN_SEQERR;
-    }
 
 // vars
-    const char          *tableName = NULL;
-    const char          *primaryColumn = NULL;
-    const char          *primaryColumnValue = NULL;
+    const char*         tableName = NULL;
+    etDBColumn*         primaryColumn = NULL;
+    const char*         primaryColumnName = NULL;
+    const char*         primaryColumnValue = NULL;
 
 
 
@@ -370,30 +368,34 @@ etID_STATE          etDBSQLRemoveData( etDBDriver* dbDriver, etDBTable* dbTable,
     etStringCharSet( sqlquery, "DELETE FROM \0", 13 );
 
 // add table name
-    etDBObjectTableNameGet( dbObject, tableName );
+    etDBTableGetName( dbTable, tableName );
     etStringCharAdd( sqlquery, "\"" );
     etStringCharAdd( sqlquery, tableName );
     etStringCharAdd( sqlquery, "\"" );
 
 
 // get the primary key-column
-    if( etDBObjectTableColumnPrimaryGet( dbObject, primaryColumn ) != etID_YES ){
+    if( etDBTableGetColumnWithOption( dbTable, etDBCOLUMN_OPTION_PRIMARY, primaryColumn ) != etID_YES ){
         return etID_STATE_ERR_INTERR;
     }
+
+// get column name
+    __etDBColumnGet( primaryColumn, &primaryColumnName, NULL, NULL );
+
 // get the value of the primary column
-    if( etDBObjectValueGet( dbObject, primaryColumn, primaryColumnValue ) != etID_YES ){
+    if( etDBColumnGetValue( primaryColumn, primaryColumnValue ) != etID_YES ){
         return etID_STATE_ERR_INTERR;
     }
 
 // WHERE
     etStringCharAdd( sqlquery, " WHERE " );
     etStringCharAdd( sqlquery, columnEnclose );
-    etStringCharAdd( sqlquery, primaryColumn );
+    etStringCharAdd( sqlquery, primaryColumnName );
     etStringCharAdd( sqlquery, columnEnclose );
     etStringCharAdd( sqlquery, " = '" );
     etStringCharAdd( sqlquery, primaryColumnValue );
     etStringCharAdd( sqlquery, "'" );
-*/
+
     return etID_YES;
 }
 

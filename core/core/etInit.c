@@ -92,6 +92,10 @@ etID_STATE        etInit( int argc, const char* argv[] ){
 
                 if( Argument1 != NULL ){
 
+                    if( strncmp( Argument1, "--nomemautoclean", 7 ) == 0 ){
+                        etDebugLevelSet( etID_LEVEL_ALL );
+                        continue;
+                    }
 
                     if( strncmp( Argument1, "--debug", 7 ) == 0 ){
                         etDebugLevelSet( etID_LEVEL_ALL );

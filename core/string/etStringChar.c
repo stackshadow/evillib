@@ -18,6 +18,9 @@
 
 #include "evillib_depends.h"
 
+#ifndef _C_etStringChar
+#define _C_etStringChar
+
 #include "core/etDebug.h"
 #include "core/etObject.h"
 #include "memory/etMemoryBlock.h"
@@ -85,17 +88,17 @@ etID_STATE              __etStringCharCopy( etString *etStringActual, char *targ
 //ERROR CHECKING
     etObjectCheckGetter(etStringActual);
     etDebugCheckNull(target);
-    
+
     unsigned int lengthToCopy = etStringActual->lengthActual;
-    
+
     if( lengthToCopy > maxLen ){
         lengthToCopy = maxLen;
     }
-    
+
 // copy memory
     memcpy( target, etStringActual->data, lengthToCopy * sizeof(char) );
-    
-    
+
+
     return etID_YES;
 }
 
@@ -124,7 +127,7 @@ etID_STATE              etStringCharSet( etString *etStringActual, const char *s
 
 // Debug
 #ifndef ET_DEBUG_OFF
-    snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p, %p]", etStringActual, source );
+    snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p, %s]", etStringActual, source );
     etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
 #endif
 
@@ -247,8 +250,8 @@ int                     etStringCharFind( etString *etStringActual, const char *
 
 // Get char
     const char* ActualString = NULL;
-    
-    
+
+
     etStringCharGet( etStringActual, ActualString );
     if( ActualString == NULL ) return -1;
 
@@ -293,6 +296,10 @@ int                     etStringCharFind( etString *etStringActual, const char *
     return -1;
 }
 
+
 #ifdef __cplusplus
 }
+#endif
+
+
 #endif

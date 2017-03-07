@@ -18,6 +18,9 @@
 
 #include "evillib_depends.h"
 
+#ifndef _C_etString
+#define _C_etString
+
 #include "core/etDebug.h"
 #include "core/etObject.h"
 #include "memory/etMemory.h"
@@ -84,8 +87,8 @@ etID_STATE                __etStringAllocLen( etString **p_etStringActual, int N
 // Allocate etString
     etMemoryAlloc( etStringActual, sizeof(etString) );
     if( etStringActual == NULL ){
-            *p_etStringActual = NULL;
-            return etDebugState(etID_STATE_CRIT_NOMEMORY);
+        *p_etStringActual = NULL;
+        return etDebugState(etID_STATE_CRIT_NOMEMORY);
     }
 
 // String properties
@@ -238,10 +241,9 @@ etID_STATE                __etStringFree( etString **p_etStringActual ){
 // Vars
     etString            *etStringActual = *p_etStringActual;
 
-// Release the data
+// release data
     if( etStringActual->data != NULL ){
         etMemoryRelease( etStringActual->data );
-        etStringActual->data = NULL;
     }
 
 // Relese the String itselfe
@@ -260,6 +262,9 @@ etID_STATE                __etStringFree( etString **p_etStringActual ){
 
 #ifdef __cplusplus
 }
+#endif
+
+
 #endif
 
 

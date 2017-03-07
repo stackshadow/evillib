@@ -168,32 +168,32 @@ etID_STATE          etDBDriverDataAdd( etDBDriver* dbDriver, etDBTable* dbTable 
     return etID_STATE_ERR;
 }
 
-/*
-etID_STATE          etDBDriverDataChange( etDBDriver *dbDriver, etDBObject *dbObject ){
+
+etID_STATE          etDBDriverDataChange( etDBDriver* dbDriver, etDBTable* dbTable ){
 // check
     etDebugCheckNull(dbDriver);
 
 // call function
     if( dbDriver->dataChange != NULL ){
-        return dbDriver->dataChange( dbDriver, dbObject );
+        return dbDriver->dataChange( dbDriver, dbTable );
     }
 
     return etID_STATE_ERR;
 }
 
 
-etID_STATE          etDBDriverDataRemove( etDBDriver *dbDriver, etDBObject *dbObject ){
+etID_STATE          etDBDriverDataRemove( etDBDriver *dbDriver, etDBTable* dbTable ){
 // check
     etDebugCheckNull(dbDriver);
 
 // call function
     if( dbDriver->dataRemove != NULL ){
-        return dbDriver->dataRemove( dbDriver, dbObject );
+        return dbDriver->dataRemove( dbDriver, dbTable );
     }
 
     return etID_STATE_ERR;
 }
-*/
+
 
 etID_STATE          etDBDriverDataGet( etDBDriver* dbDriver, etDBTable* dbTable, etDBFilter* dbFilter ){
 // check

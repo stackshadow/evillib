@@ -246,6 +246,9 @@ etID_STATE          __etDBTableGetColumn( etDBTable* dbTable, const char* column
     while( etDBTableIterateColumn( dbTable, dbColumnIterator, dbColumn ) == etID_YES ){
 
         __etDBColumnGet( dbColumn, &dbColumnName, NULL, NULL );
+
+        if( strlen(columnName) != strlen(dbColumnName) ) continue;
+
         if( strncmp( columnName, dbColumnName, strlen(dbColumnName) ) == 0 ){
             *p_dbColumn = dbColumn;
 
@@ -275,7 +278,7 @@ etID_STATE          __etDBTableGetColumnWithOption( etDBTable* dbTable, int dbCo
     void*               dbColumnIterator = NULL;
     etDBColumn*         dbColumn = NULL;
     const char*         dbColumnName = NULL;
-    int                 dbColumnOption = etDBCOLUMN_OPTION_NOTHING;
+    unsigned int        dbColumnOption = etDBCOLUMN_OPTION_NOTHING;
 
     while( etDBTableIterateColumn( dbTable, dbColumnIterator, dbColumn ) == etID_YES ){
 
@@ -288,6 +291,7 @@ etID_STATE          __etDBTableGetColumnWithOption( etDBTable* dbTable, int dbCo
 
     }
 
+    *p_dbColumn = NULL;
     return etID_STATE_NODATA;
 }
 

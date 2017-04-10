@@ -193,7 +193,7 @@ etID_STATE      etListIterateNextAviable( void* iterator ){
 
 // vars
     etListElement*      listElement = NULL;
-    listElement = (etList*)iterator;
+    listElement = (etListElement*)iterator;
 
 // get data
     if( listElement->next != NULL ){

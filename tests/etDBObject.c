@@ -52,7 +52,6 @@ etID_STATE              etDBObjectTableApiCheck(){
     etDBTableSetName( dbTable, "привет мир" );
     etDBTableGetName( dbTable, tempChar );
     etDebugMessage( etID_STATE_WARN, tempChar );
-    int length = strlen(tempChar);
     if( strncmp(tempChar,"привет мир",19) != 0 ){
         etDebugMessage( etID_STATE_CRIT, "Error in etDBObjectTableSetName" );
     }
@@ -69,24 +68,11 @@ etID_STATE              etDBObjectTableApiCheck(){
     return etID_YES;
 }
 
-etID_STATE              etDBColumnTest(){
-
-    etDBColumn*     dbColumn = NULL;
-
-    etDBColumnAlloc( dbColumn );
-    etDBColumnSet( dbColumn, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_NOTNULL | etDBCOLUMN_OPTION_UNIQUE );
-    etDBColumnFree( dbColumn );
-
-    etMemoryDump( NULL, NULL );
-    return etID_YES;
-}
 
 etID_STATE              etDBTableColumnTest(){
     etApicheckTimer( "etDB: check table" );
 
     etDBTable*      dbTable = NULL;
-    etDBColumn*     dbColumn = NULL;
-    const char*     tempChar = NULL;
 
 
 
@@ -95,41 +81,44 @@ etID_STATE              etDBTableColumnTest(){
     etDBTableSetName( dbTable, "Test" );
     etDBTableSetDisplayName( dbTable, "A Table with testdata" );
 
-    etDBColumnAlloc( dbColumn );
-    etDBColumnSet( dbColumn, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_NOTNULL | etDBCOLUMN_OPTION_UNIQUE );
-    etDBTableAppendColumn( dbTable, dbColumn );
+    etDBColumnAppend( dbTable, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_NOTNULL | etDBCOLUMN_OPTION_UNIQUE );
+    etDBColumnAppend( dbTable, "name", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
+    etDBColumnAppend( dbTable, "prename", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
 
-    etDBColumnAlloc( dbColumn );
-    etDBColumnSet( dbColumn, "name", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
-    etDBTableAppendColumn( dbTable, dbColumn );
+// iterate
+    while( etDBColumnIterate(dbTable) == etID_YES ){
 
-    etDBColumnAlloc( dbColumn );
-    etDBColumnSet( dbColumn, "prename", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
-    etDBTableAppendColumn( dbTable, dbColumn );
+        const char *name = NULL;
+        __etDBColumnGet( dbTable, &name, NULL, NULL );
+        __etDBColumnGet( dbTable, &name, NULL, NULL );
+
+
+
+    }
 
 // values
-    etDBTableGetColumn( dbTable, "uuid", dbColumn );
-    etDBColumnSetValue( dbColumn, "1203713-091273901273" );
+    etDBColumnSelect( dbTable, "uuid" );
+    etDBColumnSetValue( dbTable, "1203713-091273901273" );
 
-    etDBTableGetColumn( dbTable, "name", dbColumn );
-    etDBColumnSetValue( dbColumn, "Musterman" );
+    etDBColumnSelect( dbTable, "name" );
+    etDBColumnSetValue( dbTable, "Musterman" );
 
-    etDBTableGetColumn( dbTable, "prename", dbColumn );
-    etDBColumnSetValue( dbColumn, "Max" );
+    etDBColumnSelect( dbTable, "prename" );
+    etDBColumnSetValue( dbTable, "Max" );
 
-    etDBTableDumpColumn( dbTable );
+    etDBTableDump( dbTable );
 
     etDBTableFree( dbTable );
     etMemoryDump( NULL, NULL );
     return etID_YES;
 }
 
+/*
 etID_STATE              etDBDriverTestSQLite(){
     etApicheckTimer( "etDB: check table" );
 
     etDBDriver*     dbDriver = NULL;
     etDBTable*      dbTable = NULL;
-    etDBColumn*     dbColumn = NULL;
     const char*     tempChar = NULL;
 
 
@@ -142,6 +131,7 @@ etID_STATE              etDBDriverTestSQLite(){
     etDBTableAlloc( dbTable );
     etDBTableSetName( dbTable, "Test" );
     etDBTableSetDisplayName( dbTable, "A Table with testdata" );
+
 
     etDBColumnAlloc( dbColumn );
     etDBColumnSet( dbColumn, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_NOTNULL | etDBCOLUMN_OPTION_UNIQUE );
@@ -212,17 +202,16 @@ etID_STATE              etDBDriverTestSQLite(){
     etDBDriverDisConnect( dbDriver );
 }
 
-
+*/
 
 int                     main( int argc, const char* argv[] ){
     etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
 
 
-    //etDBObjectTableApiCheck();
-    //etDBColumnTest();
-    //etDBTableColumnTest();
-    etDBDriverTestSQLite();
+    etDBObjectTableApiCheck();
+    etDBTableColumnTest();
+    //etDBDriverTestSQLite();
 
 //    etDBObjectTableColumnApiCheck();
 //    etDBObjectValueApiCheck();

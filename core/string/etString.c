@@ -78,12 +78,6 @@ etID_STATE                __etStringAllocLen( etString **p_etStringActual, int N
 // Vars
     etString            *etStringActual = NULL;
 
-// Debug
-#ifndef ET_DEBUG_OFF
-    snprintf( etDebugTempMessage, etDebugTempMessageLen, "CALL [%p %i]", *p_etStringActual, NewLen );
-    etDebugMessage( etID_LEVEL_DETAIL, etDebugTempMessage );
-#endif
-
 // Allocate etString
     etMemoryAlloc( etStringActual, sizeof(etString) );
     if( etStringActual == NULL ){

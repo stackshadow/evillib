@@ -48,107 +48,96 @@ extern "C" {
 
 
 
-etID_STATE          __etDBColumnAlloc( etDBColumn** p_etDBColumn ){
-    etDebugCheckNull( p_etDBColumn );
+etID_STATE          etDBColumnAppend( etDBTable* dbTable, const char *name, etDBColumnType type, unsigned int option ){
+    etDebugCheckNull( dbTable );
 
-// vars
-    etDBColumn*             dbColumn = NULL;
+// create column
+    dbTable->actualColumn = json_object();
+    json_object_set_new( dbTable->actualColumn, "name", json_string(name) );
+    json_object_set_new( dbTable->actualColumn, "type", json_integer(type) );
+    json_object_set_new( dbTable->actualColumn, "opts", json_integer(option) );
 
-// allocate memory
-    etMemoryAlloc( dbColumn, sizeof(etDBColumn) );
-
-// allocate strings
-    etStringAllocLen( dbColumn->name, 64 );
-    etStringAllocLen( dbColumn->displayName, 64 );
-
-// columns
-    dbColumn->type = etDBCOLUMN_TYPE_NOTHING;
-    dbColumn->option = 0;
-    dbColumn->value = NULL;
+    json_object_set_new( dbTable->jsonObjectColumns, name, dbTable->actualColumn );
 
 // return
-    *p_etDBColumn = dbColumn;
     return etID_YES;
 }
 
 
-etID_STATE          __etDBColumnFree( etDBColumn** p_etDBColumn ){
-    etDebugCheckNull( p_etDBColumn );
-
-// vars
-    etDBColumn*         dbColumn = *p_etDBColumn;
-
-// release string
-    etStringFree( dbColumn->name );
-    etStringFree( dbColumn->displayName );
-
-    if( dbColumn->value != NULL ){
-        etStringFree( dbColumn->value );
-    }
-
-// release memory
-    __etMemoryRelease( (void**)p_etDBColumn );
-
-    return etID_YES;
-}
-
-
-
-
-etID_STATE          etDBColumnSet( etDBColumn* dbColumn, const char *name, etDBColumnType type, unsigned int option ){
-// check
-    etDebugCheckNull( dbColumn );
+etID_STATE          etDBColumnRemove( etDBTable* dbTable, const char* name ){
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( name );
 
-// set the name
-    etStringCharSet( dbColumn->name, name, -1 );
-
-// set the rest
-    dbColumn->type = type;
-    dbColumn->option = option;
+    json_object_del( dbTable->jsonObjectColumns, name );
 
     return etID_YES;
 }
 
 
-etID_STATE          __etDBColumnGet( etDBColumn* dbColumn, const char **p_name, etDBColumnType *p_type, unsigned int *p_option ){
+
+
+etID_STATE          __etDBColumnGet( etDBTable* dbTable, const char **p_name, etDBColumnType *p_type, unsigned int *p_option ){
 // check
-    etDebugCheckNull( dbColumn );
+    etDebugCheckNull( dbTable );
+    etDebugCheckNull( dbTable->actualColumn );
+
+// temp vars
+    json_t*     tempJsonValue;
 
 // get the string from the json-string
     if( p_name != NULL ){
-        __etStringCharGet( dbColumn->name, p_name );
+        *p_name = NULL;
+        tempJsonValue = json_object_get( dbTable->actualColumn, "name" );
+        if( tempJsonValue != NULL ){
+            *p_name = json_string_value(tempJsonValue);
+        }
     }
 
     if( p_type != NULL ){
-        *p_type = dbColumn->type;
+        *p_type = 0;
+        tempJsonValue = json_object_get( dbTable->actualColumn, "type" );
+        if( tempJsonValue != NULL ){
+            *p_type = json_integer_value(tempJsonValue);
+        }
+
     }
 
     if( p_option != NULL ){
-        *p_option = dbColumn->option;
+        *p_option = 0;
+        tempJsonValue = json_object_get( dbTable->actualColumn, "opts" );
+        if( tempJsonValue != NULL ){
+            *p_option = json_integer_value(tempJsonValue);
+        }
+
     }
 
     return etID_YES;
 }
 
 
-etID_STATE          etDBColumnSetDisplayName( etDBColumn* dbColumn, const char* displayName ){
-    etDebugCheckNull( dbColumn );
+etID_STATE          etDBColumnSetDisplayName( etDBTable* dbTable, const char* displayName ){
+// check
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( displayName );
+    etDebugCheckNull( dbTable->actualColumn );
 
 // set the name
-    return etStringCharSet( dbColumn->displayName, displayName, -1 );
+    json_object_set_new( dbTable->actualColumn, "displayName", json_string(displayName) );
 
+    return etID_YES;
 }
 
 
-etID_STATE          __etDBColumnGetDisplayName( etDBColumn* dbColumn, const char** p_displayName ){
+etID_STATE          __etDBColumnGetDisplayName( etDBTable* dbTable, const char** p_displayName ){
 // check
-    etDebugCheckNull( dbColumn );
+    etDebugCheckNull( dbTable );
+    etDebugCheckNull( dbTable->actualColumn );
 
-// get the string from the json-string
+// get name
     if( p_displayName != NULL ){
-        __etStringCharGet( dbColumn->displayName, p_displayName );
+        json_t* jsonDisplayName = json_object_get( dbTable->jsonObjectTable, "displayName" );
+        if( jsonDisplayName == NULL ) return etID_STATE_ERR;
+        *p_displayName = json_string_value( jsonDisplayName );
         return etID_YES;
     }
 
@@ -158,45 +147,126 @@ etID_STATE          __etDBColumnGetDisplayName( etDBColumn* dbColumn, const char
 
 
 
-etID_STATE          etDBColumnSetValue( etDBColumn* dbColumn, const char* string ){
+etID_STATE          etDBColumnSetValue( etDBTable* dbTable, const char* string ){
 // check
-    etDebugCheckNull( dbColumn );
+    etDebugCheckNull( dbTable );
+    etDebugCheckNull( dbTable->actualColumn );
 
-// alloc if needed
-    if( dbColumn->value == NULL ){
-        etStringAlloc( dbColumn->value );
-    }
-
-// set
-    etStringCharSet( dbColumn->value, string, -1 );
+// set the name
+    json_object_set_new( dbTable->actualColumn, "value", json_string(string) );
 
 // return
     return etID_YES;
 }
 
 
-etID_STATE          __etDBColumnGetValue( etDBColumn* dbColumn, const char** p_string ){
+etID_STATE          __etDBColumnGetValue( etDBTable* dbTable, const char** p_string ){
 // check
-    etDebugCheckNull( dbColumn );
+    etDebugCheckNull( dbTable );
     etDebugCheckNull( p_string );
+    etDebugCheckNull( dbTable->actualColumn );
 
-    if( dbColumn->value == NULL ){
-        *p_string = NULL;
-        return etID_NO;
+// get name
+    if( p_string != NULL ){
+        json_t* jsonValue = json_object_get( dbTable->jsonObjectTable, "value" );
+        if( jsonValue == NULL ) return etID_STATE_ERR;
+        *p_string = json_string_value( jsonValue );
+        return etID_YES;
     }
 
-    return __etStringCharGet( dbColumn->value, p_string );
+    return etID_NO;
+}
+
+
+etID_STATE          etDBColumnCleanValue( etDBTable* dbTable ){
+// check
+    etDebugCheckNull( dbTable );
+    etDebugCheckNull( dbTable->actualColumn );
+
+// set the name
+    json_object_del( dbTable->actualColumn, "value" );
+
+// return
+    return etID_YES;
+}
+
+
+etID_STATE          etDBColumnCleanAllValues( etDBTable* dbTable ){
+// check
+    etDebugCheckNull( dbTable );
+    etDebugCheckNull( dbTable->actualColumn );
+
+    etDBColumnIterateReset(dbTable);
+    while( etDBColumnIterate(dbTable) == etID_YES ){
+        etDBColumnCleanValue( dbTable );
+    }
+
+    return etID_YES;
 }
 
 
 
 
+etID_STATE          etDBColumnIterateReset( etDBTable* dbTable ){
+// check
+    etDebugCheckNull( dbTable );
+
+    dbTable->iteratorColumn = NULL;
+
+    return etID_YES;
+}
 
 
+etID_STATE          etDBColumnIterate( etDBTable* dbTable ){
+// check
+    etDebugCheckNull( dbTable );
+
+// start or continue
+    if( dbTable->iteratorColumn == NULL ){
+        dbTable->iteratorColumn = json_object_iter( dbTable->jsonObjectColumns );
+    } else {
+        dbTable->iteratorColumn = json_object_iter_next( dbTable->jsonObjectColumns, dbTable->iteratorColumn );
+    }
+
+// we reached the end of the list
+    if( dbTable->iteratorColumn == NULL ) return etID_STATE_END;
+
+    dbTable->actualColumn = json_object_iter_value( dbTable->iteratorColumn );
+
+    return etID_YES;
+}
 
 
+etID_STATE          etDBColumnSelect( etDBTable* dbTable, const char* name ){
+    etDebugCheckNull( dbTable );
+    etDebugCheckNull( dbTable->actualColumn );
+    etDebugCheckNull( name );
+
+    dbTable->actualColumn = json_object_get( dbTable->jsonObjectColumns, name );
+    if( dbTable->actualColumn == NULL ) return etID_STATE_NOTHING;
+
+    return etID_YES;
+}
 
 
+etID_STATE          etDBColumnSelectWithOption( etDBTable* dbTable, unsigned int option ){
+    etDebugCheckNull( dbTable );
+    etDebugCheckNull( dbTable->actualColumn );
+
+
+// vars
+    unsigned int columnOption = 0;
+
+    etDBColumnIterateReset(dbTable);
+    while( etDBColumnIterate(dbTable) == etID_YES ){
+        __etDBColumnGet(dbTable,NULL,NULL,&columnOption);
+        if( option & columnOption ){
+            return etID_YES;
+        }
+    }
+
+    return etID_STATE_NODATA;
+}
 
 
 

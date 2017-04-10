@@ -27,6 +27,7 @@
 extern "C" {
 #endif
 
+#include "db/etDBTable.h"
 
 #define etDBObject_TYPE_COLUMN "column"
 
@@ -52,54 +53,52 @@ typedef enum etDBColumnType_t {
 #define etDBCOLUMN_OPTION_DISPLAY 8
 
 
-typedef struct etDBColumn_t {
-    etString*           name;
-    etString*           displayName;
-
-    etDBColumnType      type;
-    unsigned int        option;
-
-    etString*           value;
-} etDBColumn;
-
-#define             etDBColumnAlloc( dbColumn ) __etDBColumnAlloc( &dbColumn )
-etID_STATE          __etDBColumnAlloc( etDBColumn** p_etDBColumn );
-
-#define             etDBColumnFree( dbColumn ) __etDBColumnFree( &dbColumn )
-etID_STATE          __etDBColumnFree( etDBColumn** p_etDBColumn );
 
 
 
-
-etID_STATE          etDBColumnSet( etDBColumn* dbColumn, const char *name, etDBColumnType type, unsigned int option );
-
-#define             etDBColumnGet( dbColumn, name, type, option ) __etDBColumnGet( dbColumn, &name, &type, &option )
-etID_STATE          __etDBColumnGet( etDBColumn* dbColumn, const char **p_name, etDBColumnType *p_type, unsigned int *p_option );
+etID_STATE          etDBColumnAppend( etDBTable* dbTable, const char *name, etDBColumnType type, unsigned int option );
 
 
-etID_STATE          etDBColumnSetDisplayName( etDBColumn* dbColumn, const char* displayName );
+etID_STATE          etDBColumnRemove( etDBTable* dbTable, const char* name );
 
-#define             etDBColumnGetDisplayName( dbColumn, displayName ) __etDBColumnGetDisplayName( dbColumn, &displayName )
-etID_STATE          __etDBColumnGetDisplayName( etDBColumn* dbColumn, const char** p_displayName );
+
+
+#define             etDBColumnGet( dbTable, name, type, option ) __etDBColumnGet( dbTable, &name, &type, &option )
+etID_STATE          __etDBColumnGet( etDBTable* dbTable, const char **p_name, etDBColumnType *p_type, unsigned int *p_option );
+
+
+etID_STATE          etDBColumnSetDisplayName( etDBTable* dbTable, const char* displayName );
+
+#define             etDBColumnGetDisplayName( dbTable, displayName ) __etDBColumnGetDisplayName( dbTable, &displayName )
+etID_STATE          __etDBColumnGetDisplayName( etDBTable* dbTable, const char** p_displayName );
 
 
 
 
-etID_STATE          etDBColumnSetValue( etDBColumn* dbColumn, const char* string );
+etID_STATE          etDBColumnSetValue( etDBTable* dbTable, const char* string );
 
-#define             etDBColumnGetValue( dbColumn, string ) __etDBColumnGetValue( dbColumn, &string )
-etID_STATE          __etDBColumnGetValue( etDBColumn* dbColumn, const char** p_string );
-
-
+#define             etDBColumnGetValue( dbTable, string ) __etDBColumnGetValue( dbTable, &string )
+etID_STATE          __etDBColumnGetValue( etDBTable* dbTable, const char** p_string );
 
 
+etID_STATE          etDBColumnCleanValue( etDBTable* dbTable );
 
 
-
-
+etID_STATE          etDBColumnCleanAllValues( etDBTable* dbTable );
 
 
 
+
+etID_STATE          etDBColumnIterateReset( etDBTable* dbTable );
+
+
+etID_STATE          etDBColumnIterate( etDBTable* dbTable );
+
+
+etID_STATE          etDBColumnSelect( etDBTable* dbTable, const char* name );
+
+
+etID_STATE          etDBColumnSelectWithOption( etDBTable* dbTable, unsigned int option );
 
 
 

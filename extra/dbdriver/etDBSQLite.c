@@ -211,6 +211,47 @@ etID_STATE          etDBSQLiteTableRemove( etDBDriver* dbDriver, etDBTable* dbTa
 }
 
 
+etID_STATE          etDBSQLiteTableExists( etDBDriver* dbDriver, etDBTable* dbTable ){
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbTable );
+    etDebugCheckNull( dbDriver->dbDriverData );
+
+//
+    etDBSQLiteDriver    *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+    etID_STATE          returnState = etID_STATE_NOTHING;
+
+// the table Name
+    const char* tableName = NULL;
+    etDBTableGetName( dbTable, tableName );
+
+// clear
+    etStringClean( sqliteDriver->sqlquery );
+
+// create table
+    etStringCharSet( sqliteDriver->sqlquery, "SELECT name FROM sqlite_master WHERE type='table' AND name='", -1 );
+    etStringCharAdd( sqliteDriver->sqlquery, tableName );
+    etStringCharAdd( sqliteDriver->sqlquery, "';" );
+
+// run the query
+    returnState = etDBSQLiteRun( dbDriver, dbTable );
+    if( returnState == etID_YES ){
+        return etID_YES;
+    }
+
+// is there a row ?
+    if( sqliteDriver->sqliteState == SQLITE_ROW ){
+    // clean up
+        sqlite3_reset( sqliteDriver->sqliteStatement );
+        sqliteDriver->sqliteStatement = NULL;
+    // return
+        return etID_YES;
+    }
+
+    return etID_NO;
+}
+
+
 
 
 etID_STATE          etDBSQLiteColumnAdd( etDBDriver* dbDriver, etDBTable* dbTable, const char* columnName ){
@@ -422,7 +463,6 @@ etID_STATE          etDBSQLiteDataNext( etDBDriver* dbDriver, etDBTable* dbTable
 
 // vars
     etDBSQLiteDriver*   sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
-    etDBColumn*         dbColumn = NULL;
 
 
 // iterate
@@ -438,8 +478,8 @@ etID_STATE          etDBSQLiteDataNext( etDBDriver* dbDriver, etDBTable* dbTable
             if( columnValue == NULL ) columnValue = ""; // the "NULL" char inside sqlite
 
         // get the column and set the value
-            etDBTableGetColumn( dbTable, columnName, dbColumn );
-            etDBColumnSetValue( dbColumn, columnValue );
+            etDBColumnSelect( dbTable, columnName );
+            etDBColumnSetValue( dbTable, columnValue );
 
         }
 
@@ -471,6 +511,7 @@ etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *file
 
     dbDriver->tableAdd = etDBSQLiteTableAdd;
     dbDriver->tableRemove = etDBSQLiteTableRemove;
+    dbDriver->tableExists = etDBSQLiteTableExists;
 
     dbDriver->columnAdd = etDBSQLiteColumnAdd;
     dbDriver->columnRemove = NULL;

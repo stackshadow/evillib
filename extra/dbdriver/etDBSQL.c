@@ -56,8 +56,6 @@ etID_STATE          etDBSQLAddTable( etDBDriver* dbDriver, etDBTable* dbTable, e
     etStringCharAdd( sqlquery, "\"" );
 
 // columns
-    void*               dbColumnIterator = NULL;
-    etDBColumn*         dbColumn = NULL;
     etID_BOOL           firstColumn = etID_TRUE;
     const char          *columnName = NULL;
     etDBColumnType      columnType;
@@ -65,8 +63,8 @@ etID_STATE          etDBSQLAddTable( etDBDriver* dbDriver, etDBTable* dbTable, e
 
     etStringCharAdd( sqlquery, " ( " );
 
-
-    while( etDBTableIterateColumn( dbTable, dbColumnIterator, dbColumn ) == etID_YES ){
+    etDBColumnIterateReset(dbTable);
+    while( etDBColumnIterate( dbTable ) == etID_YES ){
 
     // comma
         if( firstColumn == etID_FALSE ){
@@ -74,7 +72,7 @@ etID_STATE          etDBSQLAddTable( etDBDriver* dbDriver, etDBTable* dbTable, e
         }
 
     // get column name
-        etDBColumnGet( dbColumn, columnName, columnType, columnOption );
+        etDBColumnGet( dbTable, columnName, columnType, columnOption );
 
     // column name
         etStringCharAdd( sqlquery, columnEnclose );
@@ -151,14 +149,14 @@ etID_STATE          etDBSQLAddColumn( etDBDriver* dbDriver, etDBTable* dbTable, 
     etStringCharAdd( sqlquery, " ADD COLUMN " );
 
 // columns
-    etDBColumn*         dbColumn;
     etDBColumnType      dbColumnType;
-    int                 dbColumnOption = etDBCOLUMN_OPTION_NOTHING;
+    unsigned int        dbColumnOption = etDBCOLUMN_OPTION_NOTHING;
 
 // find the column
-    if( etDBTableGetColumn( dbTable, columnName, dbColumn ) != etID_YES ) return etID_STATE_ERR_INTERR;
-    dbColumnType = dbColumn->type;
-    dbColumnOption = dbColumn->option;
+    if( etDBColumnSelect( dbTable, columnName ) != etID_YES ) return etID_STATE_ERR_INTERR;
+
+// get the values
+    __etDBColumnGet( dbTable, NULL, &dbColumnType, &dbColumnOption );
 
 // column name
     etStringCharAdd( sqlquery, columnEnclose );
@@ -194,8 +192,6 @@ etID_STATE          etDBSQLAddData( etDBDriver* dbDriver, etDBTable* dbTable, et
 
 
 // vars
-    etDBColumn*         dbColumn = NULL;
-    void*               dbColumnIterator = NULL;
     etID_BOOL           firstColumn = etID_TRUE;
     const char          *tableName = NULL;
     const char          *columnName = NULL;
@@ -219,11 +215,12 @@ etID_STATE          etDBSQLAddData( etDBDriver* dbDriver, etDBTable* dbTable, et
 
 // columns
     etStringCharAdd( sqlquery, " (" );
-    while( etDBTableIterateColumn( dbTable, dbColumnIterator, dbColumn ) == etID_YES ){
+    etDBColumnIterateReset( dbTable );
+    while( etDBColumnIterate( dbTable ) == etID_YES ){
 
     // get the value
-        __etDBColumnGet( dbColumn, &columnName, NULL, NULL );
-        etDBColumnGetValue( dbColumn, columnValue );
+        __etDBColumnGet( dbTable, &columnName, NULL, NULL );
+        etDBColumnGetValue( dbTable, columnValue );
 
     // comma
         if( firstColumn == etID_FALSE ){
@@ -272,8 +269,6 @@ etID_STATE          etDBSQLChangeData( etDBDriver* dbDriver, etDBTable* dbTable,
 // vars
     etID_BOOL           firstColumn = etID_TRUE;
     const char*         tableName = NULL;
-    etDBColumn*         column = NULL;
-    void*               columnIterator = NULL;
     const char*         columnName = NULL;
     const char*         columnValue = NULL;
     const char*         primaryColumnName = NULL;
@@ -294,11 +289,12 @@ etID_STATE          etDBSQLChangeData( etDBDriver* dbDriver, etDBTable* dbTable,
 
 // columns
     etStringCharAdd( sqlquery, " SET " );
-    while( etDBTableIterateColumn( dbTable, columnIterator, column ) == etID_YES ){
+    etDBColumnIterateReset( dbTable );
+    while( etDBColumnIterate( dbTable ) == etID_YES ){
 
     // get the value
-        __etDBColumnGet( column, &columnName, NULL, NULL );
-        etDBColumnGetValue( column, columnValue );
+        __etDBColumnGet( dbTable, &columnName, NULL, NULL );
+        etDBColumnGetValue( dbTable, columnValue );
 
     // comma
         if( firstColumn == etID_FALSE ){
@@ -320,14 +316,14 @@ etID_STATE          etDBSQLChangeData( etDBDriver* dbDriver, etDBTable* dbTable,
 
 
 // get the primary key-column
-    if( etDBTableGetColumnWithOption( dbTable, etDBCOLUMN_OPTION_PRIMARY, column ) != etID_YES ){
+    if( etDBColumnSelectWithOption( dbTable, etDBCOLUMN_OPTION_PRIMARY ) != etID_YES ){
         return etID_STATE_ERR_INTERR;
     }
 
-    __etDBColumnGet( column, &primaryColumnName, NULL, NULL );
+    __etDBColumnGet( dbTable, &primaryColumnName, NULL, NULL );
 
 // get the value of the primary column
-    if( etDBColumnGetValue( column, primaryColumnValue ) != etID_YES ){
+    if( etDBColumnGetValue( dbTable, primaryColumnValue ) != etID_YES ){
         return etID_STATE_ERR_INTERR;
     }
 
@@ -355,7 +351,6 @@ etID_STATE          etDBSQLRemoveData( etDBDriver* dbDriver, etDBTable* dbTable,
 
 // vars
     const char*         tableName = NULL;
-    etDBColumn*         primaryColumn = NULL;
     const char*         primaryColumnName = NULL;
     const char*         primaryColumnValue = NULL;
 
@@ -375,15 +370,15 @@ etID_STATE          etDBSQLRemoveData( etDBDriver* dbDriver, etDBTable* dbTable,
 
 
 // get the primary key-column
-    if( etDBTableGetColumnWithOption( dbTable, etDBCOLUMN_OPTION_PRIMARY, primaryColumn ) != etID_YES ){
+    if( etDBColumnSelectWithOption( dbTable, etDBCOLUMN_OPTION_PRIMARY ) != etID_YES ){
         return etID_STATE_ERR_INTERR;
     }
 
 // get column name
-    __etDBColumnGet( primaryColumn, &primaryColumnName, NULL, NULL );
+    __etDBColumnGet( dbTable, &primaryColumnName, NULL, NULL );
 
 // get the value of the primary column
-    if( etDBColumnGetValue( primaryColumn, primaryColumnValue ) != etID_YES ){
+    if( etDBColumnGetValue( dbTable, primaryColumnValue ) != etID_YES ){
         return etID_STATE_ERR_INTERR;
     }
 
@@ -407,8 +402,6 @@ etID_STATE          etDBSQLGetData( etDBDriver* dbDriver, etDBTable* dbTable, et
     etDebugCheckNull( sqlquery );
 
 // vars
-    etDBColumn*         dbColumn = NULL;
-    void*               dbColumnIterator = NULL;
     etID_BOOL           firstColumn = etID_TRUE;
     const char          *tableName = NULL;
     const char          *columnName = NULL;
@@ -419,10 +412,11 @@ etID_STATE          etDBSQLGetData( etDBDriver* dbDriver, etDBTable* dbTable, et
 // create table
     etStringCharSet( sqlquery, "SELECT ", 7 );
 
-    while( etDBTableIterateColumn( dbTable, dbColumnIterator, dbColumn ) == etID_YES ){
+    etDBColumnIterateReset(dbTable);
+    while( etDBColumnIterate( dbTable ) == etID_YES ){
 
     // get
-        __etDBColumnGet( dbColumn, &columnName, NULL, NULL );
+        __etDBColumnGet( dbTable, &columnName, NULL, NULL );
 
     // comma
         if( firstColumn == etID_FALSE ){
@@ -448,8 +442,6 @@ etID_STATE          etDBSQLGetData( etDBDriver* dbDriver, etDBTable* dbTable, et
     if( dbFilter == NULL ) return etID_YES;
 
 // WHERE
-    etDBFilterElement*  dbFilterElement = NULL;
-    void*               dbFilterIterator = NULL;
     etID_STATE          isWHERE = etID_NO;
     etID_STATE          isFirstOperation = etID_YES;
     int                 actualFilterGroup = -1;
@@ -459,11 +451,11 @@ etID_STATE          etDBSQLGetData( etDBDriver* dbDriver, etDBTable* dbTable, et
     etDBFILTER_TYPE     filterType;
     const char*         filterString;
 
-
-    while( etDBFilterIterate( dbFilter, dbFilterIterator, dbFilterElement ) == etID_YES ){
+    etDBFilterIterateReset( dbFilter );
+    while( etDBFilterIterate( dbFilter ) == etID_YES ){
 
     // get
-        etDBFilterElementGet( dbFilterElement, filterGroup, filterOperation, filterColumn, filterType, filterString );
+        etDBFilterElementGet( dbFilter, filterGroup, filterOperation, filterColumn, filterType, filterString );
 
     // add WHERE
         if( isWHERE == etID_NO ){

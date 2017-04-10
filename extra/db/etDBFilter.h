@@ -56,8 +56,10 @@ struct etDBFilterElement_s {
 
 typedef struct etDBFilter_s etDBFilter;
 struct etDBFilter_s {
-    etList*     start;
-    etList*     end;
+    json_t*     jsonArray;
+    int         jsonArrayIndex;
+    int         jsonArrayLen;
+    json_t*     jsonArrayElement;
 };
 
 
@@ -71,11 +73,13 @@ etID_STATE          __etDBFilterFree( etDBFilter** p_dbFilter );
 etID_STATE          etDBFilterAppend( etDBFilter* dbFilter, int group, etDBFILTER_OP operation, const char* columnName, etDBFILTER_TYPE type, const char* value );
 
 
-#define             etDBFilterIterate( dbFilter, iterator, dbFilterElement ) __etDBFilterIterate( dbFilter, &iterator, &dbFilterElement )
-etID_STATE          __etDBFilterIterate( etDBFilter* dbFilter, void** iterator, etDBFilterElement** p_dbFilterElement );
+etID_STATE          etDBFilterIterateReset( etDBFilter* dbFilter );
+
+
+etID_STATE          etDBFilterIterate( etDBFilter* dbFilter );
 
 #define             etDBFilterElementGet( dbFilter, group, operation, columnName, type, value ) __etDBFilterElementGet( dbFilter, &group, &operation, &columnName, &type, &value )
-etID_STATE          __etDBFilterElementGet( etDBFilterElement* dbFilterElement, int* group, etDBFILTER_OP* operation, const char** p_columnName, etDBFILTER_TYPE* type, const char** p_value );
+etID_STATE          __etDBFilterElementGet( etDBFilter* dbFilter, int* group, etDBFILTER_OP* operation, const char** p_columnName, etDBFILTER_TYPE* type, const char** p_value );
 
 
 #ifdef __cplusplus

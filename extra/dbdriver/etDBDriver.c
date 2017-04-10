@@ -126,6 +126,17 @@ etID_STATE          etDBDriverTableRemove( etDBDriver* dbDriver, etDBTable* dbTa
 }
 
 
+etID_STATE          etDBDriverTableExists( etDBDriver* dbDriver, etDBTable* dbTable ){
+// check
+    etDebugCheckNull(dbTable);
+
+// call function
+    if( dbDriver->tableExists != NULL ){
+        return dbDriver->tableExists( dbDriver, dbTable );
+    }
+
+    return etID_STATE_ERR;
+}
 /*
 
 etID_STATE          etDBDriverColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
@@ -200,7 +211,7 @@ etID_STATE          etDBDriverDataGet( etDBDriver* dbDriver, etDBTable* dbTable,
     etDebugCheckNull(dbDriver);
 
 // clean values
-    etDBTableCleanColumnValues( dbTable );
+    etDBColumnCleanAllValues( dbTable );
 
 // call function
     if( dbDriver->dataGet != NULL ){
@@ -216,7 +227,7 @@ etID_STATE          etDBDriverDataGetWithLimits( etDBDriver* dbDriver, etDBTable
     etDebugCheckNull(dbDriver);
 
 // clean values
-    etDBTableCleanColumnValues( dbTable );
+    etDBColumnCleanAllValues( dbTable );
 
 // call function
     if( dbDriver->dataGetWithLimit != NULL ){
@@ -232,7 +243,7 @@ etID_STATE          etDBDriverDataNext( etDBDriver* dbDriver, etDBTable* dbTable
     etDebugCheckNull(dbDriver);
 
 // clean values
-    etDBTableCleanColumnValues( dbTable );
+    etDBColumnCleanAllValues( dbTable );
 
 // call function
     if( dbDriver->dataNext != NULL ){

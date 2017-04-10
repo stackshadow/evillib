@@ -25,7 +25,8 @@
 #include "string/etString.h"
 #include "string/etStringChar.h"
 
-#include "db/etDBColumn.h"
+#include "jansson.h"
+
 #include "db/etDBFilter.h"
 
 #ifdef __cplusplus
@@ -33,12 +34,15 @@ extern "C" {
 #endif
 
 typedef struct etDBTable_t {
-    etString*       name;
-    etString*       displayName;
 
-// columns
-    etList*         etDBColumnList;
-    etDBColumn*     etDBColumnDisplayValue;
+// jsons
+    json_t*     jsonObjectTable;
+    json_t*     jsonObjectColumns;
+    json_t*     jsonObjectValues;
+
+// indexing
+    void*       iteratorColumn;
+    json_t*     actualColumn;
 
 
 } etDBTable;
@@ -83,32 +87,10 @@ etID_STATE          __etDBTableGetDisplayName( etDBTable* dbTable, const char** 
 
 
 
-etID_STATE          etDBTableAppendColumn( etDBTable* dbTable, etDBColumn* column );
+etID_STATE          etDBTableSetDisplayColumnName( etDBTable* dbTable, const char* columnName );
 
-#define             etDBTableIterateColumn( dbTable, iterator, column ) __etDBTableIterateColumn( dbTable, &iterator, &column )
-etID_STATE          __etDBTableIterateColumn( etDBTable* dbTable, void **iterator, etDBColumn** p_column );
-
-#define             etDBTableGetColumn( dbTable, columnName, dbColumn ) __etDBTableGetColumn( dbTable, columnName, &dbColumn )
-etID_STATE          __etDBTableGetColumn( etDBTable* dbTable, const char* columnName, etDBColumn** p_dbColumn );
-
-#define             etDBTableGetColumnWithOption( dbTable, dbColumnOptionToFind, dbColumn ) __etDBTableGetColumnWithOption( dbTable, dbColumnOptionToFind, &dbColumn )
-etID_STATE          __etDBTableGetColumnWithOption( etDBTable* dbTable, int dbColumnOptionToFind, etDBColumn** p_dbColumn );
-
-
-etID_STATE          etDBTableDumpColumn( etDBTable* dbTable );
-
-
-
-
-etID_STATE          etDBTableSetDisplayColumn( etDBTable* dbTable, etDBColumn* dbColumn );
-
-#define             etDBTableGetDisplayColumn( dbTable, dbColumn ) __etDBTableGetDisplayColumn( dbTable, &dbColumn )
-etID_STATE          __etDBTableGetDisplayColumn( etDBTable* dbTable, etDBColumn** p_dbColumn );
-
-
-
-
-etID_STATE          etDBTableCleanColumnValues( etDBTable* dbTable );
+#define             etDBTableGetDisplayColumnName( dbTable, columnName ) __etDBTableGetDisplayColumnName( dbTable, &columnName )
+etID_STATE          __etDBTableGetDisplayColumnName( etDBTable* dbTable, const char** p_columnName );
 
 
 

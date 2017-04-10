@@ -43,10 +43,11 @@ etID_STATE          __etDBFilterAlloc( etDBFilter** p_dbFilter ){
 // allocate memory
     etMemoryAlloc( dbFilter, sizeof(etDBFilter) );
 
-// allocate list
-    etListAlloc( dbFilter->start );
-    dbFilter->end = dbFilter->start;
-
+// filter
+    dbFilter->jsonArray = json_array();
+    dbFilter->jsonArrayIndex = 0;
+    dbFilter->jsonArrayLen = 0;
+    dbFilter->jsonArrayElement = NULL;
 
 // return
     *p_dbFilter = dbFilter;
@@ -59,14 +60,9 @@ etID_STATE          __etDBFilterFree( etDBFilter** p_dbFilter ){
 
 // vars
     etDBFilter*             dbFilter = *p_dbFilter;
-    etDBFilterElement*      dbFilterElement = NULL;
-    void*                   dbFilterIterator = NULL;
 
-
-
-
-// clean the list itselfe
-    etListFree( dbFilter->start );
+// clean
+    json_decref( dbFilter->jsonArray );
 
 // free the memory for our class
     etMemoryRelease( dbFilter );
@@ -80,67 +76,99 @@ etID_STATE          __etDBFilterFree( etDBFilter** p_dbFilter ){
 etID_STATE          etDBFilterAppend( etDBFilter* dbFilter, int group, etDBFILTER_OP operation, const char* columnName, etDBFILTER_TYPE type, const char* value ){
     etDebugCheckNull( dbFilter );
 
-// vars
-    etDBFilterElement*      dbFilterElement = NULL;
+// a new element
+    json_t*         jsonFilterElement = json_object();
 
-// create a new element
-    etMemoryAlloc( dbFilterElement, sizeof(etDBFilterElement) );
+    json_object_set_new( jsonFilterElement, "group", json_integer(group) );
+    json_object_set_new( jsonFilterElement, "operation", json_integer(operation) );
+    json_object_set_new( jsonFilterElement, "colName", json_string(columnName) );
+    json_object_set_new( jsonFilterElement, "type", json_integer(type) );
+    json_object_set_new( jsonFilterElement, "value", json_string(value) );
 
-    dbFilterElement->group = group;
+    json_array_append( dbFilter->jsonArray, jsonFilterElement );
 
-    dbFilterElement->operation = operation;
-
-    if( dbFilterElement->column == NULL ) etStringAlloc( dbFilterElement->column );
-    etStringCharSet( dbFilterElement->column, columnName, -1 );
-
-    dbFilterElement->type = type;
-
-    if( dbFilterElement->value == NULL ) etStringAlloc( dbFilterElement->value );
-    etStringCharSet( dbFilterElement->value, value, -1 );
-
-// append to the list
-    etListAppend( dbFilter->end, dbFilterElement );
+    dbFilter->jsonArrayLen++;
 
     return etID_YES;
 }
 
 
-etID_STATE          __etDBFilterIterate( etDBFilter* dbFilter, void** iterator, etDBFilterElement** p_dbFilterElement ){
+etID_STATE          etDBFilterIterateReset( etDBFilter* dbFilter ){
+    etDebugCheckNull( dbFilter );
 
-// iterate from the beginning
-    if( *iterator == NULL && *p_dbFilterElement == NULL ){
-        __etListIterate( dbFilter->start, iterator );
-    }
+    dbFilter->jsonArrayIndex = 0;
 
-// get data and set iterator to next element
-    return __etListIterateNext( iterator, (void**)p_dbFilterElement );
+    return etID_YES;
 }
 
 
-etID_STATE          __etDBFilterElementGet( etDBFilterElement* dbFilterElement, int* group, etDBFILTER_OP* operation, const char** p_columnName, etDBFILTER_TYPE* type, const char** p_value ){
-    etDebugCheckNull( dbFilterElement );
+etID_STATE          etDBFilterIterate( etDBFilter* dbFilter ){
+    etDebugCheckNull( dbFilter );
 
+// finished ?
+    if( dbFilter->jsonArrayIndex >= dbFilter->jsonArrayLen ){
+        dbFilter->jsonArrayLen = json_array_size(dbFilter->jsonArray);
+        dbFilter->jsonArrayIndex = 0;
+        return etID_STATE_END;
+    }
+
+    dbFilter->jsonArrayElement = json_array_get( dbFilter->jsonArray, dbFilter->jsonArrayIndex );
+    dbFilter->jsonArrayIndex++;
+
+    return etID_YES;
+}
+
+
+etID_STATE          __etDBFilterElementGet( etDBFilter* dbFilter, int* group, etDBFILTER_OP* operation, const char** p_columnName, etDBFILTER_TYPE* type, const char** p_value ){
+// check
+    etDebugCheckNull( dbFilter );
+    etDebugCheckNull( dbFilter->jsonArrayElement );
+
+// values
+    json_t*     jsonValue = NULL;
 
     if( group != NULL ){
-        *group = dbFilterElement->group;
+        *group = 0;
+        jsonValue = json_object_get( dbFilter->jsonArrayElement, "group" );
+        if( jsonValue != NULL ){
+            *group = json_integer_value(jsonValue);
+        }
     }
 
     if( operation != NULL ){
-        *operation = dbFilterElement->operation;
+        *operation = 0;
+        jsonValue = json_object_get( dbFilter->jsonArrayElement, "operation" );
+        if( jsonValue != NULL ){
+            *operation = json_integer_value(jsonValue);
+        }
     }
 
     if( p_columnName != NULL ){
-        __etStringCharGet( dbFilterElement->column, p_columnName );
+        *p_columnName = NULL;
+        jsonValue = json_object_get( dbFilter->jsonArrayElement, "colName" );
+        if( jsonValue != NULL ){
+            *p_columnName = json_string_value(jsonValue);
+        }
     }
 
     if( type != NULL ){
-        *type = dbFilterElement->type;
+        *type = 0;
+        jsonValue = json_object_get( dbFilter->jsonArrayElement, "type" );
+        if( jsonValue != NULL ){
+            *type = json_integer_value(jsonValue);
+        }
     }
 
     if( p_value != NULL ){
-        __etStringCharGet( dbFilterElement->value, p_value );
+        *p_value = NULL;
+        jsonValue = json_object_get( dbFilter->jsonArrayElement, "value" );
+        if( jsonValue != NULL ){
+            *p_value = json_string_value(jsonValue);
+        }
     }
 
+
+    return etID_YES;
 }
 
 

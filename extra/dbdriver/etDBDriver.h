@@ -57,6 +57,7 @@ struct etDBDriver_s {
 // handle table
     etID_STATE          (*tableAdd)( etDBDriver* dbDriver, etDBTable* dbTable );
     etID_STATE          (*tableRemove)( etDBDriver* dbDriver, etDBTable* dbTable );
+    etID_STATE          (*tableExists)( etDBDriver* dbDriver, etDBTable* dbTable );
 // handle columns
     etID_STATE          (*columnAdd)( etDBDriver* dbDriver, etDBTable* dbTable, const char* columnName );
     etID_STATE          (*columnRemove)( etDBDriver* dbDriver, etDBTable* dbTable, const char* columnName );
@@ -99,10 +100,15 @@ etID_STATE          etDBDriverDisConnect( etDBDriver* dbDriver );
 
 
 
+
 etID_STATE          etDBDriverTableAdd( etDBDriver* dbDriver, etDBTable* dbTable );
 
 
 etID_STATE          etDBDriverTableRemove( etDBDriver* dbDriver, etDBTable* dbTable );
+
+
+etID_STATE          etDBDriverTableExists( etDBDriver* dbDriver, etDBTable* dbTable );
+
 
 
 

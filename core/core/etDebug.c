@@ -300,6 +300,9 @@ If the messageLevel is etID_LEVEL_CRITICAL the application exits !
 
 void                    etDebugMessageExtern( etID_LEVEL messageLevel, const char *function, int line, const char *message ){
 
+// only print message over an amount of visible level
+    if( messageLevel < etDebugEvillib->LevelVisible ) return;
+
     // Fill struct
     etDebugEvillib->Level = messageLevel;
 
@@ -318,6 +321,9 @@ void                    etDebugMessageExtern( etID_LEVEL messageLevel, const cha
 
 
 void                    etDebugMessageIntern( etID_LEVEL messageLevel, const char *function, int line, const char *message ){
+
+// only print message over an amount of visible level
+    if( messageLevel < etDebugEvillib->LevelVisible ) return;
 
     const char *ProgramName = etDebugEvillib->Program;
 

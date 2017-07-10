@@ -46,6 +46,7 @@ typedef enum etDBColumnType_t {
 
 } etDBColumnType;
 
+#define etDBCOLUMN_OPTION_IGNORE 0
 #define etDBCOLUMN_OPTION_NOTHING 0
 #define etDBCOLUMN_OPTION_PRIMARY 1
 #define etDBCOLUMN_OPTION_NOTNULL 2
@@ -55,11 +56,13 @@ typedef enum etDBColumnType_t {
 
 
 
-
 etID_STATE          etDBColumnAppend( etDBTable* dbTable, const char *name, etDBColumnType type, unsigned int option );
 
 
 etID_STATE          etDBColumnRemove( etDBTable* dbTable, const char* name );
+
+
+etID_STATE          etDBColumnRemoveAll( etDBTable* dbTable );
 
 
 

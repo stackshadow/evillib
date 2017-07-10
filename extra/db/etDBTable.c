@@ -31,7 +31,7 @@
 
 // headers
 #include "db/etDBTable.h"
-
+#include "db/etDBColumn.h"
 
 
 /** @ingroup etDB
@@ -47,6 +47,15 @@
 extern "C" {
 #endif
 
+#include "core/etInit.c"
+
+#include "string/etString.c"
+#include "memory/etList.c"
+
+// pseudo defines
+//etID_STATE          etDBColumnRemoveAll( etDBTable* dbTable );
+
+
 
 etID_STATE          __etDBTableAlloc( etDBTable** p_dbTable ){
     etDebugCheckNull( p_dbTable );
@@ -57,12 +66,16 @@ etID_STATE          __etDBTableAlloc( etDBTable** p_dbTable ){
 // allocate memory
     etMemoryAlloc( dbTable, sizeof(etDBTable) );
 
-// create json-table
-    dbTable->jsonObjectTable = json_object();
-    dbTable->jsonObjectColumns = json_object();
-    dbTable->jsonObjectValues = json_object();
+// prealloc strings
+	etStringAllocLen( dbTable->tableName, 32 );
+	etStringAllocLen( dbTable->tableDisplayName, 64 );
+	etStringAllocLen( dbTable->columnNameOfDisplayValues, 32 );
 
-    json_object_set_new( dbTable->jsonObjectTable, "columns", dbTable->jsonObjectColumns );
+// allocate lists
+	etListAlloc( dbTable->columns );
+	dbTable->column = NULL;
+	dbTable->columnIterator = NULL;
+
 
 // return
     *p_dbTable = dbTable;
@@ -76,8 +89,14 @@ etID_STATE          __etDBTableFree( etDBTable** p_dbTable ){
 // vars
     etDBTable*          dbTable = *p_dbTable;
 
-// destroy json
-    json_decref( dbTable->jsonObjectTable );
+//
+	etStringFree( dbTable->tableName );
+	etStringFree( dbTable->tableDisplayName );
+	etStringFree( dbTable->columnNameOfDisplayValues );
+
+// free the columns
+	etDBColumnRemoveAll( dbTable );
+	etListFree( dbTable->columns );
 
 
 // release memory
@@ -111,7 +130,7 @@ etID_STATE          etDBTableSetName( etDBTable* dbTable, const char* tableName 
     etDebugCheckNull( tableName );
 
 // set the name
-    json_object_set_new( dbTable->jsonObjectTable, "name", json_string(tableName) );
+	etStringCharSet( dbTable->tableName, tableName, -1 );
 
     return etID_YES;
 }
@@ -140,12 +159,11 @@ etID_STATE          __etDBTableGetName( etDBTable* dbTable, const char** p_table
     etDebugCheckNull( p_tableName );
 
 // get name
-    json_t* jsonTableName = json_object_get( dbTable->jsonObjectTable, "name" );
-    if( jsonTableName == NULL ) return etID_STATE_ERR;
-    *p_tableName = json_string_value( jsonTableName );
+	if( __etStringCharGet( dbTable->tableName, p_tableName ) == etID_YES ){
+		return etID_YES;
+	}
 
-
-    return etID_YES;
+    return etID_NO;
 }
 
 /** @ingroup gretDBObjectTable
@@ -168,9 +186,11 @@ etID_STATE          etDBTableSetDisplayName( etDBTable* dbTable, const char* dis
     etDebugCheckNull( displayName );
 
 // set the name
-    json_object_set_new( dbTable->jsonObjectTable, "displayName", json_string(displayName) );
+	if( etStringCharSet( dbTable->tableDisplayName, displayName, -1 ) == etID_YES ){
+		return etID_YES;
+	}
 
-    return etID_YES;
+    return etID_NO;
 }
 
 
@@ -180,13 +200,11 @@ etID_STATE          __etDBTableGetDisplayName( etDBTable* dbTable, const char** 
     etDebugCheckNull( p_displayName );
 
 // get name
-    if( p_displayName != NULL ){
-        json_t* jsonTableDisplayName = json_object_get( dbTable->jsonObjectTable, "displayName" );
-        if( jsonTableDisplayName == NULL ) return etID_STATE_ERR;
-        *p_displayName = json_string_value( jsonTableDisplayName );
-    }
+	if( __etStringCharGet( dbTable->tableDisplayName, p_displayName ) == etID_YES ){
+		return etID_YES;
+	}
 
-    return etID_YES;
+    return etID_NO;
 }
 
 
@@ -198,9 +216,11 @@ etID_STATE          etDBTableSetDisplayColumnName( etDBTable* dbTable, const cha
     etDebugCheckNull( columnName );
 
 // set the name
-    json_object_set_new( dbTable->jsonObjectTable, "displayColumnName", json_string(columnName) );
+	if( etStringCharSet( dbTable->columnNameOfDisplayValues, columnName, -1 ) == etID_YES ){
+		return etID_YES;
+	}
 
-    return etID_YES;
+    return etID_NO;
 }
 
 
@@ -210,14 +230,11 @@ etID_STATE          __etDBTableGetDisplayColumnName( etDBTable* dbTable, const c
     etDebugCheckNull( p_columnName );
 
 // get name
-    if( p_columnName != NULL ){
-        json_t* jsonTableDisplayColumnName = json_object_get( dbTable->jsonObjectTable, "displayColumnName" );
-        if( jsonTableDisplayColumnName == NULL ) return etID_STATE_ERR;
-        *p_columnName = json_string_value( jsonTableDisplayColumnName );
-        return etID_YES;
-    }
+	if( __etStringCharGet( dbTable->columnNameOfDisplayValues, p_columnName ) == etID_YES ){
+		return etID_YES;
+	}
 
-    return etID_YES;
+    return etID_NO;
 }
 
 
@@ -227,9 +244,6 @@ etID_STATE          etDBTableDump( etDBTable* dbTable ){
 // check
     etDebugCheckNull( dbTable );
 
-    char* dumpString = json_dumps( dbTable->jsonObjectTable, JSON_PRESERVE_ORDER | JSON_INDENT(4) );
-    fprintf( stdout, "%s\n", dumpString );
-    free( dumpString );
 
     return etID_YES;
 }

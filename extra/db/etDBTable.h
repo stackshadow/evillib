@@ -35,14 +35,14 @@ extern "C" {
 
 typedef struct etDBTable_t {
 
-// jsons
-    json_t*     jsonObjectTable;
-    json_t*     jsonObjectColumns;
-    json_t*     jsonObjectValues;
+// the new stuff
+	etString*	tableName;
+	etString*	tableDisplayName;
+	etString*	columnNameOfDisplayValues;
 
-// indexing
-    void*       iteratorColumn;
-    json_t*     actualColumn;
+	etList*		columns;
+	void*		column;
+	void*		columnIterator;
 
 
 } etDBTable;

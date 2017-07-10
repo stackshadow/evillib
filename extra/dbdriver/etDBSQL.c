@@ -26,12 +26,17 @@
 extern "C" {
 #endif
 
+#include "core/etDebug.c"
+#include "core/etObject.c"
+#include "memory/etMemory.c"
+#include "string/etString.c"
+#include "string/etStringChar.c"
 
-#include "dbdriver/etDBDriver.h"
-#include "db/etDBObject.h"
-#include "db/etDBTable.h"
-#include "db/etDBColumn.h"
-
+#include "dbdriver/etDBDriver.c"
+//#include "db/etDBObject.h"
+#include "db/etDBTable.c"
+#include "db/etDBColumn.c"
+#include "db/etDBFilter.c"
 
 
 // Table

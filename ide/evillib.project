@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<CodeLite_Project Name="evillib" InternalType="">
+<CodeLite_Project Name="evillib" InternalType="" Version="10.0.0">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00010001N0005Debug000000000000]]>
+    </Plugin>
+  </Plugins>
   <VirtualDirectory Name="extra">
     <VirtualDirectory Name="db">
       <File Name="../extra/db/etDBObjectValue.h"/>
@@ -12,6 +17,9 @@
       <File Name="../extra/db/etDBColumn.h"/>
       <File Name="../extra/db/etDBTable.c"/>
       <File Name="../extra/db/etDBTable.h"/>
+      <File Name="../extra/db/etDBObjectTable.dox"/>
+      <File Name="../extra/db/etDBFilter.c"/>
+      <File Name="../extra/db/etDBFilter.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="dbdriver">
       <File Name="../extra/dbdriver/etDBSQL.c"/>

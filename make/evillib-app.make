@@ -28,6 +28,7 @@ endif
 sources = $(shell find ./tests -name "*.c" -printf "%p " )
 sources = ./tests/etMemoryBlock.c
 sources = ./tests/etDBObject.c
+sources = ./tests/etDBSQL.c
 #sources = ./tests/etList.c
 sourcesFull=$(sources)
 
@@ -55,6 +56,7 @@ CFLAGS+=-I ./extra/db
 CFLAGS+=-I/usr/include/postgresql
 CFLAGS+=-Wall
 CFLAGS+=-g
+CFLAGS+=-DET_MEMEXITCLEAN_OFF
 #CFLAGS+=-DET_MEMEXITCLEAN_OFF
 
 CLIBS+=-lpthread

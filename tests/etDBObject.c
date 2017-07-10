@@ -22,6 +22,10 @@
 
 
 #include "core/etInit.c"
+
+#include "string/etString.c"
+#include "memory/etList.c"
+
 #include "db/etDBTable.c"
 #include "db/etDBColumn.c"
 #include "db/etDBFilter.c"
@@ -86,17 +90,51 @@ etID_STATE              etDBTableColumnTest(){
     etDBColumnAppend( dbTable, "prename", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
 
 // iterate
+	int dbTableColumnCounter = 0;
+	etDBColumnIterateReset(dbTable);
     while( etDBColumnIterate(dbTable) == etID_YES ){
 
-        const char *name = NULL;
-        __etDBColumnGet( dbTable, &name, NULL, NULL );
-        __etDBColumnGet( dbTable, &name, NULL, NULL );
+        const char*			dbColumnName = NULL;
+		etDBColumnType		dbColumnType = etDBCOLUMN_TYPE_NOTHING;
+		unsigned int		dbColumnOption = etDBCOLUMN_OPTION_NOTHING;
+
+        __etDBColumnGet( dbTable, &dbColumnName, &dbColumnType, &dbColumnOption );
+
+		switch( dbTableColumnCounter ){
+			case 0:
+				if( strncmp("uuid",dbColumnName,strlen(dbColumnName)) != 0 ){
+					etDebugMessage( etID_STATE_CRIT, "Error Column 'uuid' not in table" );
+				}
+				if( dbColumnType != etDBCOLUMN_TYPE_STRING ){
+					etDebugMessage( etID_STATE_CRIT, "Error Column type is not a string" );
+				}
+				if( dbColumnOption != (etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_NOTNULL | etDBCOLUMN_OPTION_UNIQUE) ){
+					etDebugMessage( etID_STATE_CRIT, "Error Column options incorrect" );
+				}
+				break;
+
+			case 1:
+				if( strncmp("name",dbColumnName,strlen(dbColumnName)) != 0 ){
+					etDebugMessage( etID_STATE_CRIT, "Error Column 'name' not in table" );
+				}
+				break;
+
+			case 2:
+				if( strncmp("prename",dbColumnName,strlen(dbColumnName)) != 0 ){
+					etDebugMessage( etID_STATE_CRIT, "Error Column 'prename' not in table" );
+				}
+				break;
+
+			default:
+				etDebugMessage( etID_STATE_CRIT, "Error Column not handled." );
+				break;
+		}
 
 
-
+		dbTableColumnCounter++;
     }
 
-// values
+// fill values
     etDBColumnSelect( dbTable, "uuid" );
     etDBColumnSetValue( dbTable, "1203713-091273901273" );
 
@@ -105,6 +143,16 @@ etID_STATE              etDBTableColumnTest(){
 
     etDBColumnSelect( dbTable, "prename" );
     etDBColumnSetValue( dbTable, "Max" );
+
+// check values
+	const char* dbValueName = NULL;
+
+	etDBColumnSelect( dbTable, "name" );
+	etDBColumnGetValue( dbTable, dbValueName );
+	if( strncmp(dbValueName,"Musterman",strlen("Musterman")) != 0 ){
+		etDebugMessage( etID_STATE_CRIT, "Error: Column dont contains the correct value" );
+	}
+
 
     etDBTableDump( dbTable );
 
@@ -205,9 +253,14 @@ etID_STATE              etDBDriverTestSQLite(){
 */
 
 int                     main( int argc, const char* argv[] ){
+
     etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
 
+/*
+	size_t etMemoryBlockSize = sizeof(etMemoryBlock);
+	size_t etMemoryBlockListSize = sizeof(etMemoryBlockList);
+*/
 
     etDBObjectTableApiCheck();
     etDBTableColumnTest();
@@ -215,7 +268,8 @@ int                     main( int argc, const char* argv[] ){
 
 //    etDBObjectTableColumnApiCheck();
 //    etDBObjectValueApiCheck();
-
+    etMemoryDump( NULL, NULL );
+	etMemoryBlockListFree( etMemoryList );
 
 }
 

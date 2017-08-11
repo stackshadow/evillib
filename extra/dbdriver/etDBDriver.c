@@ -18,6 +18,7 @@
 
 #include "dbdriver/etDBDriver.h"
 
+#include "db/etDBFilter.c"
 
 etID_STATE          __etDBDriverAlloc( etDBDriver** p_dbDriver ){
 // check
@@ -133,6 +134,19 @@ etID_STATE          etDBDriverTableExists( etDBDriver* dbDriver, etDBTable* dbTa
 // call function
     if( dbDriver->tableExists != NULL ){
         return dbDriver->tableExists( dbDriver, dbTable );
+    }
+
+    return etID_STATE_ERR;
+}
+
+
+etID_STATE          etDBDriverTableList( etDBDriver* dbDriver, etDBTable* dbTable ){
+// check
+    etDebugCheckNull(dbTable);
+
+// call function
+    if( dbDriver->tableList != NULL ){
+        return dbDriver->tableList( dbDriver, dbTable );
     }
 
     return etID_STATE_ERR;

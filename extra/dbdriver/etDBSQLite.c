@@ -22,7 +22,7 @@
 #include "dbdriver/etDBSQL.h"
 #include "dbdriver/etDBSQLite.h"
 #include "db/etDBColumn.h"
-#include "db/etDBObjectValue.h"
+
 
 
 
@@ -252,6 +252,41 @@ etID_STATE          etDBSQLiteTableExists( etDBDriver* dbDriver, etDBTable* dbTa
 }
 
 
+etID_STATE          etDBSQLiteTableList( etDBDriver* dbDriver, etDBTable* dbTable ){
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbTable );
+    etDebugCheckNull( dbDriver->dbDriverData );
+
+// vars
+    etDBSQLiteDriver*	sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+    etID_STATE          returnState = etID_STATE_NOTHING;
+
+// the dbTable should contain the column tableName
+	if( etDBColumnSelect( dbTable, "tableName" ) != etID_YES ){
+		etDBColumnAppend( dbTable, "tableName", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
+	}
+
+
+// the query
+    etStringClean( sqliteDriver->sqlquery );
+    etStringCharSet( sqliteDriver->sqlquery, "SELECT name AS tableName FROM sqlite_master WHERE type='table'", -1 );
+
+// run the query
+    returnState = etDBSQLiteRun( dbDriver, dbTable );
+    if( returnState != etID_YES ){
+        return etID_STATE_ERR_INTERR;
+    }
+
+// is there a row ?
+    if( sqliteDriver->sqliteState == SQLITE_ROW ){
+        return etID_YES;
+    }
+
+    return etID_NO;
+}
+
+
 
 
 etID_STATE          etDBSQLiteColumnAdd( etDBDriver* dbDriver, etDBTable* dbTable, const char* columnName ){
@@ -279,14 +314,12 @@ etID_STATE          etDBSQLiteColumnAdd( etDBDriver* dbDriver, etDBTable* dbTabl
 }
 
 
-etID_STATE          etDBSQLiteColumnRemove( etDBDriver *dbDriver, etDBObject *dbObject, const char* columnName ){
+etID_STATE          etDBSQLiteColumnRemove( etDBDriver *dbDriver, etDBTable* dbTable, const char* columnName ){
 // check
     etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbObject );
+    etDebugCheckNull( dbTable );
 
-// check if an table and column is selected
-    etDBObjectTableCheck( dbObject );
-    etDBObjectColumnCheck( dbObject );
+
 
 // the driver
     etDBSQLiteDriver    *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
@@ -512,6 +545,7 @@ etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *file
     dbDriver->tableAdd = etDBSQLiteTableAdd;
     dbDriver->tableRemove = etDBSQLiteTableRemove;
     dbDriver->tableExists = etDBSQLiteTableExists;
+	dbDriver->tableList = etDBSQLiteTableList;
 
     dbDriver->columnAdd = etDBSQLiteColumnAdd;
     dbDriver->columnRemove = NULL;

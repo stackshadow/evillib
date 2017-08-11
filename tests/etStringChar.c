@@ -61,7 +61,7 @@ etID_STATE              etStringCharTest(){
 
 // Try to get an etString from an empty etString
     etStringCharGet( etStringActual, etStringChar );
-    
+
 // Set it with an char
     etStringCharSet( etStringActual, "An test String", -1 );
     etStringCharGet( etStringActual, etStringChar );
@@ -120,6 +120,11 @@ etID_STATE              etStringCharTest(){
         etDebugMessage( etID_LEVEL_CRITICAL, "Found the search string 'longer' not instide the string" );
     }
 
+// compare it
+	int compareValue = etStringCharCompare( etStringActual, "An test for an longer String" );
+    if( foundPosition != 15 ){
+        etDebugMessage( etID_LEVEL_CRITICAL, "String compare failed" );
+    }
 
 
     etStringClean( etStringActual );
@@ -149,7 +154,7 @@ int                     main( int argc, const char* argv[] ){
 
     etStringCharTest();
     etStringWCharTest();
-    
-    
+
+
 }
 

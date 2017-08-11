@@ -92,16 +92,17 @@ Smaller numbers means not so urgend messages. high number = high priority
 typedef enum etID_LEVEL {
     etID_LEVEL_ALL,
     etID_LEVEL_DETAIL,
-    etID_LEVEL_DETAIL_MEM,                /*!< Memory Debug message */
+    etID_LEVEL_DETAIL_MEM,             	/*!< Memory Debug message */
     etID_LEVEL_DETAIL_EVENT,            /*!< Event debug messages */
-    etID_LEVEL_DETAIL_PROCESS,            /*!< Process debug messages */
-    etID_LEVEL_DETAIL_NET,                /*!< Network debug process */
-    etID_LEVEL_DETAIL_THREAD,            /*!< Threading debug process */
-    etID_LEVEL_DETAIL_DB,                /*!< Database debug messages */
+    etID_LEVEL_DETAIL_PROCESS,         	/*!< Process debug messages */
+    etID_LEVEL_DETAIL_NET,             	/*!< Network debug process */
+    etID_LEVEL_DETAIL_THREAD,         	/*!< Threading debug process */
+    etID_LEVEL_DETAIL_DB,             	/*!< Database debug messages */
+	etID_LEVEL_DETAIL_APP,				/** Application Details */
     etID_LEVEL_TEST,
     etID_LEVEL_INFO,                    /*!< Info message */
-    etID_LEVEL_WARNING,                    /*!< Warning message */
-    etID_LEVEL_ERR,                        /*!< Error message */
+    etID_LEVEL_WARNING,                 /*!< Warning message */
+    etID_LEVEL_ERR,                     /*!< Error message */
 
     etID_LEVEL_CRITICAL,                /*!< Critical message, exit program ! */
 }

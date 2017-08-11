@@ -255,7 +255,7 @@ etID_STATE      etListDataRemove( etList* list, void* data, etID_BOOL removeAll 
         listElement = listElement->next;
     }
 
-
+	return etID_YES;
 }
 
 

@@ -42,34 +42,129 @@
 #include "string/etString.c"
 #include "string/etStringChar.c"
 
-#include "db/etDBObject.c"
 #include "db/etDBTable.c"
 #include "db/etDBColumn.c"
-#include "db/etDBObjectFilter.c"
-#include "db/etDBObjectValue.c"
 #include "dbdriver/etDBSQL.c"
-#include "dbdriver/etDBDriver.c"
 #include "dbdriver/etDBSQLite.c"
-#include "dbdriver/etDBPSQL.c"
+//#include "dbdriver/etDBDriver.c"
+
+//#include "dbdriver/etDBPSQL.c"
 
 
 etDBDriver              dbDriver;
-etDBObject*             dbObject;
 
 
 
 
 etDBDriver*             etDBSQLiteTest(){
 
+// vars
+	etDBDriver*		sqliteDriver;
+
+// sqlite-driver
+	etDBDriverAlloc( sqliteDriver );
+	etDBSQLiteDriverInit( sqliteDriver, "/tmp/test.sqlite" );
+	etDBDriverConnect( sqliteDriver );
 
 
-// init the driver
-    etDBSQLiteDriverInit( &dbDriver, "/tmp/test.sqlite" );
+// list tables
+	//etDBDriverTableList( sqliteDriver, sqliteMaster );
 
-    return NULL;
+//SELECT name FROM my_db.sqlite_master WHERE type='table';
+
+    return sqliteDriver;
 }
 
 
+etDBTable*				etDBCreateTableTest( etDBDriver* driver ){
+
+// vars
+	etDBTable*		dbTable = NULL;
+
+// a test table
+	etDBTableAlloc( dbTable );
+	etDBTableSetName( dbTable, "testTable" );
+	etDBColumnAppend( dbTable, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_NOTNULL );
+	etDBColumnAppend( dbTable, "username", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_UNIQUE );
+	etDBColumnAppend( dbTable, "data", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
+
+// Run the query which create the table
+	etDBDriverTableRemove( driver, dbTable );
+	etDBDriverTableAdd( driver, dbTable );
+
+// check if table exist
+	if( etDBSQLiteTableExists( driver, dbTable ) != etID_YES ){
+		etDebugMessage( etID_STATE_CRIT, "Error 'testTable' don't exist in DB..." );
+	}
+
+
+	return dbTable;
+}
+
+
+void					etDBDataTest( etDBDriver* driver, etDBTable* dbTable ){
+
+// vars
+	etDBFilter*		dbFilter;
+	etString*		dbValueString;
+	const char*		dbValueCharArray;
+
+// set values and create some data
+	etDBColumnSelect( dbTable, "uuid" );
+	etDBColumnSetValue( dbTable, "b4681c03-3a91-4dcb-baee-f6cb9c08e1d1" );
+	etDBColumnSelect( dbTable, "username" );
+	etDBColumnSetValue( dbTable, "root" );
+	etDBColumnSelect( dbTable, "data" );
+	etDBColumnSetValue( dbTable, "The root user" );
+// Add the Data itselfe
+	etDBDriverDataAdd( driver, dbTable );
+
+
+
+	etDBColumnSelect( dbTable, "uuid" );
+	etDBColumnSetValue( dbTable, "8b8a1380-a251-49b4-b4df-c56863f6c78b" );
+	etDBColumnSelect( dbTable, "username" );
+	etDBColumnSetValue( dbTable, "mainUser" );
+	etDBColumnSelect( dbTable, "data" );
+	etDBColumnSetValue( dbTable, "The main user account" );
+// Add the Data itselfe
+	etDBDriverDataAdd( driver, dbTable );
+
+
+
+	etDBColumnSelect( dbTable, "uuid" );
+	etDBColumnSetValue( dbTable, "93d12ebb-9f2f-4368-bdb6-64674f279118" );
+	etDBColumnSelect( dbTable, "username" );
+	etDBColumnSetValue( dbTable, "guest" );
+	etDBColumnSelect( dbTable, "data" );
+	etDBColumnSetValue( dbTable, "The guest" );
+// Add the Data itselfe
+	etDBDriverDataAdd( driver, dbTable );
+
+
+
+// we create a filter which match multiple entrys
+	etDBFilterAlloc( dbFilter );
+	etDBFilterAppend( dbFilter, 0, etDBFILTER_OP_AND, "data", etDBFILTER_TYPE_CONTAIN, "The" );
+
+	etDBColumnSelect( dbTable, "uuid" );
+	etDBDriverDataGet( driver, dbTable, dbFilter );
+	while( etDBDriverDataNext( driver, dbTable ) == etID_YES ){
+		etDBColumnGetValue( dbTable, dbValueCharArray );
+
+	}
+
+// make a more specific filter
+	etDBFilterAppend( dbFilter, 0, etDBFILTER_OP_AND, "username", etDBFILTER_TYPE_CONTAIN, "User" );
+	etDBColumnSelect( dbTable, "uuid" );
+	etDBDriverDataGet( driver, dbTable, dbFilter );
+	while( etDBDriverDataNext( driver, dbTable ) == etID_YES ){
+		etDBColumnGetValue( dbTable, dbValueCharArray );
+	}
+
+}
+
+/*
 void                    etDBDriverTest( etDBDriver *dbDriver ){
 
 // is connected ?
@@ -103,16 +198,14 @@ void                    etDBDriverTest( etDBDriver *dbDriver ){
     etDBDriverColumnAdd( dbDriver, dbObject );
 
 
-/*
-SELECT uuid,postalcode,displayName,inhabitants  FROM city;
 
-DROP TABLE IF EXISTS t1_backup;
-CREATE TABLE t1_backup( 'postalcode' INTEGER,'uuid' TEXT  UNIQUE,'displayName' TEXT );
-INSERT INTO t1_backup SELECT postalcode,uuid,displayName FROM city;
-DROP TABLE city;
-ALTER TABLE t1_backup RENAME TO city
+// SELECT uuid,postalcode,displayName,inhabitants  FROM city;
+// DROP TABLE IF EXISTS t1_backup;
+// CREATE TABLE t1_backup( 'postalcode' INTEGER,'uuid' TEXT  UNIQUE,'displayName' TEXT );
+// INSERT INTO t1_backup SELECT postalcode,uuid,displayName FROM city;
+// DROP TABLE city;
+// ALTER TABLE t1_backup RENAME TO city
 
-*/
 
 // we add some data
     etDBObjectTablePick( dbObject, "city" );
@@ -180,47 +273,17 @@ ALTER TABLE t1_backup RENAME TO city
 
 
 }
-
+*/
 
 int                     main( int argc, const char* argv[] ){
     etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
     etDebugLevelSet( etID_LEVEL_DETAIL_DB );
 
-// alloc the dbobject
-    etDBObjectAlloc( dbObject );
 
-// contact table
-    etDBObjectTableAdd( dbObject, "contacts" );
-    etDBObjectTableColumnAdd( dbObject, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_UNIQUE );
-    etDBObjectTableColumnAdd( dbObject, "prename", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
-    etDBObjectTableColumnAdd( dbObject, "familyname", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
-    etDBObjectTableColumnAdd( dbObject, "city_uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
-
-// city table
-    etDBObjectTableAdd( dbObject, "city" );
-    etDBObjectTableColumnAdd( dbObject, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_UNIQUE );
-    etDBObjectTableColumnPrimarySet( dbObject, "uuid" );
-    etDBObjectTableColumnAdd( dbObject, "displayName", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
-    etDBObjectTableColumnAdd( dbObject, "postalcode", etDBCOLUMN_TYPE_INT, etDBCOLUMN_OPTION_NOTHING );
-
-// dummy
-    etDBObjectTableAdd( dbObject, "dummy" );
-    etDBObjectTableColumnAdd( dbObject, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_UNIQUE );
-    etDBObjectTableColumnPrimarySet( dbObject, "uuid" );
-
-
-    etDBObjectDump( dbObject );
-
-
-// init the driver
-    etDBPSQLDriverInit( &dbDriver, "localhost", "127.0.0.1", "5435", "root", "root", "doDB", "require" );
-    //etDBSQLiteTest();
-    etDBDriverTest( &dbDriver );
-
-    etDBDriverDisConnect( &dbDriver );
-
-
+	etDBDriver* sqliteDriver = etDBSQLiteTest();
+	etDBTable* dbTable = etDBCreateTableTest( sqliteDriver );
+	etDBDataTest( sqliteDriver, dbTable );
 
 /*
     PGresult *PQexec(PGconn *conn, const char *command);

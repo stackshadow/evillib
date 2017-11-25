@@ -59,8 +59,19 @@ etID_STATE      etListClean( etList* list );
 
 etID_STATE      etListAppend( etList* list, void *data );
 
+
+
+
+etID_STATE      etListElementRemove( etList* list, etListElement* element );
+
+
+
+
 #define         etListIterate( list, iterator ) __etListIterate( list, &iterator )
 etID_STATE      __etListIterate( etList* list, void** iterator );
+
+#define         etListIterateGet( iterator, data ) __etListIterateGet( iterator, (void**)&data )
+etID_STATE      __etListIterateGet( void* iterator, void** data );
 
 #define         etListIterateNext( iterator, data ) __etListIterateNext( &iterator, (void**)&data )
 etID_STATE      __etListIterateNext( void** iterator, void** data );
@@ -68,6 +79,8 @@ etID_STATE      __etListIterateNext( void** iterator, void** data );
 
 etID_STATE      etListIterateNextAviable( void* iterator );
 
+#define         etListIterateRemove( list, iterator ) __etListIterateRemove( list, &iterator )
+etID_STATE      __etListIterateRemove( etList* list, void** iterator );
 
 
 

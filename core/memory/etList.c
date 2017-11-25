@@ -147,16 +147,77 @@ etID_STATE      etListAppend( etList* list, void *data ){
 }
 
 
+
+
+etID_STATE      etListElementRemove( etList* list, etListElement* element ){
+// Object okay ?
+    etDebugCheckNull( list );
+    etDebugCheckNull( element );
+
+
+// if the element is the start
+    if( element == list->start ){
+        list->start = element->next;
+    }
+
+// if the element is the end
+    if( element == list->end ){
+        list->end = element->prev;
+    }
+
+// unlink from the prev element
+    if( element->prev != NULL ){
+        element->prev->next = element->next;
+    }
+
+// unlink the next
+    if( element->next != NULL ){
+        element->next->prev = element->prev;
+    }
+
+// release the element
+    etMemoryRelease( element );
+
+    return etID_YES;
+}
+
+
+
+
+
 etID_STATE      __etListIterate( etList* list, void** iterator ){
 // Object okay ?
     etDebugCheckNull( list );
     etDebugCheckNull( iterator );
+
+// list start is empty
+	if( list->start == NULL ){
+		*iterator = NULL;
+		return etID_NO;
+	}
 
 // vars
     etListElement*      listElement = list->start;
 
 // return as iterator
     *iterator = (void*)listElement;
+
+    return etID_YES;
+}
+
+
+etID_STATE      __etListIterateGet( void* iterator, void** data ){
+// Object okay ?
+    etDebugCheckNull( iterator );
+
+// vars
+    etListElement*      listElement = (etListElement*)iterator;
+
+// the end of the list ?
+    if( listElement == NULL ) return etID_STATE_NODATA;
+
+// get data
+    *data = listElement->data;
 
     return etID_YES;
 }
@@ -202,6 +263,21 @@ etID_STATE      etListIterateNextAviable( void* iterator ){
 
     return etID_NO;
 }
+
+
+etID_STATE      __etListIterateRemove( etList* list, void** iterator ){
+
+// vars
+    etListElement*      listElement = (etListElement*)*iterator;
+
+// return the next element
+    *iterator = (void*)listElement->next;
+
+// remove the actual element
+    return etListElementRemove( list, listElement );
+}
+
+
 
 
 etID_STATE      etListDataRemove( etList* list, void* data, etID_BOOL removeAll ){
@@ -255,7 +331,7 @@ etID_STATE      etListDataRemove( etList* list, void* data, etID_BOOL removeAll 
         listElement = listElement->next;
     }
 
-
+	return etID_YES;
 }
 
 

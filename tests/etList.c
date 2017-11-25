@@ -19,102 +19,65 @@
 #include "core/etInit.c"
 #include "memory/etList.c"
 
-
+    static const char*     dataFirst = "First Data";
+    static const char*     dataSecond = "Second Data";
+    static const char*     dataThird = "Third Data";
+    static const char*     dataFourth = "Fourth Data";
 
 int                     main( int argc, const char* argv[] ){
     etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
 
     etList*         listStart;
-    etList*         listEnd;
+    const char*     tempData = NULL;
+    void*           listIterator = NULL;
 
-    const char*     dataFirst = "First Data";
-    const char*     dataSecond = "Second Data";
-    const char*     dataThird = "Third Data";
-    const char*     dataFourth = "Fourth Data";
 
     etListAlloc( listStart );
-    etListAppend( listStart, dataFirst );
-    etListAppend( listStart, dataSecond );
-    etListAppend( listStart, dataThird );
-    etListAppend( listStart, dataFourth );
     etListDump( listStart );
 
-    void* listIterator = NULL;
+    etListAppend( listStart, (void*)dataFirst );
+    etListAppend( listStart, (void*)dataSecond );
+    etListAppend( listStart, (void*)dataThird );
+    etListAppend( listStart, (void*)dataFourth );
+    etListDump( listStart );
+
+
     etListIterate( listStart, listIterator );
-    while( etListIterateNext( listIterator, dataFirst ) == etID_YES ){
-        dataSecond = dataFirst;
+    while( etListIterateNext( listIterator, tempData ) == etID_YES ){
+        tempData = tempData;
     }
 
-    etListDataRemove( listStart, dataSecond, etID_TRUE );
+    etListDataRemove( listStart, (void*)dataSecond, etID_TRUE );
     etListDump( listStart );
 
-    etListDataRemove( listStart, dataFirst, etID_TRUE );
+    etListDataRemove( listStart, (void*)dataFirst, etID_TRUE );
     etListDump( listStart );
 
-    etListDataRemove( listStart, dataFourth, etID_TRUE );
+    etListDataRemove( listStart, (void*)dataFourth, etID_TRUE );
+    etListDump( listStart );
+
+    etListDataRemove( listStart, (void*)dataThird, etID_TRUE );
+    etListDump( listStart );
+
+    etListDataRemove( listStart, (void*)dataFirst, etID_TRUE );
+    etListDump( listStart );
+
+
+// append again
+    etListAppend( listStart, (void*)dataFirst );
+    etListAppend( listStart, (void*)dataSecond );
+    etListAppend( listStart, (void*)dataThird );
+    etListAppend( listStart, (void*)dataFourth );
+    etListDump( listStart );
+
+    etListIterate( listStart, listIterator );
+    etListIterateNext( listIterator, tempData );
+    etListIterateNext( listIterator, tempData );
+    etListIterateRemove( listStart, listIterator );
     etListDump( listStart );
 
 
 
-
-/*
-
-// allocate
-    etListAlloc( listStart );
-    listEnd = listStart;
-
-    int testValueInt = 1024;
-    char testValueString[] = "test\0";
-    char* tempString = testValueString;
-    void*   iterator = NULL;
-    void*   iteratorData = NULL;
-
-// test a single element
-    etListAppend( listEnd, &testValueString );
-    etListIterate( listEnd, iterator );
-    etListIterateNext( iterator, iteratorData );
-
-
-
-
-
-// append
-    etListAppend( listEnd, &testValueInt );
-    etListAppend( listEnd, &testValueInt );
-    etListAppend( listEnd, &testValueString );
-    etListAppend( listEnd, &testValueInt );
-    etListAppend( listEnd, &testValueInt );
-    etListAppend( listEnd, &testValueInt );
-
-    etListIterate( listEnd, iterator );
-    etListIterateNext( iterator, iteratorData );
-    testValueInt = *(int*)iteratorData;
-    etListIterateNext( iterator, iteratorData );
-    etListIterateNext( iterator, iteratorData );
-    tempString = (char*)iteratorData;
-    etListIterateNext( iterator, iteratorData );
-
-    etListDump( listStart );
-// test the remove
-
-// remove in the middle
-    etListElementRemove( listStart->next );
-    etListDump( listStart );
-
-// remove the start
-    etListElementRemove( listStart );
-    etListDump( listStart );
-
-// remove the end
-    etListElementRemove( listEnd );
-    etListDump( listStart );
-
-// remove the string from the list
-    etListDataRemove( listStart, &testValueString, etID_FALSE );
-    etListDump( listStart );
-
-    etListFree( listStart );
-*/
 }
 

@@ -84,6 +84,10 @@ void                    etDebugPrintMessageDefault( etDebug* etDebugActual ){
             fprintf( OutputStream, "\e[0;36m[DEBUG]\033[00m [DETAIL]" );
             break;
 
+        case etID_LEVEL_DETAIL_APP:
+            fprintf( OutputStream, "\e[0;36m[DEBUG]\033[00m [DETAIL]" );
+            break;
+
         case etID_LEVEL_DETAIL_MEM:
             fprintf( OutputStream, "\033[0;36m[DEBUG]\033[00m [MEMORY]" );
             break;

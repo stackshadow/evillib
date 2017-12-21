@@ -286,30 +286,39 @@ etID_STATE                  etMemoryBlockListDump( etMemoryBlockList *list ){
 
 #ifndef ET_DEBUG_OFF
 
+    const char*     blockState = "[VIRTUAL]";
+    const char*     blockFree = "";
+    const char*     blockUsed = "";
+    const char*     blockLocked = "";
+
     blockIterator = list->start;
     while( blockIterator != NULL ){
 
-            fprintf( stdout, "[ %p->%p ]", blockIterator, blockIterator->next );
 
             if( blockIterator != NULL ){
+
+                blockState = "[VIRTUAL]";
+                blockFree = "";
+                blockUsed = "";
+                blockLocked = "";
+
                 // Alloced / Virtual
                 if( blockIterator->state & etID_MEM_STATE_ALLOCED ) {
-                    fprintf( stdout, "[ALLOCED]" );
-                }
-                else {
-                    fprintf( stdout, "[VIRTUAL]" );
+                    blockState = "[ALLOCED]";
                 }
 
             // Parameter
-                if( blockIterator->state & etID_MEM_STATE_FREE ) fprintf( stdout, "[FREE]" );
-                if( blockIterator->state & etID_MEM_STATE_USED ) fprintf( stdout, "[USED]" );
-                if( blockIterator->state & etID_MEM_STATE_LOCKED ) fprintf( stdout, "[LOCKED]" );
+                if( blockIterator->state & etID_MEM_STATE_FREE ) blockFree = "[FREE]";
+                if( blockIterator->state & etID_MEM_STATE_USED ) blockUsed = "[USED]";
+                if( blockIterator->state & etID_MEM_STATE_LOCKED ) blockLocked = "[LOCKED]";
             }
 
-            fprintf( stdout, "[%lu]", blockIterator->size );
+            snprintf( etDebugTempMessage, etDebugTempMessageLen, "[ %p->%p ]%s%s%s%s[%lu]",
+            blockIterator,blockIterator->next,blockState,blockFree,blockUsed,blockLocked,blockIterator->size  );
+
+            etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
 
 
-            fprintf( stdout, "\n" );
 
         blockIterator = blockIterator->next;
     }

@@ -520,7 +520,28 @@ etID_STATE					etMemoryCompact(){
 }
 
 
+size_t						etMemoryRealSize(){
+// Check
+    etDebugCheckNull( etMemoryList );
+	
+// Vars
+	size_t				etMemoryBlockSize = sizeof( etMemoryBlock );
+	size_t				etMemorySize = 0;
+    etMemoryBlock*		blockIterator = etMemoryList->start;
 
+    blockIterator = etMemoryList->start;
+    while( blockIterator != NULL ){
+		
+	// calculate
+		etMemorySize = etMemorySize + etMemoryBlockSize + blockIterator->size;
+		
+	// set next to overnext
+		blockIterator = blockIterator->next;
+
+	}
+	
+	return etMemorySize;
+}
 
 
 

@@ -83,7 +83,7 @@ void                        __etMemoryBlockAlloc( etMemoryBlock **p_etMemoryBloc
     etMemoryBlockNew->size = size;
 
 // allocate payload
-    etMemoryBlockNew->data = (etMemoryBlock*)malloc( size );
+    etMemoryBlockNew->data = malloc( size );
     if( etMemoryBlockNew->data == NULL ){
         *p_etMemoryBlock = NULL;
         etDebugState( etID_STATE_CRIT_NOMEMORY );
@@ -163,6 +163,50 @@ void                        etMemoryBlockSetReleaseState( etMemoryBlock *etMemor
 @author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
 
 @~english
+@brief Free data of an etMemoryBlock
+
+Free the data of an memory-block. \n
+The Block is set to allocated and free/used is removed from the state of the Block, so \n
+of somebody request a new Block it will be not in the pool. \n
+This is for internaly use only !
+
+@param[in] etMemoryBlockActual The pointer to an etMemoryBlock object \n
+*/
+void						etMemoryBlockFreeData( etMemoryBlock *etMemoryBlockActual ){
+    etDebugCheckNullVoid( etMemoryBlockActual );
+
+	#ifndef ET_DEBUG_OFF
+		snprintf( etDebugTempMessage, etDebugTempMessageLen, "%p freeing", etMemoryBlockActual );
+		etDebugMessage( etID_LEVEL_DETAIL_MEM, etDebugTempMessage );
+	#endif
+	
+	if( etMemoryBlockActual->data == NULL ) return;
+	
+// secure memory ?
+    #ifndef ET_SECURE_MEMORY_OFF
+    if( etMemoryBlockClean( etMemoryBlockActual ) != etID_YES ){
+        etDebugState( etID_STATE_ERR_INTERR );
+        return;
+    }
+    #endif
+	
+// free memory
+    if( etMemoryBlockActual->state & etID_MEM_STATE_ALLOCED ){
+        free( etMemoryBlockActual->data );
+		etMemoryBlockActual->data = NULL;
+    }
+
+// Block is only used ( not alloced, so it can not requested later )
+	etMemoryBlockActual->state = etID_MEM_STATE_DATA_FREED;
+
+	
+}
+
+/** @ingroup grMemoryBlock
+@internal
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+
+@~english
 @brief Free an etMemoryBlock
 
 Free an etMemoryBlock directly. \n
@@ -172,19 +216,10 @@ This is for internaly use only !
 void                        etMemoryBlockFree( etMemoryBlock *etMemoryBlockActual ){
     etDebugCheckNullVoid( etMemoryBlockActual );
 
-    #ifndef ET_SECURE_MEMORY_OFF
-    if( etMemoryBlockClean( etMemoryBlockActual ) != etID_YES ){
-        etDebugState( etID_STATE_ERR_INTERR );
-        return;
-    }
-    #endif
+// free the data
+	etMemoryBlockFreeData( etMemoryBlockActual );
 
-
-    if( etMemoryBlockActual->state & etID_MEM_STATE_ALLOCED ){
-        free( etMemoryBlockActual->data );
-    }
-
-
+// free the block
     free(etMemoryBlockActual);
 
 // Debug

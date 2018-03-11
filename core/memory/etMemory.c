@@ -124,6 +124,7 @@ etID_STATE                  etMemoryInit(){
 //    fprintf( stdout, "Standart Frame size:%li First Frame:%p \n", etMemoryGlobal->StadartFrameSize, etMemoryGlobal->FrameFirst );
 #ifndef ET_MEMEXITCLEAN_OFF
 // Register the atexit function
+	etDebugMessage( etID_LEVEL_INFO, "Enable etMemoryExit at exit" );
     atexit(etMemoryExit);
 #endif
 
@@ -150,7 +151,9 @@ void                        etMemoryExit(){
 
 
     etMemoryBlockListDump( etMemoryList );
-    etMemoryBlockListFree( etMemoryList );
+    
+	etDebugMessage( etID_LEVEL_INFO, "Free BLocks" );
+	etMemoryBlockListFree( etMemoryList );
 
 
     etDebugMessage( etID_LEVEL_INFO, "Memory System deinitialised." );
@@ -273,8 +276,13 @@ void                        __etMemoryRelease( void **p_data ){
         etDebugState( etID_STATE_ERR_INTERR );
         return;
     }
-
+	
+#ifdef ET_MEMORY_FREE_ON_RELEASE
+	etMemoryBlockFreeData( memoryBlock );
+#else
     etMemoryBlockSetReleaseState( memoryBlock, etID_TRUE );
+#endif
+
     *p_data = NULL;
 }
 
@@ -474,6 +482,45 @@ etID_STATE                  etMemoryDump( void *Userdata, void (*IteratorFunctio
 // Out
     return etID_YES;
 }
+
+
+etID_STATE					etMemoryCompact(){
+// Check
+    etDebugCheckNull( etMemoryList );
+
+// Vars
+    etMemoryBlock*		blockIterator = etMemoryList->start;
+	etMemoryBlock*		blockToFree = NULL;
+
+
+    blockIterator = etMemoryList->start;
+    while( blockIterator != NULL ){
+		
+	//
+		blockToFree = blockIterator->next;
+		if( blockToFree == NULL ) break;
+
+	// block is in use
+		if( blockToFree->state & etID_MEM_STATE_USED ){
+			blockIterator = blockIterator->next;
+			continue;
+		}
+		
+	// set next to overnext
+		blockIterator->next = blockToFree->next;
+
+	// free
+		etMemoryBlockFree( blockToFree );
+
+	// next
+		//blockIterator = blockIterator->next;
+	}
+
+	return etID_YES;
+}
+
+
+
 
 
 

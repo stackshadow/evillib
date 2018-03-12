@@ -124,7 +124,8 @@ etID_STATE          etDBSQLiteRun( etDBDriver* dbDriver, etDBTable* dbTable ){
 
 // reset if already present
     if( sqliteDriver->sqliteStatement != NULL ){
-        sqlite3_reset( sqliteDriver->sqliteStatement );
+		sqlite3_finalize( sqliteDriver->sqliteStatement );
+		sqliteDriver->sqliteStatement = NULL;
     }
 
 // prepare sql
@@ -158,6 +159,32 @@ etID_STATE          etDBSQLiteRun( etDBDriver* dbDriver, etDBTable* dbTable ){
 
 
     return etID_STATE_ERR;
+}
+
+
+
+
+etID_STATE          etDBSQLiteQueryExecute( etDBDriver* dbDriver, etDBTable* dbTable, const char* sqlCommand ){
+// check
+    etDebugCheckNull( dbDriver );
+
+// vars
+    etDBSQLiteDriver    *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+	etID_STATE          returnState = etID_STATE_NOTHING;
+	
+	
+	
+// set query
+	etStringCharSet( sqliteDriver->sqlquery, sqlCommand, -1 );
+	
+// run the query
+    returnState = etDBSQLiteRun( dbDriver, dbTable );
+    if( returnState == etID_YES ){
+        return etID_YES;
+    }
+	
+// return
+    return etID_NO;
 }
 
 
@@ -507,12 +534,29 @@ etID_STATE          etDBSQLiteDataNext( etDBDriver* dbDriver, etDBTable* dbTable
 
             const char* columnName = sqlite3_column_name( sqliteDriver->sqliteStatement, columnIndex );
             const char* columnValue = (const char*)sqlite3_column_text( sqliteDriver->sqliteStatement, columnIndex );
+			int columnType = sqlite3_column_type( sqliteDriver->sqliteStatement, columnIndex );
 
             if( columnValue == NULL ) columnValue = ""; // the "NULL" char inside sqlite
 
         // get the column and set the value
-            etDBColumnSelect( dbTable, columnName );
-            etDBColumnSetValue( dbTable, columnValue );
+            if( etDBColumnSelect( dbTable, columnName ) != etID_YES ){
+				
+				etDBColumnType newColumnType = etDBCOLUMN_TYPE_NOTHING;
+				if( columnType == SQLITE_INTEGER ) newColumnType = etDBCOLUMN_TYPE_INT;
+				if( columnType == SQLITE_FLOAT ) newColumnType = etDBCOLUMN_TYPE_FLOAT;
+				if( columnType == SQLITE_TEXT ) newColumnType = etDBCOLUMN_TYPE_STRING;
+				if( columnType == SQLITE_BLOB ) newColumnType = etDBCOLUMN_TYPE_BLOB;
+
+				etDBColumnAppend( dbTable, columnName, newColumnType, etDBCOLUMN_OPTION_NOTHING );
+				
+			// try again to select it
+				if( etDBColumnSelect( dbTable, columnName ) != etID_YES ){
+					continue;
+				}
+			}
+
+		//finally set the value
+			etDBColumnSetValue( dbTable, columnValue );
 
         }
 
@@ -525,6 +569,30 @@ etID_STATE          etDBSQLiteDataNext( etDBDriver* dbDriver, etDBTable* dbTable
 }
 
 
+etID_STATE 			etDBSQLiteDriverDestroy( etDBDriver *dbDriver ){
+// check
+    etDebugCheckNull(dbDriver);
+	
+// get our driver-data
+	etDBSQLiteDriver *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+	
+// free some stuff
+	etStringFree( sqliteDriver->sqlquery );
+	
+// reset if already present
+    if( sqliteDriver->sqliteStatement != NULL ){
+        sqlite3_finalize( sqliteDriver->sqliteStatement );
+    }
+
+// close handle
+    sqlite3_close(sqliteDriver->sqliteHandle);
+    sqliteDriver->sqliteHandle = NULL;
+	
+// free driver-data
+	etMemoryRelease( sqliteDriver );
+	
+	return etID_YES;
+}
 
 // userspace
 etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *filename ){
@@ -541,7 +609,9 @@ etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *file
 
     dbDriver->connect = NULL;
     dbDriver->isConnected = etDBSQLiteIsConnected;
-
+	
+	dbDriver->queryExecute = etDBSQLiteQueryExecute;
+	
     dbDriver->tableAdd = etDBSQLiteTableAdd;
     dbDriver->tableRemove = etDBSQLiteTableRemove;
     dbDriver->tableExists = etDBSQLiteTableExists;
@@ -556,6 +626,9 @@ etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *file
     dbDriver->dataGet = etDBSQLiteDataGet;
     dbDriver->dataGetWithLimit = etDBSQLiteDataGetWithLimit;
     dbDriver->dataNext = etDBSQLiteDataNext;
+	
+	dbDriver->destroy = etDBSQLiteDriverDestroy;
+
 
 // alloc data for driver
     etMemoryAlloc( dbDriver->dbDriverData, sizeof(etDBSQLiteDriver) );
@@ -566,7 +639,10 @@ etID_STATE          etDBSQLiteDriverInit( etDBDriver *dbDriver, const char *file
 
 // try to open the sqlite connection
     int sqliteResult = sqlite3_open( filename, &sqliteDriver->sqliteHandle );
-    if( sqliteResult == SQLITE_OK ) return etID_YES;
+    if( sqliteResult == SQLITE_OK ){
+		sqliteDriver->sqliteStatement = NULL;
+		return etID_YES;
+	}
 
 
 // print error

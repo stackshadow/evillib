@@ -44,23 +44,20 @@ typedef enum {
 }
 etDBFILTER_OP;
 
-typedef struct etDBFilterElement_s etDBFilterElement;
-struct etDBFilterElement_s {
+typedef struct etDBFilterElement_s {
     int                 group;
     etDBFILTER_OP       operation;
     etString*           column;
     etDBFILTER_TYPE     type;
     etString*           value;
 
-};
+} etDBFilterElement;
 
-typedef struct etDBFilter_s etDBFilter;
-struct etDBFilter_s {
-    json_t*     jsonArray;
-    int         jsonArrayIndex;
-    int         jsonArrayLen;
-    json_t*     jsonArrayElement;
-};
+typedef struct etDBFilter_s {
+    etList*             elements;
+    void*               element;
+    void*               elementIterator;
+} etDBFilter;
 
 
 #define             etDBFilterAlloc( dbFilter ) __etDBFilterAlloc( &dbFilter )

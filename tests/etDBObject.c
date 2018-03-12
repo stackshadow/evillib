@@ -20,6 +20,8 @@
 #include "evillib_defines.h"
 #include "evillib_depends.h"
 
+// WE release directly the memory
+#define ET_MEMORY_FREE_ON_RELEASE 1
 
 #include "core/etInit.c"
 
@@ -28,8 +30,7 @@
 
 #include "db/etDBTable.c"
 #include "db/etDBColumn.c"
-#include "db/etDBFilter.c"
-#include "dbdriver/etDBDriver.c"
+//#include "db/etDBFilter.c"
 #include "dbdriver/etDBSQL.c"
 
 #include "dbdriver/etDBSQLite.c"
@@ -253,9 +254,8 @@ etID_STATE              etDBDriverTestSQLite(){
 */
 
 int                     main( int argc, const char* argv[] ){
-
-    etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
+	etInit( argc, argv );
 
 /*
 	size_t etMemoryBlockSize = sizeof(etMemoryBlock);
@@ -264,13 +264,16 @@ int                     main( int argc, const char* argv[] ){
 
     etDBObjectTableApiCheck();
     etDBTableColumnTest();
-    //etDBDriverTestSQLite();
 
-//    etDBObjectTableColumnApiCheck();
-//    etDBObjectValueApiCheck();
-    etMemoryDump( NULL, NULL );
-	etMemoryBlockListFree( etMemoryList );
-
+// memcheck
+	etMemoryCompact();
+	etMemoryDump( NULL, NULL );
+	size_t sizeLeft = etMemoryRealSize();
+	if( sizeLeft > 113 ){
+		fprintf( stderr, "ERROR: Memory leak ! Normaly 113Bytes should be left, but we have: %l", sizeLeft );
+		exit(-1);
+	}
+	
 }
 
 

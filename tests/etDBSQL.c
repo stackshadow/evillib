@@ -17,12 +17,16 @@
 */
 
 
+
 #include "evillib_defines.h"
 #include "evillib_depends.h"
 #include "evillib-extra_depends.h"
 
 #include "core/etDebug.h"
 #include "core/etDebug.c"
+
+// WE release directly the memory
+#define ET_MEMORY_FREE_ON_RELEASE 1
 
 #include "memory/etMemoryBlock.h"
 #include "memory/etMemoryBlock.c"
@@ -87,7 +91,7 @@ etDBTable*				etDBCreateTableTest( etDBDriver* driver ){
 	etDBColumnAppend( dbTable, "uuid", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_PRIMARY | etDBCOLUMN_OPTION_NOTNULL );
 	etDBColumnAppend( dbTable, "username", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_UNIQUE );
 	etDBColumnAppend( dbTable, "data", etDBCOLUMN_TYPE_STRING, etDBCOLUMN_OPTION_NOTHING );
-
+	
 // Run the query which create the table
 	etDBDriverTableRemove( driver, dbTable );
 	etDBDriverTableAdd( driver, dbTable );
@@ -106,7 +110,6 @@ void					etDBDataTest( etDBDriver* driver, etDBTable* dbTable ){
 
 // vars
 	etDBFilter*		dbFilter;
-	etString*		dbValueString;
 	const char*		dbValueCharArray;
 
 // set values and create some data
@@ -142,7 +145,6 @@ void					etDBDataTest( etDBDriver* driver, etDBTable* dbTable ){
 	etDBDriverDataAdd( driver, dbTable );
 
 
-
 // we create a filter which match multiple entrys
 	etDBFilterAlloc( dbFilter );
 	etDBFilterAppend( dbFilter, 0, etDBFILTER_OP_AND, "data", etDBFILTER_TYPE_CONTAIN, "The" );
@@ -162,6 +164,8 @@ void					etDBDataTest( etDBDriver* driver, etDBTable* dbTable ){
 		etDBColumnGetValue( dbTable, dbValueCharArray );
 	}
 
+
+	etDBFilterFree( dbFilter );
 }
 
 /*
@@ -275,15 +279,55 @@ void                    etDBDriverTest( etDBDriver *dbDriver ){
 }
 */
 
+void					etDBRawTest( etDBDriver* driver ){
+	
+}
+
+
 int                     main( int argc, const char* argv[] ){
-    etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_ALL );
+	etInit( argc, argv );
     etDebugLevelSet( etID_LEVEL_DETAIL_DB );
 
+// vars
+	const char* etDBColumnName = NULL;
+	const char* etDBColumnValue = NULL;
+	etDBDriver* sqliteDriver = NULL;
+	etDBTable* dbTable = NULL;
 
-	etDBDriver* sqliteDriver = etDBSQLiteTest();
-	etDBTable* dbTable = etDBCreateTableTest( sqliteDriver );
+/*
+	sqliteDriver = etDBSQLiteTest();
+	dbTable = etDBCreateTableTest( sqliteDriver );
 	etDBDataTest( sqliteDriver, dbTable );
+	etDBTableFree( dbTable );
+	etDBDriverFree( sqliteDriver );
+	*/
+	
+	sqliteDriver = etDBSQLiteTest();
+	etDBTableAlloc( dbTable );
+
+
+// insert
+	etDBSQLiteQueryExecute( sqliteDriver, dbTable, "INSERT INTO `testTable`(`uuid`,`username`,`data`) VALUES ( 'asdad','buhja','exit')" );
+
+	
+	etDBSQLiteQueryExecute( sqliteDriver, dbTable, "SELECT * FROM testTable" );
+	while( etDBDriverDataNext( sqliteDriver, dbTable ) == etID_YES ){
+		
+		etDBColumnIterateReset( dbTable );
+		while( etDBColumnIterate( dbTable ) == etID_YES ){
+			__etDBColumnGet( dbTable, &etDBColumnName, NULL, NULL );
+			etDBColumnGetValue( dbTable, etDBColumnValue );
+			
+			fprintf( stderr, "%s: %s\n", etDBColumnName, etDBColumnValue );
+		}
+	}
+	etDBTableFree( dbTable );
+	etDBDriverFree( sqliteDriver );
+
+
+
+
 
 /*
     PGresult *PQexec(PGconn *conn, const char *command);
@@ -294,7 +338,21 @@ int                     main( int argc, const char* argv[] ){
 */
 
 
-
+// compact memory
+	etMemoryDump( NULL, NULL );
+	etMemoryCompact();
+	
+// normaly only 113Bytes should be left, if its more, we have an memory leak
+// inside evillib functions
+	size_t sizeLeft = etMemoryRealSize();
+	if( sizeLeft > 113 ){
+		fprintf( stderr, "ERROR: Memory leak ! Normaly 113Bytes should be left, but we have: %l", sizeLeft );
+		etMemoryDump( NULL, NULL );
+		exit(-1);
+	}
+	
+	
+	return 0;
 }
 
 

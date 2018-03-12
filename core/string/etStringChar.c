@@ -84,7 +84,7 @@ etID_STATE              __etStringCharGet( etString *etStringActual, const char 
 @param[out] target The pointer to an char array
 @param[in] maxLen The maximum lenght of chars of the provided array
 */
-etID_STATE              __etStringCharCopy( etString *etStringActual, char *target, int maxLen ){
+etID_STATE              __etStringCharCopy( etString* etStringActual, char* target, int maxLen ){
 //ERROR CHECKING
     etObjectCheckGetter(etStringActual);
     etDebugCheckNull(target);
@@ -120,7 +120,7 @@ If the source-char is shorter than maxLen, the len of source-char is used
 *- @ref etID_STATE_ERR_PARAMETER
 *- @ref etID_YES
 */
-etID_STATE              etStringCharSet( etString *etStringActual, const char *source, int maxLen ){
+etID_STATE              etStringCharSet( etString* etStringActual, const char* source, int maxLen ){
 // Check
     etObjectCheckSetter(etStringActual);
     etDebugCheckNull(source);
@@ -176,7 +176,7 @@ etID_STATE              etStringCharSet( etString *etStringActual, const char *s
 *- @ref etID_STATE_ERR_PARAMETER
 *- @ref etID_YES
 */
-etID_STATE              etStringCharAdd( etString *etStringActual, const char *source ){
+etID_STATE              etStringCharAdd( etString* etStringActual, const char* source ){
 // Parameter check
     etDebugCheckNull(etStringActual);
     etDebugCheckNull(source);
@@ -237,7 +237,7 @@ The search start from "Offset"
 *- >0 Start-Position where the Char-Array is located. 0 is the first char !
 *- -1 An error occure, or CompareString is not included inside the etString
 */
-int                     etStringCharFind( etString *etStringActual, const char *compareString, int offset ){
+int                     etStringCharFind( etString* etStringActual, const char* compareString, int offset ){
 //ERROR CHECKING
     if( etStringActual == NULL ){
         etDebugState(etID_STATE_ERR_PARAMETER);
@@ -296,6 +296,40 @@ int                     etStringCharFind( etString *etStringActual, const char *
     return -1;
 }
 
+/** @ingroup grStringChar
+@author Martin Langlotz alias stackshadow <stackshadow@evilbrain.de>
+
+@~english
+
+@brief Compare an Char-Array inside the etString
+
+This is basecally an wrapper around strncmp
+
+@param[in] etStringActual The pointer to an etString object
+@param[in] compareString The Char-Array which will be compared with the etString
+@return \n
+*- <0	the first character that does not match has a lower value in etStringActual than in compareString
+*- 0	the contents of both strings are equal
+*- >0	the first character that does not match has a greater value in etStringActual than in compareString
+
+*/
+int						etStringCharCompare( etString* etStringActual, const char* compareString ){
+// Parameter check
+    etDebugCheckNull(etStringActual);
+    etDebugCheckNull(compareString);
+
+// vars
+	size_t 			etStringActualLen = strlen(compareString);
+	const char*		etStringActualCharArray = NULL;
+
+
+    etStringCharGet( etStringActual, etStringActualCharArray );
+    if( etStringActualCharArray == NULL ) return -1;
+
+	etStringActualLen = strlen(etStringActualCharArray);
+
+	return strncmp( etStringActualCharArray, compareString, etStringActualLen );
+}
 
 #ifdef __cplusplus
 }

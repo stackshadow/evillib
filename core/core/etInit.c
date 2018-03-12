@@ -80,7 +80,7 @@ etID_STATE        etInit( int argc, const char* argv[] ){
 // Set program
     etDebugProgramNameSet( "program" );
 // Dont show any Debugging as default
-    etDebugLevelSet( etID_LEVEL_ERR );
+    //etDebugLevelSet( etID_LEVEL_ERR );
 
 
 // Command line parameters

@@ -43,6 +43,14 @@ etID_STATE          __etDBDriverFree( etDBDriver** p_dbDriver ){
 // check
     etDebugCheckNull(p_dbDriver);
 
+
+	if( (*p_dbDriver)->destroy != NULL ){
+		(*p_dbDriver)->destroy( *p_dbDriver );
+	} else {
+		etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'destroy'" );
+	}
+
+
 // release memory
     __etMemoryRelease( (void**)p_dbDriver );
 
@@ -64,8 +72,8 @@ etID_STATE          etDBDriverConnect( etDBDriver* dbDriver ){
         return dbDriver->connect( dbDriver );
     }
 
+	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'connect'" );
     return etID_STATE_ERR;
-
 }
 
 
@@ -79,8 +87,8 @@ etID_STATE          etDBDriverIsConnect( etDBDriver* dbDriver ){
         return dbDriver->isConnected( dbDriver );
     }
 
+	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'isConnected'" );
     return etID_STATE_ERR;
-
 }
 
 
@@ -94,10 +102,25 @@ etID_STATE          etDBDriverDisConnect( etDBDriver* dbDriver ){
         return dbDriver->disconnect( dbDriver );
     }
 
+	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'disconnect'" );
     return etID_STATE_ERR;
-
 }
 
+
+
+etID_STATE 			etDBDriverQueryExecute( etDBDriver* dbDriver, etDBTable* dbTable, const char* sqlCommand ){
+// check
+    etDebugCheckNull(dbDriver);
+
+
+// call function
+    if( dbDriver->queryExecute != NULL ){
+        return dbDriver->queryExecute( dbDriver, dbTable, sqlCommand );
+    }
+
+	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'queryExecute'" );
+    return etID_STATE_ERR;
+}
 
 
 
@@ -110,6 +133,7 @@ etID_STATE          etDBDriverTableAdd( etDBDriver* dbDriver, etDBTable* dbTable
         return dbDriver->tableAdd( dbDriver, dbTable );
     }
 
+	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'tableAdd'" );
     return etID_STATE_ERR;
 }
 
@@ -123,6 +147,7 @@ etID_STATE          etDBDriverTableRemove( etDBDriver* dbDriver, etDBTable* dbTa
         return dbDriver->tableRemove( dbDriver, dbTable );
     }
 
+	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'tableRemove'" );
     return etID_STATE_ERR;
 }
 
@@ -136,6 +161,7 @@ etID_STATE          etDBDriverTableExists( etDBDriver* dbDriver, etDBTable* dbTa
         return dbDriver->tableExists( dbDriver, dbTable );
     }
 
+	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'tableExists'" );
     return etID_STATE_ERR;
 }
 
@@ -149,6 +175,7 @@ etID_STATE          etDBDriverTableList( etDBDriver* dbDriver, etDBTable* dbTabl
         return dbDriver->tableList( dbDriver, dbTable );
     }
 
+	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'tableList'" );
     return etID_STATE_ERR;
 }
 /*
@@ -190,6 +217,7 @@ etID_STATE          etDBDriverDataAdd( etDBDriver* dbDriver, etDBTable* dbTable 
         return dbDriver->dataAdd( dbDriver, dbTable );
     }
 
+	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'dataAdd'" );
     return etID_STATE_ERR;
 }
 
@@ -203,6 +231,7 @@ etID_STATE          etDBDriverDataChange( etDBDriver* dbDriver, etDBTable* dbTab
         return dbDriver->dataChange( dbDriver, dbTable );
     }
 
+	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'dataChange'" );
     return etID_STATE_ERR;
 }
 
@@ -216,6 +245,7 @@ etID_STATE          etDBDriverDataRemove( etDBDriver *dbDriver, etDBTable* dbTab
         return dbDriver->dataRemove( dbDriver, dbTable );
     }
 
+	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'dataRemove'" );
     return etID_STATE_ERR;
 }
 
@@ -232,6 +262,7 @@ etID_STATE          etDBDriverDataGet( etDBDriver* dbDriver, etDBTable* dbTable,
         return dbDriver->dataGet( dbDriver, dbTable, dbFilter );
     }
 
+	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'dataGet'" );
     return etID_STATE_ERR;
 }
 
@@ -248,6 +279,7 @@ etID_STATE          etDBDriverDataGetWithLimits( etDBDriver* dbDriver, etDBTable
         return dbDriver->dataGetWithLimit( dbDriver, dbTable, start, amount, dbFilter );
     }
 
+	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'dataGetWithLimit'" );
     return etID_STATE_ERR;
 }
 
@@ -264,6 +296,7 @@ etID_STATE          etDBDriverDataNext( etDBDriver* dbDriver, etDBTable* dbTable
         return dbDriver->dataNext( dbDriver, dbTable );
     }
 
+	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'dataNext'" );
     return etID_STATE_ERR;
 }
 

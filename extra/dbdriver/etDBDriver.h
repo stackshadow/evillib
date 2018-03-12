@@ -54,6 +54,9 @@ struct etDBDriver_s {
     etID_STATE          (*isConnected)( etDBDriver* dbDriver );
     etID_STATE          (*disconnect)( etDBDriver* dbDriver );
 
+// some driver supports execution of bare metal SQL-Commands
+    etID_STATE          (*queryExecute)( etDBDriver* dbDriver, etDBTable* dbTable, const char* sqlCommand );
+
 // handle table
     etID_STATE          (*tableAdd)( etDBDriver* dbDriver, etDBTable* dbTable );
     etID_STATE          (*tableRemove)( etDBDriver* dbDriver, etDBTable* dbTable );
@@ -71,6 +74,8 @@ struct etDBDriver_s {
     etID_STATE          (*dataGetWithLimit)( etDBDriver* dbDriver, etDBTable* dbTable, int start, int amount, etDBFilter* dbFilter );
     etID_STATE          (*dataNext)( etDBDriver* dbDriver, etDBTable* dbTable );
 
+// cleanup stuff
+	etID_STATE			(*destroy)( etDBDriver* dbDriver );
 
     void                *dbDriverData;
 };
@@ -100,6 +105,9 @@ etID_STATE          etDBDriverIsConnect( etDBDriver* dbDriver );
 
 etID_STATE          etDBDriverDisConnect( etDBDriver* dbDriver );
 
+
+
+etID_STATE 			etDBDriverQueryExecute( etDBDriver* dbDriver, etDBTable* dbTable, const char* sqlCommand );
 
 
 

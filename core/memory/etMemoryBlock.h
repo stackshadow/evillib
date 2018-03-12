@@ -52,11 +52,12 @@ struct         etMemoryBlock_s {
 
 */
 // States
-    #define etID_MEM_STATE_ALLOCED          1        /**< Memory Block is allocated by alloc */
-    #define etID_MEM_STATE_FREE             2        /**< Memory Block is free for request */
-    #define etID_MEM_STATE_USED             4        /**< Memory Block is in use */
-    #define etID_MEM_STATE_LOCKED           8        /**< Memory Block is locked by an process */
-    #define etID_MEM_STATE_ERROR            128        /**< Memory Block is on error state */
+    #define etID_MEM_STATE_ALLOCED          	1       /**< Memory Block is allocated by alloc */
+    #define etID_MEM_STATE_FREE             	2     	/**< Memory Block is free for request */
+    #define etID_MEM_STATE_USED             	4       /**< Memory Block is in use */
+    #define etID_MEM_STATE_LOCKED           	8       /**< Memory Block is locked by an process */
+	#define etID_MEM_STATE_DATA_FREED       	16      /**< Data are Freed */
+    #define etID_MEM_STATE_ERROR            	128    	/**< Memory Block is on error state */
 
 
 
@@ -66,6 +67,9 @@ void                        __etMemoryBlockAlloc( etMemoryBlock **p_etMemoryBloc
 
 
 void                        etMemoryBlockSetReleaseState( etMemoryBlock *etMemoryBlockActual, etID_BOOL releaseIt );
+
+
+void						etMemoryBlockFreeData( etMemoryBlock *etMemoryBlockActual );
 
 
 void                        etMemoryBlockFree( etMemoryBlock *etMemoryBlockActual );

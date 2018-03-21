@@ -564,6 +564,12 @@ etID_STATE          etDBSQLiteDataNext( etDBDriver* dbDriver, etDBTable* dbTable
         sqliteDriver->sqliteState = sqlite3_step(sqliteDriver->sqliteStatement);
         return etID_YES;
     }
+	
+// finished ?
+	if( sqliteDriver->sqliteState == SQLITE_DONE ){
+		sqlite3_finalize( sqliteDriver->sqliteStatement );
+		sqliteDriver->sqliteStatement = NULL;
+	}
 
     return etID_NO;
 }

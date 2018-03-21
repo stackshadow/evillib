@@ -299,7 +299,6 @@ etID_STATE          etDBColumnCleanValue( etDBTable* dbTable ){
 etID_STATE          etDBColumnCleanAllValues( etDBTable* dbTable ){
 // check
     etDebugCheckNull( dbTable );
-    etDebugCheckNull( dbTable->column );
 
     etDBColumnIterateReset(dbTable);
     while( etDBColumnIterate(dbTable) == etID_YES ){

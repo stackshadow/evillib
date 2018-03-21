@@ -301,7 +301,7 @@ int                     main( int argc, const char* argv[] ){
 	etDBDataTest( sqliteDriver, dbTable );
 	etDBTableFree( dbTable );
 	etDBDriverFree( sqliteDriver );
-	*/
+*/
 	
 	sqliteDriver = etDBSQLiteTest();
 	etDBTableAlloc( dbTable );

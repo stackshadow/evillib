@@ -178,21 +178,24 @@ etID_STATE          etDBDriverTableList( etDBDriver* dbDriver, etDBTable* dbTabl
 	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'tableList'" );
     return etID_STATE_ERR;
 }
-/*
 
-etID_STATE          etDBDriverColumnAdd( etDBDriver *dbDriver, etDBObject *dbObject ){
+
+
+
+etID_STATE          etDBDriverColumnAdd( etDBDriver* dbDriver, etDBTable* dbTable, const char* columnName ){
 // check
     etDebugCheckNull(dbDriver);
 
 // call function
     if( dbDriver->columnAdd != NULL ){
-        return dbDriver->columnAdd( dbDriver, dbObject );
+        return dbDriver->columnAdd( dbDriver, dbTable, columnName );
     }
 
+	etDebugMessage( etID_LEVEL_ERR, "Driver don't implement 'columnAdd'" );
     return etID_STATE_ERR;
 }
 
-
+/*
 etID_STATE          etDBDriverColumnRemove( etDBDriver *dbDriver, etDBObject *dbObject ){
 // check
     etDebugCheckNull(dbDriver);
@@ -205,7 +208,6 @@ etID_STATE          etDBDriverColumnRemove( etDBDriver *dbDriver, etDBObject *db
     return etID_STATE_ERR;
 }
 */
-
 
 
 etID_STATE          etDBDriverDataAdd( etDBDriver* dbDriver, etDBTable* dbTable ){

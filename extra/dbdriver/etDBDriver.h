@@ -125,6 +125,11 @@ etID_STATE          etDBDriverTableList( etDBDriver* dbDriver, etDBTable* dbTabl
 
 
 
+etID_STATE          etDBDriverColumnAdd( etDBDriver* dbDriver, etDBTable* dbTable, const char* columnName );
+
+
+
+
 etID_STATE          etDBDriverDataAdd( etDBDriver* dbDriver, etDBTable* dbTable );
 
 

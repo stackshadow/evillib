@@ -262,8 +262,8 @@ etID_STATE          etDBSQLiteTableExists( etDBDriver* dbDriver, etDBTable* dbTa
 
 // run the query
     returnState = etDBSQLiteRun( dbDriver, dbTable );
-    if( returnState == etID_YES ){
-        return etID_YES;
+    if( returnState != etID_YES ){
+        return etID_NO;
     }
 
 // is there a row ?
@@ -316,8 +316,45 @@ etID_STATE          etDBSQLiteTableList( etDBDriver* dbDriver, etDBTable* dbTabl
 
 
 
+etID_STATE          etDBSQLiteColumnExist( etDBDriver* dbDriver, etDBTable* dbTable, const char* columnName ){
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbTable );
+    etDebugCheckNull( dbDriver->dbDriverData );
+
+// get the sqlite driver data
+    etDBSQLiteDriver*	sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+	etID_STATE          returnState = etID_STATE_NOTHING;
+	
+// get table name
+    const char *tableName = NULL;
+    etDBTableGetName( dbTable, tableName );
+
+// build the query
+	etStringCharSet( sqliteDriver->sqlquery, "SELECT `", -1 );
+	etStringCharAdd( sqliteDriver->sqlquery, columnName );
+	etStringCharAdd( sqliteDriver->sqlquery, "` FROM '" );
+	etStringCharAdd( sqliteDriver->sqlquery, tableName );
+	etStringCharAdd( sqliteDriver->sqlquery, "' LIMIT 1;" );
+
+// run the query
+    returnState = etDBSQLiteRun( dbDriver, dbTable );
+    if( returnState == etID_YES ){
+        return etID_YES;
+    }
+
+// return no
+	return etID_NO;
+}
+
+
 etID_STATE          etDBSQLiteColumnAdd( etDBDriver* dbDriver, etDBTable* dbTable, const char* columnName ){
 
+// if column exist return etID_YES
+	if( etDBSQLiteColumnExist( dbDriver, dbTable, columnName ) == etID_YES ){
+		return etID_YES;
+	}
+	
 // check
     etDebugCheckNull( dbDriver );
     etDebugCheckNull( dbTable );

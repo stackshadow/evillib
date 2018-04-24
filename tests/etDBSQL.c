@@ -71,19 +71,32 @@ etDBDriver*             etDBSQLiteTest(){
 	etDBDriverConnect( sqliteDriver );
 
 
-// list tables
-	//etDBDriverTableList( sqliteDriver, sqliteMaster );
-
-//SELECT name FROM my_db.sqlite_master WHERE type='table';
-
     return sqliteDriver;
 }
 
+void					etDBSQLiteRaw( etDBDriver* sqliteDriver, etDBTable* dbTable ){
+
+// insert
+	etDBSQLiteQueryExecute( sqliteDriver, dbTable, "INSERT INTO `testTable`(`uuid`,`username`,`data`,`index`) VALUES ( 'asdad','buhja','exit','3')" );
+
+	
+	etDBSQLiteQueryExecute( sqliteDriver, dbTable, "SELECT * FROM testTable WHERE `uuid` = 'asdad';" );
+	while( etDBDriverDataNext( sqliteDriver, dbTable ) != etID_YES ){
+		exit(-1);
+	}
+
+}
+
+
+
+// ############# generic #############
 
 etDBTable*				etDBCreateTableTest( etDBDriver* driver ){
 
 // vars
 	etDBTable*		dbTable = NULL;
+
+
 
 // a test table
 	etDBTableAlloc( dbTable );
@@ -94,12 +107,26 @@ etDBTable*				etDBCreateTableTest( etDBDriver* driver ){
 	
 // Run the query which create the table
 	etDBDriverTableRemove( driver, dbTable );
+
+// table should not exist
+	//if( etDBSQLiteTableExists( driver, dbTable ) == etID_YES ){
+	if( etDBSQLiteTableExists( driver, dbTable ) == etID_YES ){
+		etDebugMessage( etID_STATE_CRIT, "Error 'testTable' exist in DB..." );
+		exit(-1);
+	}
+
+// add the table
 	etDBDriverTableAdd( driver, dbTable );
 
 // check if table exist
 	if( etDBSQLiteTableExists( driver, dbTable ) != etID_YES ){
 		etDebugMessage( etID_STATE_CRIT, "Error 'testTable' don't exist in DB..." );
+		exit(-1);
 	}
+
+// add a column
+	etDBColumnAppend( dbTable, "index", etDBCOLUMN_TYPE_INT, etDBCOLUMN_OPTION_NOTHING );
+	etDBDriverColumnAdd( driver, dbTable, "index" );
 
 
 	return dbTable;
@@ -119,6 +146,8 @@ void					etDBDataTest( etDBDriver* driver, etDBTable* dbTable ){
 	etDBColumnSetValue( dbTable, "root" );
 	etDBColumnSelect( dbTable, "data" );
 	etDBColumnSetValue( dbTable, "The root user" );
+	etDBColumnSelect( dbTable, "index" );
+	etDBColumnSetValue( dbTable, "0" );
 // Add the Data itselfe
 	etDBDriverDataAdd( driver, dbTable );
 
@@ -130,6 +159,8 @@ void					etDBDataTest( etDBDriver* driver, etDBTable* dbTable ){
 	etDBColumnSetValue( dbTable, "mainUser" );
 	etDBColumnSelect( dbTable, "data" );
 	etDBColumnSetValue( dbTable, "The main user account" );
+	etDBColumnSelect( dbTable, "index" );
+	etDBColumnSetValue( dbTable, "1" );
 // Add the Data itselfe
 	etDBDriverDataAdd( driver, dbTable );
 
@@ -141,6 +172,8 @@ void					etDBDataTest( etDBDriver* driver, etDBTable* dbTable ){
 	etDBColumnSetValue( dbTable, "guest" );
 	etDBColumnSelect( dbTable, "data" );
 	etDBColumnSetValue( dbTable, "The guest" );
+	etDBColumnSelect( dbTable, "index" );
+	etDBColumnSetValue( dbTable, "2" );
 // Add the Data itselfe
 	etDBDriverDataAdd( driver, dbTable );
 
@@ -168,120 +201,8 @@ void					etDBDataTest( etDBDriver* driver, etDBTable* dbTable ){
 	etDBFilterFree( dbFilter );
 }
 
-/*
-void                    etDBDriverTest( etDBDriver *dbDriver ){
-
-// is connected ?
-    if( etDBDriverIsConnect(dbDriver) != etID_YES ){
-        snprintf( etDebugTempMessage, etDebugTempMessageLen, "Not Connected" );
-        etDebugMessage( etID_LEVEL_DETAIL_DB, etDebugTempMessage );
-        return;
-    }
 
 
-// we add  dummy and delete it
-    etDBObjectTablePick( dbObject, "dummy" );
-    etDBDriverTableAdd( dbDriver, dbObject );
-
-// we select the table we would like to add
-    etDBObjectTablePick( dbObject, "contacts" );
-    etDBDriverTableAdd( dbDriver, dbObject );
-
-// we select the table we would like to add
-    etDBObjectTablePick( dbObject, "city" );
-    etDBDriverTableAdd( dbDriver, dbObject );
-
-// delete table
-    etDBObjectTablePick( dbObject, "dummy" );
-    etDBDriverTableRemove( dbDriver, dbObject );
-
-
-// oh no, we forget something for the table, we need an adittional column
-    etDBObjectTablePick( dbObject, "city" );
-    etDBObjectTableColumnAdd( dbObject, "inhabitants", etDBCOLUMN_TYPE_INT, etDBCOLUMN_OPTION_NOTHING );
-    etDBDriverColumnAdd( dbDriver, dbObject );
-
-
-
-// SELECT uuid,postalcode,displayName,inhabitants  FROM city;
-// DROP TABLE IF EXISTS t1_backup;
-// CREATE TABLE t1_backup( 'postalcode' INTEGER,'uuid' TEXT  UNIQUE,'displayName' TEXT );
-// INSERT INTO t1_backup SELECT postalcode,uuid,displayName FROM city;
-// DROP TABLE city;
-// ALTER TABLE t1_backup RENAME TO city
-
-
-// we add some data
-    etDBObjectTablePick( dbObject, "city" );
-
-    etDBObjectValueClean( dbObject );
-    etDBObjectValueSet( dbObject, "uuid", "000001" );
-    etDBObjectValueSet( dbObject, "displayName", "Berlin" );
-    etDBObjectValueSet( dbObject, "postalcode", "10115" );
-    etDBObjectDump( dbObject );
-    etDBDriverDataAdd( dbDriver, dbObject );
-
-    etDBObjectValueClean( dbObject );
-    etDBObjectValueSet( dbObject, "uuid", "000002" );
-    etDBObjectValueSet( dbObject, "displayName", "Berlin" );
-    etDBObjectValueSet( dbObject, "postalcode", "10116" );
-    etDBObjectDump( dbObject );
-    etDBDriverDataAdd( dbDriver, dbObject );
-
-    etDBObjectValueClean( dbObject );
-    etDBObjectValueSet( dbObject, "uuid", "000003" );
-    etDBObjectValueSet( dbObject, "displayName", "Hannover" );
-    etDBObjectValueSet( dbObject, "postalcode", "30159" );
-    etDBObjectDump( dbObject );
-    etDBDriverDataAdd( dbDriver, dbObject );
-
-    etDBObjectValueClean( dbObject );
-    etDBObjectValueSet( dbObject, "uuid", "000004" );
-    etDBObjectValueSet( dbObject, "displayName", " Iter \"The big\" City" );
-    etDBObjectValueSet( dbObject, "postalcode", "0" );
-    etDBDriverDataAdd( dbDriver, dbObject );
-
-
-// we change some data
-    etDBObjectValueClean( dbObject );
-    etDBObjectValueSet( dbObject, "uuid", "000002" );
-    etDBObjectValueSet( dbObject, "displayName", "IterCity" );
-    etDBObjectValueSet( dbObject, "postalcode", "0" );
-    etDBDriverDataChange( dbDriver, dbObject );
-
-// we delete some data
-    etDBObjectValueClean( dbObject );
-    etDBObjectValueSet( dbObject, "uuid", "000004" );
-    etDBDriverDataRemove( dbDriver, dbObject );
-
-// vars
-    const char *tempValue;
-
-// try to get NOTHING
-    etDBObjectFilterClear( dbObject );
-    etDBObjectFilterAdd( dbObject, 0, etDBFILTER_OP_AND, "displayName", etDBFILTER_TYPE_CONTAIN, "Ahorn" );
-    etDBDriverDataGet( dbDriver, dbObject );                   // run the query
-    etDBDriverDataNext( dbDriver, dbObject );                  // get the first resultset
-    etDBObjectValueGet( dbObject, "displayName", tempValue );
-
-
-// we filter our data
-    etDBObjectFilterClear( dbObject );
-    etDBObjectFilterAdd( dbObject, 0, etDBFILTER_OP_AND, "uuid", etDBFILTER_TYPE_CONTAIN, "000001" );
-
-// get data
-    etDBDriverDataGet( dbDriver, dbObject );                   // run the query
-    etDBDriverDataNext( dbDriver, dbObject );                  // get the first resultset
-    etDBObjectValueGet( dbObject, "displayName", tempValue );
-    etDBObjectValueGet( dbObject, "displayName", tempValue );
-
-
-}
-*/
-
-void					etDBRawTest( etDBDriver* driver ){
-	
-}
 
 
 int                     main( int argc, const char* argv[] ){
@@ -290,52 +211,23 @@ int                     main( int argc, const char* argv[] ){
     etDebugLevelSet( etID_LEVEL_DETAIL_DB );
 
 // vars
-	const char* etDBColumnName = NULL;
-	const char* etDBColumnValue = NULL;
 	etDBDriver* sqliteDriver = NULL;
 	etDBTable* dbTable = NULL;
 
-/*
+
+
+// ######################### Test SQLITE #########################
 	sqliteDriver = etDBSQLiteTest();
 	dbTable = etDBCreateTableTest( sqliteDriver );
 	etDBDataTest( sqliteDriver, dbTable );
-	etDBTableFree( dbTable );
-	etDBDriverFree( sqliteDriver );
-*/
-	
-	sqliteDriver = etDBSQLiteTest();
-	etDBTableAlloc( dbTable );
-
-
-// insert
-	etDBSQLiteQueryExecute( sqliteDriver, dbTable, "INSERT INTO `testTable`(`uuid`,`username`,`data`) VALUES ( 'asdad','buhja','exit')" );
-
-	
-	etDBSQLiteQueryExecute( sqliteDriver, dbTable, "SELECT * FROM testTable" );
-	while( etDBDriverDataNext( sqliteDriver, dbTable ) == etID_YES ){
-		
-		etDBColumnIterateReset( dbTable );
-		while( etDBColumnIterate( dbTable ) == etID_YES ){
-			__etDBColumnGet( dbTable, &etDBColumnName, NULL, NULL );
-			etDBColumnGetValue( dbTable, etDBColumnValue );
-			
-			fprintf( stderr, "%s: %s\n", etDBColumnName, etDBColumnValue );
-		}
-	}
+	etDBSQLiteRaw( sqliteDriver, dbTable );
 	etDBTableFree( dbTable );
 	etDBDriverFree( sqliteDriver );
 
 
 
 
-
-/*
-    PGresult *PQexec(PGconn *conn, const char *command);
-    ExecStatusType PQresultStatus(const PGresult *res);
-    PGRES_COMMAND_OK PGRES_TUPLES_OK
-    char *PQresultErrorMessage(const PGresult *res);
-    PQclear(PGresult *res);
-*/
+	
 
 
 // compact memory
@@ -346,7 +238,7 @@ int                     main( int argc, const char* argv[] ){
 // inside evillib functions
 	size_t sizeLeft = etMemoryRealSize();
 	if( sizeLeft > 113 ){
-		fprintf( stderr, "ERROR: Memory leak ! Normaly 113Bytes should be left, but we have: %l", sizeLeft );
+		fprintf( stderr, "ERROR: Memory leak ! Normaly 113Bytes should be left, but we have: %li", sizeLeft );
 		etMemoryDump( NULL, NULL );
 		exit(-1);
 	}

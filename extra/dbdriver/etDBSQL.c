@@ -322,6 +322,8 @@ etID_STATE          etDBSQLChangeData( etDBDriver* dbDriver, etDBTable* dbTable,
 
 // get the primary key-column
     if( etDBColumnSelectWithOption( dbTable, etDBCOLUMN_OPTION_PRIMARY ) != etID_YES ){
+		snprintf( etDebugTempMessage, etDebugTempMessageLen, "No Primary Column for table '%s'", tableName );
+		etDebugMessage( etID_LEVEL_ERR, etDebugTempMessage );
         return etID_STATE_ERR_INTERR;
     }
 
@@ -329,6 +331,9 @@ etID_STATE          etDBSQLChangeData( etDBDriver* dbDriver, etDBTable* dbTable,
 
 // get the value of the primary column
     if( etDBColumnGetValue( dbTable, primaryColumnValue ) != etID_YES ){
+		
+		
+		
         return etID_STATE_ERR_INTERR;
     }
 

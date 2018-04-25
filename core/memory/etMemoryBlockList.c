@@ -286,7 +286,6 @@ etID_STATE                  etMemoryBlockListDump( etMemoryBlockList *list ){
 
 #ifndef ET_DEBUG_OFF
 
-    const char*     blockState = "[VIRTUAL]";
 	const char*     blockAlloced = "";
     const char*     blockFree = "";
     const char*     blockUsed = "";

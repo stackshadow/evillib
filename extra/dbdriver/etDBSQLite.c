@@ -190,54 +190,6 @@ etID_STATE          etDBSQLiteQueryExecute( etDBDriver* dbDriver, etDBTable* dbT
 
 
 
-etID_STATE          etDBSQLiteTableAdd( etDBDriver* dbDriver, etDBTable* dbTable ){
-// check
-    etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbTable );
-    etDebugCheckNull( dbDriver->dbDriverData );
-
-//
-    etDBSQLiteDriver    *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
-    etID_STATE          returnState = etID_STATE_NOTHING;
-
-// create the query
-    if( etDBSQLAddTable( dbDriver, dbTable, sqliteDriver->sqlquery, "'" ) != etID_YES ) return etID_STATE_ERR_INTERR;
-
-// run the query
-    returnState = etDBSQLiteRun( dbDriver, dbTable );
-    if( returnState == etID_YES ){
-        return etID_YES;
-    }
-
-// return
-    return etID_NO;
-}
-
-
-etID_STATE          etDBSQLiteTableRemove( etDBDriver* dbDriver, etDBTable* dbTable ){
-// check
-    etDebugCheckNull( dbDriver );
-    etDebugCheckNull( dbTable );
-    etDebugCheckNull( dbDriver->dbDriverData );
-
-//
-    etDBSQLiteDriver    *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
-    etID_STATE          returnState = etID_STATE_NOTHING;
-
-// create the query
-    if( etDBSQLRemoveTable( dbDriver, dbTable, sqliteDriver->sqlquery ) != etID_YES ) return etID_STATE_ERR_INTERR;
-
-// run the query
-    returnState = etDBSQLiteRun( dbDriver, dbTable );
-    if( returnState == etID_YES ){
-        return etID_YES;
-    }
-
-// return
-    return etID_NO;
-}
-
-
 etID_STATE          etDBSQLiteTableExists( etDBDriver* dbDriver, etDBTable* dbTable ){
 // check
     etDebugCheckNull( dbDriver );
@@ -275,6 +227,61 @@ etID_STATE          etDBSQLiteTableExists( etDBDriver* dbDriver, etDBTable* dbTa
         return etID_YES;
     }
 
+    return etID_NO;
+}
+
+
+etID_STATE          etDBSQLiteTableAdd( etDBDriver* dbDriver, etDBTable* dbTable ){
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbTable );
+    etDebugCheckNull( dbDriver->dbDriverData );
+
+// only create a table if needed
+	if( etDBSQLiteTableExists( dbDriver, dbTable )  == etID_YES ){
+		return etID_STATE_DATA_AVIABLE;
+	}
+
+
+// vars
+    etDBSQLiteDriver    *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+    etID_STATE          returnState = etID_STATE_NOTHING;
+
+
+// create the query
+    if( etDBSQLAddTable( dbDriver, dbTable, sqliteDriver->sqlquery, "'" ) != etID_YES ) return etID_STATE_ERR_INTERR;
+
+// run the query
+    returnState = etDBSQLiteRun( dbDriver, dbTable );
+    if( returnState == etID_YES ){
+        return etID_YES;
+    }
+
+// return
+    return etID_NO;
+}
+
+
+etID_STATE          etDBSQLiteTableRemove( etDBDriver* dbDriver, etDBTable* dbTable ){
+// check
+    etDebugCheckNull( dbDriver );
+    etDebugCheckNull( dbTable );
+    etDebugCheckNull( dbDriver->dbDriverData );
+
+//
+    etDBSQLiteDriver    *sqliteDriver = (etDBSQLiteDriver*)dbDriver->dbDriverData;
+    etID_STATE          returnState = etID_STATE_NOTHING;
+
+// create the query
+    if( etDBSQLRemoveTable( dbDriver, dbTable, sqliteDriver->sqlquery ) != etID_YES ) return etID_STATE_ERR_INTERR;
+
+// run the query
+    returnState = etDBSQLiteRun( dbDriver, dbTable );
+    if( returnState == etID_YES ){
+        return etID_YES;
+    }
+
+// return
     return etID_NO;
 }
 

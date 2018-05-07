@@ -117,6 +117,13 @@ etDBTable*				etDBCreateTableTest( etDBDriver* driver ){
 
 // add the table
 	etDBDriverTableAdd( driver, dbTable );
+	
+// try to add again
+	if( etDBDriverTableAdd( driver, dbTable ) != etID_STATE_DATA_AVIABLE ){
+		etDebugMessage( etID_STATE_CRIT, "Error 'testTable' dont exist in DB..." );
+		exit(-1);
+	}
+
 
 // check if table exist
 	if( etDBSQLiteTableExists( driver, dbTable ) != etID_YES ){

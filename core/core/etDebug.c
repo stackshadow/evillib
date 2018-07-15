@@ -111,6 +111,10 @@ void                    etDebugPrintMessageDefault( etDebug* etDebugActual ){
         case etID_LEVEL_DETAIL_DB:
             fprintf( OutputStream, "\033[0;48m[DEBUG]\033[00m [DB]" );
             break;
+			
+		case etID_LEVEL_DETAIL_BUS:
+            fprintf( OutputStream, "\033[0;48m[DEBUG]\033[00m [BUS]" );
+            break;		
 
         case etID_LEVEL_TEST:
             fprintf( OutputStream, "\033[0;48m[DEBUG]\033[00m [TEST]" );
